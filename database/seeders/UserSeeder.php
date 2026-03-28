@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'username' => 'AdminMaster'
         ]);
 
-        User::factory(10)->make()->each(function ($userFake) {
+        User::factory(3)->make()->each(function ($userFake) {
             $this->createSupabaseUser([
                 'email' => $userFake->email,
                 'password' => 'password123',
