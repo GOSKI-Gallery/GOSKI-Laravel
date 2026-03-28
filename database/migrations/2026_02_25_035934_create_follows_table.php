@@ -17,17 +17,13 @@ return new class extends Migration
             $table->foreignUuid('follower_id')->constrained('users')->onDelete('cascade');
             $table->foreignUuid('followed_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-
             $table->unique(['follower_id', 'followed_id']);
         });
-
-        DB::unprepared('
+        DB::unprepared("
             ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
-
-            CREATE POLICY "Follows visíveis por todos" ON public.follows FOR SELECT USING (true);
-            CREATE POLICY "Usuários seguem outros" ON public.follows FOR INSERT WITH CHECK (auth.uid() = follower_id);
-            CREATE POLICY "Usuários deixam de seguir" ON public.follows FOR DELETE USING (auth.uid() = follower_id);
-        ');
+            CREATE POLICY \"Follows públicos\" ON public.follows FOR SELECT USING (true);
+            CREATE POLICY \"Dono gerencia follow\" ON public.follows FOR ALL USING (auth.uid() = follower_id);
+        ");
     }
 
     /**

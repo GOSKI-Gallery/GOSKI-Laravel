@@ -17,17 +17,14 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
             $table->timestamps();
-
             $table->unique(['user_id', 'post_id']);
         });
-
-        DB::unprepared('
+        
+        DB::unprepared("
             ALTER TABLE public.likes ENABLE ROW LEVEL SECURITY;
-
-            CREATE POLICY "Likes visíveis por todos" ON public.likes FOR SELECT USING (true);
-            CREATE POLICY "Usuários dão like" ON public.likes FOR INSERT WITH CHECK (auth.uid() = user_id);
-            CREATE POLICY "Usuários removem like" ON public.likes FOR DELETE USING (auth.uid() = user_id);
-        ');
+            CREATE POLICY \"Likes públicos\" ON public.likes FOR SELECT USING (true);
+            CREATE POLICY \"Dono gerencia like\" ON public.likes FOR ALL USING (auth.uid() = user_id);
+        ");
     }
 
     /**
