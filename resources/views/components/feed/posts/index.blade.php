@@ -1,6 +1,5 @@
 @props(['user'])
 
-{{-- Mock de dados para simular o que o controller enviaria --}}
 @php
     $posts = [
         (object)[
