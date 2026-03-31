@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Post\PostController;
 
 
 Route::get('/', function () {
@@ -32,6 +33,4 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('/users/{id}', [AdminController::class, 'remove'])->name('admin.users.delete');
 });
 
-Route::get('/feed', function(){
-    return view('feed');
-});
+Route::get('/feed', [PostController::class, 'index']);

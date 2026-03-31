@@ -4,11 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\RegisterUserRequest;
-use App\Services\SupabaseAuthService;
+use App\Services\SupabaseService;
 
 class UserController extends Controller
 {
-    public function register(RegisterUserRequest $request, SupabaseAuthService $supabase)
+    public function register(RegisterUserRequest $request, SupabaseService $supabase)
     {
         $response = $supabase->signUp(
             $request->email, 
