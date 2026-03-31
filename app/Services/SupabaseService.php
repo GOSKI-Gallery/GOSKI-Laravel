@@ -64,6 +64,9 @@ class SupabaseService
         ])->get("{$this->url}/auth/v1/user")->json();
     }
 
+    /**
+     * Retorna os Posts
+    */
     public function getPosts()
     {
         return $this->client()->get("{$this->url}/rest/v1/posts?select=*,users(*)&order=created_at.desc")->json();

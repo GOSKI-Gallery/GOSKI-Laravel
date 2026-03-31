@@ -62,11 +62,35 @@ return new class extends Migration {
                 END IF;
             END $$;
         ");
+
+        Schema::create('laravel.password_reset_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->foreignUuid('user_id');
+            $table->string('token')->unique();
+            $table->timestamp('expires_at');
+            $table->timestamps();
+    
+            $table->foreign('user_id')->references('id')->on('public.users')->onDelete('cascade');
+        });
+    
+        Schema::create('laravel.sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->uuid('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+    
+            $table->foreign('user_id')->references('id')->on('public.users')->onDelete('cascade');
+        });
     }
+
 
     public function down(): void
     {
         DB::unprepared('DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users; DROP FUNCTION IF EXISTS public.handle_new_user;');
         Schema::dropIfExists('users');
+        Schema::dropIfExists('laravel.password_reset_tokens');
+        Schema::dropIfExists('laravel.sesseions');
     }
 };

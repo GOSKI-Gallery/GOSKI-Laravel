@@ -37,7 +37,7 @@
                     <h1 class='ml-2 text-black'>Curtir</h1>
                 </button>
             </form>
-            <span class="font-semibold text-sm">{{ $post['likes'] }} curtidas</span>
+            <span class="font-semibold text-sm">{{-- count($post['likes']) - --}} curtidas</span>
         </div>
     </div>
 @endforeach
