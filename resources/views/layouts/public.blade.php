@@ -3,7 +3,7 @@
 
 @include('shared.head')
 
-<body class='bg-[#ECECEC] min-h-screen'>
+<body class='bg-[#FAFAFA] min-h-screen'>
     <x-header />
 
     <div class="flex flex-col justify-between mx-auto px-4 py-4 itens-center">
