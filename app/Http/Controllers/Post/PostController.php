@@ -3,66 +3,55 @@
 namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\CreatePostRequest;
 use App\Services\SupabaseService;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(SupabaseService $supabase)
+    protected SupabaseService $supabase;
+
+    public function __construct(SupabaseService $supabase)
     {
-        $posts = $supabase->getPosts();
+        $this->supabase = $supabase;
+    }
+
+    public function index()
+    {
+        $posts = $this->supabase->getPosts();
 
         return view('feed', ['posts' => $posts]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(CreatePostRequest $request)
     {
-        //
-    }
+        $data = $request->validated();
+        $file = $request->file('image_url');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        try {
+            $fileName = 'post_'.time().'_'.uniqid().'.'.$file->extension();
+            
+            $this->supabase->uploadImage('posts', $fileName, $file);
+        
+            $publicUrl = $this->supabase->getPublicUrl('posts', $fileName);
+        
+            $record = [
+                'user_id' => Auth::id(),
+                'description' => $data['description'],
+                'image_url' => $publicUrl,
+                'is_nsfw' => false
+            ];
+        
+            $this->supabase->insert('posts', $record);
+        
+            return redirect()->route('feed')->with('success', 'Post criado com sucesso!');
+        } 
+        
+        catch (\Exception $e) {
+            Log::error('Erro ao criar o post: '.$e->getMessage().' '.$e->getLine().' '.$e->getFile());
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            return redirect()->back()->with('error', 'Desculpe, ocorreu um erro ao criar o post. Tente novamente mais tarde.');
+        }
     }
 }

@@ -33,4 +33,5 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('/users/{id}', [AdminController::class, 'remove'])->name('admin.users.delete');
 });
 
-Route::get('/feed', [PostController::class, 'index']);
+Route::get('/feed', [PostController::class, 'index'])->name('feed');
+Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
