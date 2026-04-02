@@ -28,7 +28,7 @@
             @enderror
 
             <button type="submit"
-                class="bg-[#1000FF] hover:bg-[#1000FF]/20 shadow-md mt-2 px-8 py-2 rounded-lg w-3/4 font-bold text-white transition duration-200 cursor-pointer">
+                class="bg-gray-900 hover:bg-black/30 shadow-md mt-2 px-8 py-2 rounded-lg w-3/4 font-bold text-white transition duration-200 cursor-pointer">
                 Entrar
             </button>
         </div>

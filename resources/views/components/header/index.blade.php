@@ -2,11 +2,11 @@
     <div class="mx-auto px-4 max-w-6xl">
         <div class="flex justify-between items-center h-16"> 
             
-            <div class="flex items-center">
+            <div class="flex items-center hover:opacity-60 cursor-pointer">
                 <a href="/feed" class="flex items-center group">
-                    <img class="w-auto h-10 transition-transform group-hover:scale-105" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
-                    <h1 class="ml-2 font-black text-3xl tracking-tighter text-gray-900">
-                        {{ config('app.name') }}<span class="text-indigo-600">.</span>
+                    <img class="w-auto h-10 transition-transform" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
+                    <h1 class="ml-2 font-black text-2xl tracking-tighter text-gray-900">
+                        {{ config('app.name') }}
                     </h1>
                 </a>
             </div>
