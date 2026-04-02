@@ -7,79 +7,95 @@ use Illuminate\Support\Facades\Http;
 class SupabaseService
 {
     protected string $url;
+
     protected string $key;
+
+    protected string $anonKey;
 
     public function __construct()
     {
         $this->url = rtrim(env('SUPABASE_URL'), '/');
         $this->key = env('SUPABASE_SERVICE_ROLE_KEY');
+        $this->anonKey = env('SUPABASE_ANON_KEY');
     }
 
-    /**
-     * Helper para headers padrão
-     */
-    private function client()
+    private function client(bool $useServiceKey = true)
     {
+        $token = $useServiceKey ? $this->key : $this->anonKey;
+
         return Http::withHeaders([
-            'apikey' => $this->key,
-            'Content-Type' => 'application/json',
-            'Authorization' => "Bearer {$this->key}",
+            'apikey' => $this->anonKey,
+            'Authorization' => "Bearer {$token}",
         ]);
     }
-    
-    /**
-     * Registra um novo usuário no Auth do Supabase
-     */
+
     public function signUp(string $email, string $password, string $username)
     {
-        return $this->client()->post("{$this->url}/auth/v1/signup", [
+        return $this->client(false)->post("{$this->url}/auth/v1/signup", [
             'email' => $email,
             'password' => $password,
-            'data' => [
-                'username' => $username
-            ]
+            'data' => ['username' => $username],
         ])->json();
     }
 
-    /**
-     * Autentica um usuário no Auth do Supabase
-    */
     public function signIn(string $email, string $password)
     {
-        return $this->client()->post("{$this->url}/auth/v1/token?grant_type=password", 
-        [
-            'email' => $email,
-            'password' => $password,
-        ])->json();
+        return $this->client(false)->post("{$this->url}/auth/v1/token?grant_type=password",
+            [
+                'email' => $email,
+                'password' => $password,
+            ])->json();
     }
 
-    /**
-     * Retorna o Usuario
-    */
-    public function getUser(string $token) 
+    public function getUser(string $token)
     {
         return Http::withHeaders([
-            'apikey' => $this->key,
+            'apikey' => $this->anonKey,
             'Authorization' => "Bearer {$token}",
         ])->get("{$this->url}/auth/v1/user")->json();
     }
 
-    /**
-     * Retorna os Posts
-    */
     public function getPosts()
     {
-        return $this->client()->get("{$this->url}/rest/v1/posts?select=*,users(*)&order=created_at.desc")->json();
+        $posts = $this->client()->get("{$this->url}/rest/v1/posts?select=*,users(*)&order=created_at.desc")->json();
+
+        if (is_null($posts) || (isset($posts['message']) && $posts['message'] === 'JWT expired')) {
+            return [];
+        }
+
+        return array_map(function ($post) {
+            if (is_string($post)) {
+                $post = json_decode($post, true);
+            }
+            if (isset($post['users']) && is_string($post['users'])) {
+                $post['users'] = json_decode($post['users'], true);
+            }
+
+            return $post;
+        }, $posts);
     }
 
-    /**
-     * Busca no Banco de Dados (PostgREST)
-     */
-    public function from(string $table)
+    public function insert(string $table, array $data)
     {
-        return Http::withHeaders([
-            'apikey' => $this->key,
-            'Authorization' => "Bearer {$this->key}",
-        ])->get("{$this->url}/rest/v1/{$table}");
+        return $this->client()->post("{$this->url}/rest/v1/{$table}", $data)->json();
     }
-}   
+
+    public function uploadImage(string $bucket, string $path, $file)
+    {
+        $url = "{$this->url}/storage/v1/object/{$bucket}/{$path}";
+        
+        return Http::withHeaders([
+            'apikey' => $this->anonKey,
+            'Authorization' => "Bearer {$this->key}",
+            'Content-Type' => $file->getMimeType(),
+        ])->withBody(file_get_contents($file->getRealPath()), $file->getMimeType())
+        ->post($url)
+        ->throw()
+        ->json();
+    }
+
+    public function getPublicUrl(string $bucket, string $path)
+    {
+        return "{$this->url}/storage/v1/object/public/{$bucket}/{$path}";
+    }
+}
