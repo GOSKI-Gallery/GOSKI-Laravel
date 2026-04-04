@@ -48,7 +48,7 @@ class AdminController extends Controller
         }
 
         else {
-            return redirect()->route('admin.users.index')->with('sucess', 'Usuario deletado com sucesso');
+            return redirect()->route('admin.users.index')->with('success', 'Usuario deletado com sucesso');
         }
     }
 }
