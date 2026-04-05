@@ -20,8 +20,13 @@ class PostController extends Controller
 
     public function index()
     {
+        $supabase = new SupabaseService();
         $allPosts = Post::with('users')->latest()->get();
         $userPosts = Post::where('user_id', Auth::id())->latest()->take(9)->get();
+
+        foreach ($allPosts as $post) {
+            $post->likes_count = $supabase->getLikeCount($post->id);
+        }
 
         return view('feed', [
             'posts' => $allPosts,

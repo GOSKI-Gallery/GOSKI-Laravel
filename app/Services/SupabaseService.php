@@ -98,4 +98,81 @@ class SupabaseService
     {
         return "{$this->url}/storage/v1/object/public/{$bucket}/{$path}";
     }
+
+    // ─── Follow ─────────────────────────────────────────────
+
+    public function followUser(string $followerId, string $followedId)
+    {
+        return $this->client()->post(
+            "{$this->url}/rest/v1/follows",
+            [
+                'follower_id' => $followerId,
+                'followed_id' => $followedId,
+            ]
+        )->json();
+    }
+
+    public function unfollowUser(string $followerId, string $followedId)
+    {
+        return $this->client()
+            ->delete("{$this->url}/rest/v1/follows?follower_id=eq.{$followerId}&followed_id=eq.{$followedId}")
+            ->json();
+    }
+
+    public function isFollowing(string $followerId, string $followedId): bool
+    {
+        $response = $this->client()
+            ->get("{$this->url}/rest/v1/follows?follower_id=eq.{$followerId}&followed_id=eq.{$followedId}")
+            ->json();
+
+        return is_array($response) && count($response) > 0;
+    }
+
+    public function getFollowCount(string $userId, string $type = 'followers'): int
+    {
+        $column = $type === 'followers' ? 'followed_id' : 'follower_id';
+        $response = $this->client()
+            ->get("{$this->url}/rest/v1/follows?{$column}=eq.{$userId}")
+            ->json();
+
+        return is_array($response) ? count($response) : 0;
+    }
+
+    // ─── Like ───────────────────────────────────────────────
+
+    public function likePost(string $userId, string $postId)
+    {
+        return $this->client()->post(
+            "{$this->url}/rest/v1/likes",
+            [
+                'user_id' => $userId,
+                'post_id' => $postId,
+            ]
+        )->json();
+    }
+
+    public function unlikePost(string $userId, string $postId)
+    {
+        return $this->client()
+            ->delete("{$this->url}/rest/v1/likes?user_id=eq.{$userId}&post_id=eq.{$postId}")
+            ->json();
+    }
+
+    public function hasLikedPost(string $userId, string $postId): bool
+    {
+        $response = $this->client()
+            ->get("{$this->url}/rest/v1/likes?user_id=eq.{$userId}&post_id=eq.{$postId}")
+            ->json();
+
+        return is_array($response) && count($response) > 0;
+    }
+
+    public function getLikeCount(string $postId): int
+    {
+        $response = $this->client()
+            ->get("{$this->url}/rest/v1/likes?post_id=eq.{$postId}")
+            ->json();
+
+        return is_array($response) ? count($response) : 0;
+    }
 }

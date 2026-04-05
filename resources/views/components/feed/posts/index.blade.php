@@ -24,7 +24,7 @@
                         </div>
 
                         @if (auth()->check() && auth()->id() !== $post['users']['id'])
-                            <form action="{{-- route('user.follow', $post['users']['id']) --}}" method="POST">
+                            <form action="{{ route('user.follow', $post['users']['id']) }}" method="POST">
                                 @csrf
                                 <button type="submit"
                                     class="bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-full text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
@@ -49,13 +49,15 @@
                                 </p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button
-                                    class="group flex items-center gap-2 pr-3 py-2 rounded-full hover:bg-red-50 transition-all cursor-pointer">
-                                    <img class="w-6 h-6 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all"
-                                        src="{{ asset('images/icons/like.png') }}" alt="Like">
-                                    {{-- MOCK: No futuro, usar {{ count($post['likes']) }} --}}
-                                    <span class="text-sm font-black text-gray-700 group-hover:text-red-600">42</span>
-                                </button>
+                                <form action="{{ route('post.like.toggle', $post['id']) }}" method="POST" class="m-0 p-0">
+                                    @csrf
+                                    <button type="submit"
+                                        class="group flex items-center gap-2 pr-3 py-2 rounded-full hover:bg-red-50 transition-all cursor-pointer">
+                                        <img class="w-6 h-6 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all"
+                                            src="{{ asset('images/icons/like.png') }}" alt="Like">
+                                        <span class="text-sm font-black text-gray-700 group-hover:text-red-600">{{ $post['likes_count'] ?? 0 }}</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
