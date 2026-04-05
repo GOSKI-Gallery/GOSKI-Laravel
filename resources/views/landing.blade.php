@@ -16,12 +16,12 @@
                     <h2>Acompanhe as</h2>
                     <p>
                         <span
-                            class="bg-clip-text text-transparent bg-gradient-to-r from-red-600 via-pink-600 to-indigo-600">
+                            class="bg-clip-text text-transparent bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">
                             expressões
                         </span>
                         <span>do</span>
                         <span
-                            class="bg-clip-text text-transparent bg-gradient-to-l from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">
+                            class="bg-clip-text text-transparent bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">
                             mundo.
                         </span>
                     </p>

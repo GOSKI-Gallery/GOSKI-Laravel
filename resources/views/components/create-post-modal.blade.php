@@ -18,7 +18,7 @@
 
             <div class="mb-5 border-2 border-gray-200 rounded-xl">
                 <input name="description" id="description" rows="3"
-                    class="w-full resize-none rounded-xl border-gray-200 px-4 py-3 text-sm outline-none transition-all placeholder:text-gray-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    class="w-full resize-none rounded-xl border-gray-200 px-4 py-3 text-sm outline-none transition-all placeholder:text-gray-300 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10"
                     placeholder="Descrição" required></input>
             </div>
 
@@ -53,7 +53,7 @@
                     Cancelar
                 </button>
                 <button type="submit"
-                    class="cursor-pointer rounded-xl bg-gray-900 px-10 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-100 transition-all hover:bg-black/30 active:scale-95">
+                    class="cursor-pointer rounded-xl bg-gray-900 px-10 py-2.5 text-sm font-bold text-white shadow-lg shadow-gray-100 transition-all hover:bg-black/30 active:scale-95">
                     Compartilhar
                 </button>
             </div>

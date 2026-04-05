@@ -8,12 +8,12 @@
 
     @if(request()->is('/'))
         <a href="/register" 
-           class='text-sm font-bold text-gray-500 hover:text-indigo-600 border border-gray-200 px-4 py-2 rounded-full transition-all hover:bg-white shadow-sm'>
+           class='text-sm font-bold text-gray-500 hover:text-gray-600 border border-gray-200 px-4 py-2 rounded-full transition-all hover:bg-white shadow-sm'>
             Crie sua conta
         </a>
     @elseif(request()->is('register'))
         <a href="/" 
-           class='text-sm font-bold text-gray-500 hover:text-indigo-600 border border-gray-200 px-4 py-2 rounded-full transition-all hover:bg-white shadow-sm'>
+           class='text-sm font-bold text-gray-500 hover:text-gray-600 border border-gray-200 px-4 py-2 rounded-full transition-all hover:bg-white shadow-sm'>
             Faça seu login
         </a>
     @endif

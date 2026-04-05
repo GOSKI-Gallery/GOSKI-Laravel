@@ -7,7 +7,7 @@
                  alt="Post image"
                  class='w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:opacity-75'>
             
-            <div class="absolute inset-0 bg-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gray-900/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         </div>
     @empty
         <div class="col-span-3 py-4 text-center">

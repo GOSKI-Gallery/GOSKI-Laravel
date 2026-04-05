@@ -12,7 +12,7 @@
                             <div class="relative group cursor-pointer">
                                 <img src="{{ $post['users']['profile_photo_url'] ?? asset('images/icons/icon.png') }}"
                                     alt="Profile"
-                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-50 group-hover:border-indigo-400 transition-all">
+                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-50 group-hover:border-gray-400 transition-all">
                             </div>
                             <div>
                                 <h2 class="font-bold text-gray-900 text-sm tracking-tight">
@@ -27,7 +27,7 @@
                             <form action="{{-- route('user.follow', $post['users']['id']) --}}" method="POST">
                                 @csrf
                                 <button type="submit"
-                                    class="bg-gray-50 text-gray-900 hover:bg-indigo-600 hover:text-white px-5 py-1.5 rounded-full text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
+                                    class="bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-full text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
                                     Seguir
                                 </button>
                             </form>
@@ -75,7 +75,7 @@
         <h3 class="text-xl font-black text-gray-900 tracking-tight">Nenhum post cadastrado.<h3>
 
                 <button id="open-modal-btn-empty"
-                    class="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-all cursor-pointer">
+                    class="mt-8 bg-gray-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 active:scale-95 transition-all cursor-pointer">
                     Fazer minha primeira postagem
                 </button>
     </div>

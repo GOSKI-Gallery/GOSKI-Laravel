@@ -3,12 +3,12 @@
         <div class='flex justify-start items-center gap-3'>
             <img src='{{ Auth::user()->profile_photo_url ?? asset('images/icons/icon.png') }}' 
                  alt='Profile Picture'
-                 class='rounded-full w-12 h-12 object-cover border-2 border-indigo-50'>
+                 class='rounded-full w-12 h-12 object-cover border-2 border-gray-50'>
             <div>
                 <h2 class='text-lg font-black text-gray-900 tracking-tighter leading-none'>{{ Auth::user()->username }}</h2>
             </div>
         </div>
-        <a href="/perfil" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2 rounded-full transition-all group">
+        <a href="/perfil" class="bg-gray-50 hover:bg-gray-100 text-gray-600 p-2 rounded-full transition-all group">
             <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
         </a>
     </div>
@@ -27,7 +27,7 @@
     <div class='mt-6'>
         <div class="flex items-center justify-between mb-4">
             <h4 class='text-[10px] font-black text-gray-400 uppercase tracking-widest'>Últimas publicações</h4>
-            <span class="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded">
+            <span class="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
                 {{ count($userPosts) }}
             </span>
         </div>
