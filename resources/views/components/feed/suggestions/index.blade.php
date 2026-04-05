@@ -1,7 +1,7 @@
 <div class='flex flex-col gap-5 py-4'>
     <div class="flex items-center justify-between">
         <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Sugestões para você</h3>
-        <button class="text-[10px] font-bold text-gray-600 hover:text-gray-800 transition-colors">Gerado por IA</button>
+        <button class="text-[10px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">Gerado por IA</button>
     </div>
 
     {{-- Futuramente envolver este bloco em um @foreach($suggestions as $suggested) --}}
