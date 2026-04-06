@@ -13,11 +13,18 @@ class FollowController extends Controller
         $followerId = Auth::id();
 
         if ($followerId === $followedId) {
-            return back()->with('error', 'Voc\u00ea n\u00e3o pode seguir a si mesmo.');
+            if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['success' => false, 'message' => 'Você não pode seguir a si mesmo.'], 400);
+            }
+            return back()->with('error', 'Você não pode seguir a si mesmo.');
         }
 
         $supabase = new SupabaseService();
         $supabase->followUser($followerId, $followedId);
+
+        if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['success' => true, 'message' => 'Followed successfully!', 'following' => true]);
+        }
 
         return back()->with('success', 'Followed successfully!');
     }
@@ -28,6 +35,10 @@ class FollowController extends Controller
 
         $supabase = new SupabaseService();
         $supabase->unfollowUser($followerId, $followedId);
+
+        if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['success' => true, 'message' => 'Unfollowed successfully!', 'following' => false]);
+        }
 
         return back()->with('success', 'Unfollowed successfully!');
     }

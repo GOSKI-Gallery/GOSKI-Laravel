@@ -16,11 +16,11 @@
     <div class='grid grid-cols-2 gap-4 py-4 border-y border-gray-50'>
         <div class="text-center border-r border-gray-50">
             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seguidores</p>
-            <h4 class="text-xl font-black text-gray-900">1.2k</h4> {{-- Mock: Futuramente count() --}}
+            <h4 class="text-xl font-black text-gray-900">{{ $followersCount ?? 0 }}</h4>
         </div>
         <div class="text-center">
             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seguindo</p>
-            <h4 class="text-xl font-black text-gray-900">842</h4> {{-- Mock: Futuramente count() --}}
+            <h4 class="text-xl font-black text-gray-900">{{ $followingCount ?? 0 }}</h4>
         </div>
     </div>
 

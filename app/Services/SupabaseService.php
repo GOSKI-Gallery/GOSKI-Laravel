@@ -99,8 +99,6 @@ class SupabaseService
         return "{$this->url}/storage/v1/object/public/{$bucket}/{$path}";
     }
 
-    // ─── Follow ─────────────────────────────────────────────
-
     public function followUser(string $followerId, string $followedId)
     {
         return $this->client()->post(
@@ -137,8 +135,6 @@ class SupabaseService
 
         return is_array($response) ? count($response) : 0;
     }
-
-    // ─── Like ───────────────────────────────────────────────
 
     public function likePost(string $userId, string $postId)
     {

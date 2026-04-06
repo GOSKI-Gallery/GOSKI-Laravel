@@ -26,11 +26,15 @@ class PostController extends Controller
 
         foreach ($allPosts as $post) {
             $post->likes_count = $supabase->getLikeCount($post->id);
+            $post->is_liked_by_user = $supabase->hasLikedPost(Auth::id(), $post->id);
+            $post->is_followed_by_user = $supabase->isFollowing(Auth::id(), $post->users['id']);
         }
 
         return view('feed', [
             'posts' => $allPosts,
             'userPosts' => $userPosts,
+            'followersCount' => $supabase->getFollowCount(Auth::id(), 'followers'),
+            'followingCount' => $supabase->getFollowCount(Auth::id(), 'following'),
         ]);
     }
 
