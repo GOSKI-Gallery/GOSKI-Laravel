@@ -10,7 +10,7 @@
                 <x-feed.posts :posts="$posts" />
             </div>
             <div class="w-3/12">
-                <x-feed.resume />
+                <x-feed.resume :userPosts="$userPosts"/>
             </div>
         </div>
     </div>

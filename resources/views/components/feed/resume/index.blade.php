@@ -1,27 +1,36 @@
-<div class='flex flex-row justify-between items-center gap-3'>
-    <div class='flex justify-start items-center'>
-        <img src='{{ $user->profile_photo_url ?? asset('images/icons/icon.png') }}' alt='Profile Picture'
-            class='rounded-full w-10 h-10 object-cover'>
-        <h1 class='text-shadow-2xs p-4 text-2xl text-center'>{{ Auth::user()->username }}</h1>
+<div class='flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm'>
+    <div class='flex flex-row justify-between items-center mb-6'>
+        <div class='flex justify-start items-center gap-3'>
+            <img src='{{ Auth::user()->profile_photo_url ?? asset('images/icons/icon.png') }}' 
+                 alt='Profile Picture'
+                 class='rounded-full w-12 h-12 object-cover border-2 border-gray-50'>
+            <div>
+                <h2 class='text-lg font-black text-gray-900 tracking-tighter leading-none'>{{ Auth::user()->username }}</h2>
+            </div>
+        </div>
+        <a href="/perfil" class="bg-gray-50 hover:bg-gray-100 text-gray-600 p-2 rounded-full transition-all group">
+            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        </a>
     </div>
-    <button
-        class="inline-flex inset-ring-1 inset-ring-white/5 justify-center bg-black hover:bg-black/30 shadow-xl px-3 py-2 rounded-md w-l font-semibold text-white text-sm cursor-pointer">
-        Meu Perfil
-    </button>
-</div>
 
-<div class='flex flex-row justify-between py-4'>
-    <div>
-        <h1 class='text-shadow-2xs'>Seguidores</h1>
+    <div class='grid grid-cols-2 gap-4 py-4 border-y border-gray-50'>
+        <div class="text-center border-r border-gray-50">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seguidores</p>
+            <h4 class="text-xl font-black text-gray-900">{{ $followersCount ?? 0 }}</h4>
+        </div>
+        <div class="text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seguindo</p>
+            <h4 class="text-xl font-black text-gray-900">{{ $followingCount ?? 0 }}</h4>
+        </div>
     </div>
-    <div>
-        <h1 class='text-shadow-2xs'>Seguindo</h1>
-    </div>
-</div>
 
-<div class='flex flex-row justify-center'>
-    <div class='flex flex-col justify-center items-center gap-4'>
-        <h1 class='text-shadow-2xs'>Publicações</h1>
-        <x-feed.resume.posts-resume />
+    <div class='mt-6'>
+        <div class="flex items-center justify-between mb-4">
+            <h4 class='text-[10px] font-black text-gray-400 uppercase tracking-widest'>Últimas publicações</h4>
+            <span class="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
+                {{ count($userPosts) }}
+            </span>
+        </div>
+        <x-feed.resume.posts-resume :userPosts="$userPosts" />
     </div>
 </div>

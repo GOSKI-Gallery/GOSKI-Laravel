@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 
-@include('shared.head')
+    @include('shared.head')
 
-<body class='bg-[#ECECEC] min-h-screen'>
-    <x-header />
+    <body class='min-h-screen bg-[#FAFAFA]'>
+        <x-header />
+        <x-create-post-modal />
 
-    <div class="flex flex-col justify-between mx-auto px-4 py-4 itens-center">
-        @yield('content')
-    </div>
+        <div class="itens-center mx-auto flex flex-col justify-between px-4 py-4">
+            @yield('content')
+        </div>
 
-</body>
+    </body>
 
 </html>

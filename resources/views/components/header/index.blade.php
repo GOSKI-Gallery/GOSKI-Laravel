@@ -1,44 +1,27 @@
-<header class="top-0 z-50 sticky backdrop-blur-lg border-[#D9D9D9] border-b">
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div class="flex justify-between items-center h-24"> 
-            <div class="flex items-center">
-                <a href="/feed" class="flex items-center">
-                    <img class="w-auto h-16" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
-                    <h1 class="ml-3 font-bold text-5xl">{{ env('APP_NAME') }}</h1>
+<header class="top-0 z-50 sticky bg-white border-gray-200 border-b">
+    <div class="mx-auto px-4 max-w-6xl">
+        <div class="flex justify-between items-center h-16"> 
+            
+            <div class="flex items-center hover:opacity-60 cursor-pointer">
+                <a href="/feed" class="flex items-center group">
+                    <img class="w-auto h-10 transition-transform" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
+                    <h1 class="ml-2 font-black text-2xl tracking-tighter text-gray-900">
+                        {{ config('app.name') }}
+                    </h1>
                 </a>
             </div>
             
-            <div class="flex items-center gap-5">
-                <button id="open-modal-btn" class="hover:opacity-20 transition-opacity cursor-pointer">
-                    <img class="w-8 h-8" src="{{ asset('images/icons/add.png') }}" alt="NovoPost">
+            <div class="flex items-center gap-6">
+                <button id="open-modal-btn" class="hover:opacity-60 transition-all cursor-pointer">
+                    <img class="w-7 h-7" src="{{ asset('images/icons/add.png') }}" alt="NovoPost">
                 </button>
 
-                <form action="" method="POST" class="flex items-center">
-                    <button type="submit" class="hover:opacity-20 transition-opacity cursor-pointer">
-                        <img class="w-8 h-8" src="{{ asset('images/icons/bell.png') }}" alt="Notificacoes">
-                    </button>
-                </form>
+                <button class="hover:opacity-60 transition-all cursor-pointer">
+                    <img class="w-7 h-7" src="{{ asset('images/icons/bell.png') }}" alt="Notificacoes">
+                </button>
 
                 <x-header.menu />
             </div>
         </div>
     </div>
 </header>
-
-<x-create-post-modal />
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const openModalBtn = document.getElementById('open-modal-btn');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const modal = document.getElementById('create-post-modal');
-
-        openModalBtn.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
-    });
-</script>

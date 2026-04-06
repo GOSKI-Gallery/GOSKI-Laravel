@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
-
     use HasFactory;
 
     protected $fillable = [
@@ -20,12 +19,12 @@ class Post extends Model
         'user_id',
     ];
 
-    public function user(): belongsTo
+    public function users(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function likes(): belongsToMany
+    public function likes(): BelongsToMany
     {
         return $this->belongsToMany(Like::class);
     }
@@ -33,8 +32,7 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class)
-                    ->withPivot('confidence')
-                    ->withTimestamps();
+            ->withPivot('confidence')
+            ->withTimestamps();
     }
-    
 }
