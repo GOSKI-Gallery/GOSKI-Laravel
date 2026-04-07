@@ -9,14 +9,15 @@
 
                     <div class="px-5 py-4 flex items-center justify-between bg-white/50 backdrop-blur-sm">
                         <div class="flex items-center gap-3">
-                            <div class="relative group cursor-pointer">
+                            <a href="{{ route('profile.show', $post['users']['id']) }}" class="relative group">
                                 <img src="{{ $post['users']['profile_photo_url'] ?? asset('images/icons/icon.png') }}"
                                     alt="Profile"
                                     class="w-10 h-10 rounded-full object-cover border-2 border-gray-50 group-hover:border-gray-400 transition-all">
-                            </div>
+                            </a>
                             <div>
-                                <h2 class="font-bold text-gray-900 text-sm tracking-tight">
-                                    {{ $post['users']['username'] }}</h2>
+                                <a href="{{ route('profile.show', $post['users']['id']) }}" class="font-bold text-gray-900 text-sm tracking-tight hover:underline">
+                                    {{ $post['users']['username'] }}
+                                </a>
                                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
                                     {{ \Carbon\Carbon::parse($post['created_at'])->diffForHumans() }}
                                 </p>
@@ -45,8 +46,8 @@
                         <div class="flex items-center justify-between mb-4">
                             <div class="text-sm leading-snug">
                                 <p class="text-gray-800">
-                                    <span
-                                        class="font-black text-gray-900 mr-2 uppercase tracking-tighter">{{ $post['users']['username'] }}</span>
+                                    <a href="{{ route('profile.show', $post['users']['id']) }}"
+                                        class="font-black text-gray-900 mr-2 uppercase tracking-tighter hover:underline">{{ $post['users']['username'] }}</a>
                                     {{ $post['description'] }}
                                 </p>
                             </div>

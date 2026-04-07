@@ -39,3 +39,6 @@ Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
 Route::post('/follow/{userId}', [FollowController::class, 'follow'])->name('user.follow');
 Route::post('/unfollow/{userId}', [FollowController::class, 'unfollow'])->name('user.unfollow');
 Route::post('/posts/{postId}/like', [LikeController::class, 'toggleLike'])->name('post.like.toggle');
+
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+Route::get('/profile/{userId}', [UserController::class, 'show'])->name('profile.show');

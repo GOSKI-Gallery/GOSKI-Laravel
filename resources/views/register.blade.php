@@ -5,7 +5,7 @@
 
 <body class='flex min-h-screen flex-col bg-[#FAFAFA]'>
 
-    <x-flash-message />
+    <x-ui.flash-message />
 
     <x-auth.header-auth />
 

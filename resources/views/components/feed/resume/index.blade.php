@@ -1,13 +1,13 @@
 <div class='flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm'>
     <div class='flex flex-row justify-between items-center mb-6'>
-        <div class='flex justify-start items-center gap-3'>
-            <img src='{{ Auth::user()->profile_photo_url ?? asset('images/icons/icon.png') }}' 
+        <a href="{{ route('profile') }}" class='flex justify-start items-center gap-3'>
+            <img src='{{ Auth::user()->profile_photo_url ?? asset('images/icons/icon.png') }}'
                  alt='Profile Picture'
-                 class='rounded-full w-12 h-12 object-cover border-2 border-gray-50'>
+                 class='rounded-full w-12 h-12 object-cover border-2 border-gray-50 hover:border-gray-400 transition-all'>
             <div>
                 <h2 class='text-lg font-black text-gray-900 tracking-tighter leading-none'>{{ Auth::user()->username }}</h2>
             </div>
-        </div>
+        </a>
         <a href="/perfil" class="bg-gray-50 hover:bg-gray-100 text-gray-600 p-2 rounded-full transition-all group">
             <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
         </a>
