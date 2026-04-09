@@ -171,4 +171,17 @@ class SupabaseService
 
         return is_array($response) ? count($response) : 0;
     }
+
+    public function getUserById(string $userId): ?array
+    {
+        $response = $this->client()
+            ->get("{$this->url}/rest/v1/users?id=eq.{$userId}")
+            ->json();
+
+        if (is_array($response) && count($response) > 0) {
+            return $response[0];
+        }
+
+        return null;
+    }
 }

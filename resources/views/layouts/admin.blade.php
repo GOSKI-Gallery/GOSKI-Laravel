@@ -7,7 +7,7 @@
     <x-admin.header />
 
 
-    <x-flash-message />
+    <x-ui.flash-message />
 
     <div class="flex flex-col mx-auto px-5 py-24 itens-center justify center">
         @yield('content')
