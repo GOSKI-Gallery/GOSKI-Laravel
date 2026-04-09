@@ -1,50 +1,65 @@
-@props(['profileUser', 'userPosts' => [], 'followersCount' => 0,
- 'followingCount' => 0, 'isOwnProfile' => true, 'isFollowed' => false])
+{{-- resources/views/components/profile/header.blade.php --}}
+@props(['profileUser', 'userPosts' => [], 'followersCount' => 0, 'followingCount' => 0, 'isOwnProfile' => true, 'isFollowed' => false])
 
-<div class='flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm'>
-    <div class='flex flex-row justify-between items-center mb-6'>
-        <div class='flex justify-start items-center gap-3'>
-            <img src='{{ $profileUser['profile_photo_url'] ?? asset('images/icons/icon.png') }}'
-                 alt='Profile Picture'
-                 class='rounded-full w-12 h-12 object-cover border-2 border-gray-50'>
-            <div>
-                <h2 class='text-lg font-black text-gray-900 tracking-tighter leading-none'>{{ $profileUser['username'] }}</h2>
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16 mb-12">
+        
+        <div class="relative">
+            <div class="w-20 h-20 md:w-40 md:h-40 rounded-full p-1 bg-gray-200">
+                <div class="w-full h-full rounded-full border-4 border-white overflow-hidden bg-gray-100">
+                    <img src="{{ $profileUser['profile_photo_url'] ?? asset('images/icons/icon.png') }}" 
+                         class="w-full h-full object-cover">
+                </div>
             </div>
         </div>
 
-        @if ($isOwnProfile)
-            <a href="/perfil" class="bg-gray-50 hover:bg-gray-100 text-gray-600 p-2 rounded-full transition-all group">
-                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            </a>
-        @else
-            <form action="{{ $isFollowed ? route('user.unfollow', $profileUser['id']) : route('user.follow', $profileUser['id']) }}" method="POST">
-                @csrf
-                <button type="submit"
-                        class="bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-full text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
-                    {{ $isFollowed ? 'Seguindo' : 'Seguir' }}
-                </button>
-            </form>
-        @endif
+        <div class="flex-1 flex flex-col items-center md:items-start">
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
+                <h2 class="text-2xl font-light text-gray-900 tracking-tight">{{ $profileUser['username'] }}</h2>
+                
+                <div class="flex gap-2">
+                    @if ($isOwnProfile)
+                        <button class="px-6 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-bold hover:bg-gray-50 transition-all cursor-pointer">
+                            Editar perfil
+                        </button>
+
+                    @else
+                        <form action="{{ $isFollowed ? route('user.unfollow', $profileUser['id']) : route('user.follow', $profileUser['id']) }}" method="POST">
+                            @csrf
+                            <button type="submit"
+                            class="follow-btn bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
+                            {{ $isFollowed ? 'Seguindo' : 'Seguir' }}
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex gap-8 mb-6">
+                <div class="flex flex-col md:flex-row items-center gap-1">
+                    <span class="font-black text-gray-900">{{ count($userPosts) }}</span>
+                    <span class="text-gray-500 text-sm lowercase">publicações</span>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-1 cursor-pointer hover:opacity-70">
+                    <span class="font-black text-gray-900">{{ $followersCount }}</span>
+                    <span class="text-gray-500 text-sm lowercase">seguidores</span>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-1 cursor-pointer hover:opacity-70">
+                    <span class="font-black text-gray-900">{{ $followingCount }}</span>
+                    <span class="text-gray-500 text-sm lowercase">seguindo</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class='grid grid-cols-2 gap-4 py-4 border-y border-gray-50'>
-        <div class="text-center border-r border-gray-50">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seguidores</p>
-            <h4 class="text-xl font-black text-gray-900">{{ $followersCount }}</h4>
-        </div>
-        <div class="text-center">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seguindo</p>
-            <h4 class="text-xl font-black text-gray-900">{{ $followingCount }}</h4>
+    <div class="border-t border-gray-100">
+        <div class="flex justify-start gap-12">
+            <div class="flex items-center gap-2 py-4 border-t border-gray-900 -mt-px text-xs font-black uppercase tracking-widest text-gray-900">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Publicações
+            </div>
         </div>
     </div>
 
-    <div class='mt-6'>
-        <div class="flex items-center justify-between mb-4">
-            <h4 class='text-[10px] font-black text-gray-400 uppercase tracking-widest'>Últimas publicações</h4>
-            <span class="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
-                {{ count($userPosts) }}
-            </span>
-        </div>
-        <x-profile.user-posts :userPosts="$userPosts" />
-    </div>
+    <x-profile.user-posts :userPosts="$userPosts" />
 </div>

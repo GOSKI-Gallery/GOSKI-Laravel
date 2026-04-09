@@ -10,7 +10,7 @@
             <div class="relative cursor-pointer">
                 <img src='{{ asset('images/icons/icon.png') }}'
                      alt='Profile Picture'
-                     class='rounded-full w-9 h-9 object-cover border border-gray-100 group-hover:border-gray-400 transition-all'>
+                     class='rounded-xl w-9 h-9 object-cover border border-gray-100 group-hover:border-gray-400 transition-all'>
             </div>
 
             <div>
@@ -18,7 +18,7 @@
             </div>
         </a>
 
-        <button class="bg-gray-900 hover:bg-gray-600 text-white px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-tighter transition-all active:scale-95 cursor-pointer shadow-sm">
+        <button class="bg-gray-900 hover:bg-gray-600 text-white px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-tighter transition-all active:scale-95 cursor-pointer shadow-sm">
             Seguir
         </button>
     </div>

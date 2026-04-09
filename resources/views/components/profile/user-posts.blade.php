@@ -5,7 +5,7 @@
         <div class="aspect-square group relative overflow-hidden rounded-lg bg-gray-100">
             <img src="{{ $post['image_url'] ?? '' }}" 
                  alt="Post image"
-                 class='w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:opacity-75'>
+                 class='w-full h-full object-cover transition-all duration-300 group-hover:scale-110'>
             
             <div class="absolute inset-0 bg-gray-900/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         </div>
