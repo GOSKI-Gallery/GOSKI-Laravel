@@ -26,7 +26,13 @@
                     Crie sua conta.
                 </h3>
 
-                <x-auth.user-form />
+                <x-auth.user-form 
+                    action="/register" 
+                    buttonText="Cadastrar" 
+                    :show-password="true" 
+                    :show-password-confirmation="true"
+                    :show-avatar="false" 
+                />
             </div>
         </div>
     </div>

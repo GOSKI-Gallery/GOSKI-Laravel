@@ -42,3 +42,4 @@ Route::post('/posts/{postId}/like', [LikeController::class, 'toggleLike'])->name
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::get('/profile/{userId}', [UserController::class, 'show'])->name('profile.show');
+Route::put('/profile', [UserController::class, 'update'])->name('profile.update');

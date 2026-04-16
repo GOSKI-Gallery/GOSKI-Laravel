@@ -1,59 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# GOSKI
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Sobre o App
+O **GOSKI-Laravel** é uma plataforma web para gerenciamento e exposição e moderação de arte digital e fotografia. O diferencial do projeto é a automação de processos via Inteligência Artificial, garantindo que todo conteúdo enviado seja moderado e categorizado automaticamente, proporcionando um ambiente seguro e organizado.
 
-## About Laravel
+### Funcionalidades
+- [x] **Setup do Projeto:** Integração Laravel + Google IDX + Supabase.
+- [x] **Autenticação:** Sistema de login vinculado ao Auth do Supabase (UUID).
+- [x] **Gerenciamento de Mídia:** Upload de imagens para buckets do Supabase Storage.
+- [x] **Processamento via IA:** Trigger de Edge Functions para moderação e rotulagem automática.
+- [x] **Perfil do Usuário:** Sincronização de dados de perfil.
+- [x] **Sistema de likes e follow:** Lógica para interação de usuários.
+- [ ] **Sistema de Notificação:** Notificação sobre interações entre usuários.
+- [ ] **Sistema de recomendação:** Filtragem de conteúdo com base nas tags geradas pela IA.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Funcionalidades adicionais
+- [ ] **Tema Escuro** 
+- [ ] **Sistema de comentarios** 
+- [ ] **Sistema de localização**
+- [ ] **Sistema de compartilhamento**
+- [ ] **Sistema de denúncia**
+- [ ] **Filtros Avançados**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Protótipos de Tela
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+* **Link para o Figma:** em desenvolvimento
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Modelagem do Banco
+O projeto utiliza uma arquitetura de persistência remota baseada em **PostgreSQL** através da plataforma **Supabase**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Estratégia de Implementação
+* **Backend:** Laravel para Migrations, Seeders e API REST.
+* **Banco de Dados:** Relacional com políticas de RLS (Row Level Security) para proteção de dados por usuário.
+* **Storage:** Supabase Storage para armazenamento de mídias.
+* **Serverless:** Edge Functions para integração com APIs de visão computacional e IA.
 
-### Premium Partners
+### Diagrama Entidade-Relacionamento (DER)
+![Diagrama de Banco de Dados GOSKI](https://drive.google.com/uc?export=download&id=181_k0xqLlx3vjZKLCQk_1eoA7keYuQJ5)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+* **Users:** Ponto central do banco, vinculado ao `auth.users` do Supabase via UUID.
+* **Posts (1:N):** Relação direta onde um usuário pode publicar múltiplos posts, mas cada post pertence a um único autor.
+* **Tags (N:N):** Relacionamento de N:N entre `posts` e `tags`, gerenciado pela tabela pivô `post_tag`.
+* **Likes:** Relacionamento de N:N. Conecta usuários aos posts curtidos.
+* **Follows:** Relacionamento de N:N.. Relação autorreferencial na tabela `users` para o sistema de seguidores.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Planejamento de Sprints
+Cronograma estimado para o desenvolvimento do MVP (Minimum Viable Product) focado em interatividade e IA:
 
-## Code of Conduct
+| Sprint | Requisito / Recurso | Prazo (Semanas) | Status |
+| :--- | :--- | :--- | :--- |
+| **Sprint 1** | **Core & Infra:** Setup Supabase e Modelagem do Banco. | 1 semanas | ✅ |
+| **Sprint 2** | **IA & Storage:** Upload de mídia, Edge Functions e Moderação automática. | 1 semanas | ✅ |
+| **Sprint 3** | **Mobile & Auth:** Interface Expo (NativeWind) e Login via Supabase Auth. | 1 semanas | ✅ |
+| **Sprint 4** | **Perfil do Usuário:** Sincronização de dados de perfil.  | 1 semanas | ✅ |
+| **Sprint 5** | **Social Engine:** Lógica de Likes, Follows. | 1 semanas | ✅ |
+| **Sprint 6** | **Engajamento:** Sistema de Notificações de interações entre usuários. | 1 semanas | 📅 |
+| **Sprint 7** | **Inteligência:** Sistema de Recomendação baseado nas Tags da IA. | 2 semanas | 📅 |
+| **Sprint 8** | **Finalização:** Refinamento de UI/UX, Testes e Documentação. | 1 semana | 📅 |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Como Executar o Ambiente
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Clonar o repositorio
+```bash
+git clone https://github.com/GOSKI-Gallery/GOSKI-Laravel.git
+```
 
-## License
+### Instalar as dependencias
+```bash
+composer install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Configurar as variaveis do sistema
+```bash
+cp .env.example .env
+```
+Preencher as variaveis
+
+### Realizar o deploy da edge function do supabase
+```bash
+supabase init
+```
+
+```bash
+supabase login
+```
+
+```bash
+supabase functions deploy image-moderator
+```
+
+### Migrar as tabelas e popular o banco de dados
+Migrar
+```bash
+php artisan migrate
+```
+Popular
+```bash
+php artisan db:seed
+```
