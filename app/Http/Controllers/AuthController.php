@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use App\Models\User as User;
-use App\Services\SupabaseService;
+use App\Services\SupabaseAuthService;
 
 class AuthController extends Controller
 {
@@ -15,7 +15,7 @@ class AuthController extends Controller
         return view('landing');
     }
 
-    public function authenticate(Request $request, SupabaseService $supabase)
+    public function authenticate(Request $request, SupabaseAuthService $supabase)
     {
 
         $request->validate([

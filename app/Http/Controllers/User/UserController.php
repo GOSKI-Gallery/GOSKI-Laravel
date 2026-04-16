@@ -4,15 +4,17 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\RegisterUserRequest;
+use App\Http\Requests\User\EditUserRequest;
 use App\Models\Post;
-use App\Services\SupabaseService;
+use App\Services\SupabaseUserService;
+use App\Services\SupabaseAuthService;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function register(RegisterUserRequest $request, SupabaseService $supabase)
+    public function register(RegisterUserRequest $request, SupabaseAuthService $supabaseAuth)
     {
-        $response = $supabase->signUp(
+        $response = $supabaseAuth->signUp(
             $request->email,
             $request->password,
             $request->username
@@ -29,7 +31,7 @@ class UserController extends Controller
 
     public function profile()
     {
-        $supabase = new SupabaseService();
+        $supabase = new SupabaseUserService();
         $userId = Auth::id();
         $userPosts = Post::where('user_id', $userId)->latest()->take(9)->get();
 
@@ -44,7 +46,7 @@ class UserController extends Controller
 
     public function show(string $userId)
     {
-        $supabase = new SupabaseService();
+        $supabase = new SupabaseUserService();
         $profileUser = $supabase->getUserById($userId);
 
         if (!$profileUser) {
@@ -62,5 +64,19 @@ class UserController extends Controller
             'followingCount' => $supabase->getFollowCount($userId, 'following'),
             'isFollowed' => $isOwnProfile ? true : $supabase->isFollowing(Auth::id(), $userId),
         ]);
+    }
+
+    public function update(EditUserRequest $request, SupabaseAuthService $supabaseAuth)
+    {
+        $validatedData = $request->validated();
+        $userId = Auth::id();
+
+        $response = $supabaseAuth->updateUser($userId, $validatedData, $request->hasFile('avatar') ? $request->file('avatar') : null);
+
+        if (isset($response['error'])) {
+            return back()->withErrors(['supabase' => $response['error']['message']]);
+        }
+
+        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
     }
 }

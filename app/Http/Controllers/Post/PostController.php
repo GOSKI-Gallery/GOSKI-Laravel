@@ -4,37 +4,39 @@ namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\CreatePostRequest;
-use App\Services\SupabaseService;
+use App\Services\SupabasePostService;
+use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Post;
 
 class PostController extends Controller
 {
-    protected SupabaseService $supabase;
+    protected SupabasePostService $supabase;
 
-    public function __construct(SupabaseService $supabase)
+    public function __construct(SupabasePostService $supabase)
     {
         $this->supabase = $supabase;
     }
 
     public function index()
     {
-        $supabase = new SupabaseService();
+        $supabase = new SupabasePostService();
+        $supabaseUser = new SupabaseUserService;
         $allPosts = Post::with('users')->latest()->get();
         $userPosts = Post::where('user_id', Auth::id())->latest()->take(9)->get();
 
         foreach ($allPosts as $post) {
             $post->likes_count = $supabase->getLikeCount($post->id);
-            $post->is_liked_by_user = $supabase->hasLikedPost(Auth::id(), $post->id);
-            $post->is_followed_by_user = $supabase->isFollowing(Auth::id(), $post->users['id']);
+            $post->is_liked_by_user = $supabaseUser->hasLikedPost(Auth::id(), $post->id);
+            $post->is_followed_by_user = $supabaseUser->isFollowing(Auth::id(), $post->users['id']);
         }
 
         return view('feed', [
             'posts' => $allPosts,
             'userPosts' => $userPosts,
-            'followersCount' => $supabase->getFollowCount(Auth::id(), 'followers'),
-            'followingCount' => $supabase->getFollowCount(Auth::id(), 'following'),
+            'followersCount' => $supabaseUser->getFollowCount(Auth::id(), 'followers'),
+            'followingCount' => $supabaseUser->getFollowCount(Auth::id(), 'following'),
         ]);
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SupabaseService;
+use App\Services\SupabasePostService;
 use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
@@ -10,7 +10,7 @@ class LikeController extends Controller
     public function toggleLike(string $postId)
     {
         $userId = Auth::id();
-        $supabase = new SupabaseService();
+        $supabase = new SupabasePostService();
 
         if ($supabase->hasLikedPost($userId, $postId)) {
             $supabase->unlikePost($userId, $postId);
