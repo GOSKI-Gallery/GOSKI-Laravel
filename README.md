@@ -79,6 +79,10 @@ git clone https://github.com/GOSKI-Gallery/GOSKI-Laravel.git
 composer install
 ```
 
+```bash
+npm install
+```
+
 ### Configurar as variaveis do sistema
 ```bash
 cp .env.example .env
