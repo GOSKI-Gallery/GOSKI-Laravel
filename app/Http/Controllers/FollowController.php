@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SupabaseService;
+use App\Services\SupabasePostService;
+use App\Services\SupabaseUserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,8 +20,10 @@ class FollowController extends Controller
             return back()->with('error', 'Você não pode seguir a si mesmo.');
         }
 
-        $supabase = new SupabaseService();
-        $supabase->followUser($followerId, $followedId);
+        $supabase = new SupabasePostService();
+        $supabaseUser = new SupabaseUserService;
+
+        $supabaseUser->followUser($followerId, $followedId);
 
         if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json(['success' => true, 'message' => 'Followed successfully!', 'following' => true]);
@@ -33,8 +36,10 @@ class FollowController extends Controller
     {
         $followerId = Auth::id();
 
-        $supabase = new SupabaseService();
-        $supabase->unfollowUser($followerId, $followedId);
+        $supabase = new SupabasePostService();
+        $supabaseUser = new SupabaseUserService;
+        
+        $supabaseUser->unfollowUser($followerId, $followedId);
 
         if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json(['success' => true, 'message' => 'Unfollowed successfully!', 'following' => false]);

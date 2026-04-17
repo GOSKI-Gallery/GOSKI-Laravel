@@ -1,5 +1,5 @@
 <div id="create-post-modal"
-    class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
+    class="fixed inset-0 z-100 hidden items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
 
     <div
         class="w-full max-w-lg transform overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl transition-all">
