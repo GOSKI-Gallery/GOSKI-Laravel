@@ -16,7 +16,7 @@
                     <img class="w-7 h-7" src="{{ asset('images/icons/add.png') }}" alt="NovoPost">
                 </button>
 
-                <button class="hover:opacity-60 transition-all cursor-pointer">
+                <button id="notification-btn" class="hover:opacity-60 transition-all cursor-pointer">
                     <img class="w-7 h-7" src="{{ asset('images/icons/bell.png') }}" alt="Notificacoes">
                 </button>
 
