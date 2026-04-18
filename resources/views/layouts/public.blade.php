@@ -5,12 +5,17 @@
 
     <body class='min-h-screen bg-[#FAFAFA]'>
         <x-header />
-        <x-create-post-modal />
+
+        @auth
+            <x-create-post-modal />
+            <x-profile.edit-profile-modal :user="Auth::user()" />
+            <x-notification-modal :notifications="[]" />
+        @endauth
 
         <div class="itens-center mx-auto flex flex-col justify-between px-4 py-4">
             @yield('content')
         </div>
 
+        @stack('scripts')
     </body>
-
 </html>

@@ -44,12 +44,15 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
     if (!window.editProfileModalLoaded) {
         window.editProfileModalLoaded = true;
 
-        const setupModal = () => {
+        const setupEditProfileModal = () => {
             const modal = document.getElementById('edit-profile-modal');
+            if (!modal) return;
+            
             const openBtn = document.getElementById('open-edit-profile-modal-btn');
             const closeBtn = document.getElementById('close-edit-profile-modal-btn');
             const closeX = document.getElementById('close-edit-profile-modal-x');
@@ -59,8 +62,6 @@
             const usernameInput = document.getElementById('username');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
-
-            if (!modal) return;
 
             if (openBtn) {
                 openBtn.addEventListener('click', (e) => {
@@ -77,9 +78,13 @@
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            preview.src = e.target.result;
-                            preview.classList.remove('hidden');
-                            placeholder.classList.add('hidden');
+                            if(preview) {
+                                preview.src = e.target.result;
+                                preview.classList.remove('hidden');
+                            }
+                            if(placeholder) {
+                                placeholder.classList.add('hidden');
+                            }
                         };
                         reader.readAsDataURL(file);
                     }
@@ -90,20 +95,6 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
                 document.body.style.overflow = 'auto';
-
-                setTimeout(() => {
-                    if (preview) {
-                        preview.src = '';
-                        preview.classList.add('hidden');
-                    }
-                    if (placeholder) {
-                        placeholder.classList.remove('hidden');
-                    }
-                    if (avatarInput) avatarInput.value = '';
-                    if (usernameInput) usernameInput.value = "{{ old('username', $user['username'] ?? '') }}";
-                    if (emailInput) emailInput.value = "{{ old('email', $user['email'] ?? '') }}";
-                    if (passwordInput) passwordInput.value = '';
-                }, 300);
             };
 
             if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -113,11 +104,12 @@
                 if (e.target === modal) closeModal();
             });
         };
-
+        
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupModal);
+            document.addEventListener('DOMContentLoaded', setupEditProfileModal);
         } else {
-            setupModal();
+            setupEditProfileModal();
         }
     }
 </script>
+@endpush

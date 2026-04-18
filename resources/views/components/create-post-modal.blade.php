@@ -61,12 +61,15 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
     if (!window.createPostModalLoaded) {
         window.createPostModalLoaded = true;
 
-        const setupModal = () => {
+        const setupCreatePostModal = () => {
             const modal = document.getElementById('create-post-modal');
+            if (!modal) return;
+
             const openBtn = document.getElementById('open-modal-btn');
             const closeBtn = document.getElementById('close-modal-btn');
             const closeX = document.getElementById('close-modal-x');
@@ -74,8 +77,6 @@
             const preview = document.getElementById('image-preview');
             const placeholder = document.getElementById('upload-placeholder');
             const description = document.getElementById('description');
-
-            if (!modal) return;
 
             if (openBtn) {
                 openBtn.addEventListener('click', (e) => {
@@ -124,9 +125,10 @@
         };
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupModal);
+            document.addEventListener('DOMContentLoaded', setupCreatePostModal);
         } else {
-            setupModal();
+            setupCreatePostModal();
         }
     }
 </script>
+@endpush
