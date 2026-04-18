@@ -1,8 +1,11 @@
-<div id="notification-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+<div id="notification-modal" class="fixed inset-0 z-100 hidden items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
     <div class="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden mx-4" @click.stop>
         
         <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h2 class="text-lg font-bold text-gray-800">Notificações</h2>
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold text-gray-800">Notificações</h2>
+                <button id="mark-as-read-btn" class="text-sm font-medium text-blue-600 hover:underline hidden">Marcar todas como lidas</button>
+            </div>
             <button id="close-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -27,15 +30,8 @@
             if(!notificationModal) return;
 
             const closeModalBtn = document.getElementById('close-modal');
+            const markAsReadBtn = document.getElementById('mark-as-read-btn');
             const notificationContent = document.getElementById('notification-content');
-
-            const formatDate = (dateString) => {
-                const date = new Date(dateString);
-                return new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' }).format(
-                    Math.round((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-                    'day'
-                );
-            };
 
             const loadNotifications = () => {
                 notificationContent.innerHTML = '<div class="text-center text-gray-500 py-4">Carregando...</div>';
@@ -47,25 +43,37 @@
                         
                         if (data.length === 0) {
                             notificationContent.innerHTML = '<div class="text-center text-gray-500 py-4">Nenhuma notificação</div>';
+                            markAsReadBtn.classList.add('hidden');
                             return;
+                        }
+
+                        const hasUnread = data.some(n => !n.is_read);
+                        if(hasUnread) {
+                            markAsReadBtn.classList.remove('hidden');
+                        } else {
+                            markAsReadBtn.classList.add('hidden');
                         }
 
                         data.forEach(notification => {
                             const item = document.createElement('div');
-                            item.className = `p-4 border-b border-gray-100 flex items-start gap-3 relative group transition-colors ${notification.is_read ? 'bg-white' : 'bg-blue-50/50'}`;
+                            item.className = `notification-item p-4 border-b border-gray-100 flex items-start gap-3 relative group transition-colors ${notification.is_read ? 'bg-white' : 'bg-blue-50/50'}`;
                             
                             const actionText = notification.type === 'like' ? 'curtiu sua publicação.' : 'começou a seguir você.';
-                            const avatar = notification.profile_photo_url || `https://ui-avatars.com/api/?name=${notification.username}`;
-                            const dot = !notification.is_read ? '<div class="w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4"></div>' : '';
+                            const avatar = notification.profile_photo_url || {{ asset('images/icons/icon.png') }};
+                            
+                            let dot = '';
+                            if (!notification.is_read) {
+                                dot = '<div class="notification-dot w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4"></div>';
+                            }
 
                             item.innerHTML = `
                                 <img src="${avatar}" class="w-10 h-10 rounded-full object-cover bg-gray-200">
                                 <div class="flex-1 min-w-0 pr-6">
                                     <p class="text-sm text-gray-800">
-                                        <span class="font-bold cursor-pointer hover:underline">${notification.username}</span>
+                                        <a href="/profile/${notification.user_id}" class="font-bold cursor-pointer hover:underline">${notification.username}</a>
                                         <span>${actionText}</span>
                                     </p>
-                                    <p class="text-xs text-gray-500 mt-1">${formatDate(notification.created_at)}</p>
+                                    <p class="text-xs text-gray-500 mt-1">${notification.created_at_for_humans}</p>
                                 </div>
                                 <button class="delete-notification-btn opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 absolute top-3 right-8 transition-opacity" data-id="${notification.id}">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -76,12 +84,11 @@
                             notificationContent.appendChild(item);
                         });
 
-                        // Add delete listeners
                         document.querySelectorAll('.delete-notification-btn').forEach(btn => {
                             btn.addEventListener('click', (e) => {
                                 e.stopPropagation();
                                 const id = btn.getAttribute('data-id');
-                                btn.closest('.p-4').remove();
+                                btn.closest('.notification-item').remove();
                                 
                                 fetch(`/notifications/${id}`, {
                                     method: 'DELETE',
@@ -101,14 +108,26 @@
                     notificationModal.classList.remove('hidden');
                     notificationModal.classList.add('flex');
                     document.body.style.overflow = 'hidden';
-                    
                     loadNotifications();
+                });
+            }
 
+            if (markAsReadBtn) {
+                markAsReadBtn.addEventListener('click', () => {
                     fetch('{{ route("notifications.read") }}', {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                             'Accept': 'application/json'
+                        }
+                    }).then(res => res.json()).then(data => {
+                        if (data.success) {
+                            document.querySelectorAll('.notification-item').forEach(item => {
+                                item.classList.remove('bg-blue-50/50');
+                                item.classList.add('bg-white');
+                            });
+                            document.querySelectorAll('.notification-dot').forEach(dot => dot.remove());
+                            markAsReadBtn.classList.add('hidden');
                         }
                     });
                 });

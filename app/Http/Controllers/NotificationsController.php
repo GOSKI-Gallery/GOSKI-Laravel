@@ -52,6 +52,7 @@ class NotificationsController extends Controller
         })->map(function ($item) use ($lastReadAt) {
             $createdAt = Carbon::parse($item->created_at);
             $item->is_read = $lastReadAt ? $createdAt->lte($lastReadAt) : false;
+            $item->created_at_for_humans = $createdAt->diffForHumans();
             
             $item->id = $item->type . '_' . $item->source_id;
             return $item;
