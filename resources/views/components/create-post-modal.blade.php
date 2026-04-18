@@ -60,3 +60,75 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    if (!window.createPostModalLoaded) {
+        window.createPostModalLoaded = true;
+
+        const setupCreatePostModal = () => {
+            const modal = document.getElementById('create-post-modal');
+            if (!modal) return;
+
+            const openBtn = document.getElementById('open-modal-btn');
+            const closeBtn = document.getElementById('close-modal-btn');
+            const closeX = document.getElementById('close-modal-x');
+            const input = document.getElementById('image_url');
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            const description = document.getElementById('description');
+
+            if (openBtn) {
+                openBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+
+            if (input) {
+                input.addEventListener('change', () => {
+                    const file = input.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            preview.src = e.target.result;
+                            preview.classList.remove('hidden');
+                            placeholder.classList.add('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+
+                setTimeout(() => {
+                    if (preview) preview.src = '';
+                    if (preview) preview.classList.add('hidden');
+                    if (placeholder) placeholder.classList.remove('hidden');
+                    if (input) input.value = '';
+                    if (description) description.value = '';
+                }, 300);
+            };
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (closeX) closeX.addEventListener('click', closeModal);
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupCreatePostModal);
+        } else {
+            setupCreatePostModal();
+        }
+    }
+</script>
+@endpush

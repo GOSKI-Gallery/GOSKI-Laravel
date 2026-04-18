@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\NotificationsController;
 
 
 Route::get('/', function () {
@@ -43,3 +44,9 @@ Route::post('/posts/{postId}/like', [LikeController::class, 'toggleLike'])->name
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::get('/profile/{userId}', [UserController::class, 'show'])->name('profile.show');
 Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read', [NotificationsController::class, 'markAsRead'])->name('notifications.read');
+    Route::delete('/notifications/{id}', [NotificationsController::class, 'delete'])->name('notifications.delete');
+});
