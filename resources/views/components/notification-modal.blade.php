@@ -59,7 +59,7 @@
                             item.className = `notification-item p-4 border-b border-gray-100 flex items-start gap-3 relative group transition-colors ${notification.is_read ? 'bg-white' : 'bg-blue-50/50'}`;
                             
                             const actionText = notification.type === 'like' ? 'curtiu sua publicação.' : 'começou a seguir você.';
-                            const avatar = notification.profile_photo_url || {{ asset('images/icons/icon.png') }};
+                            const avatar = notification.profile_photo_url || "{{ asset('images/icons/icon.png') }}";
                             
                             let dot = '';
                             if (!notification.is_read) {
