@@ -12,6 +12,7 @@ O **GOSKI-Laravel** é uma plataforma web para gerenciamento e exposição e mod
 - [x] **Sistema de likes e follow:** Lógica para interação de usuários.
 - [x] **Sistema de Notificação:** Notificação sobre interações entre usuários.
 - [ ] **Sistema de recomendação:** Filtragem de conteúdo com base nas tags geradas pela IA.
+- [ ] **Dashboard para admin:** Area para adminstração do sistema.
 
 ---
 
@@ -63,7 +64,8 @@ Cronograma estimado para o desenvolvimento do MVP (Minimum Viable Product) focad
 | **Sprint 5** | **Social Engine:** Lógica de Likes, Follows. | 1 semanas | ✅ |
 | **Sprint 6** | **Engajamento:** Sistema de Notificações de interações entre usuários. | 1 semanas | ✅ |
 | **Sprint 7** | **Inteligência:** Sistema de Recomendação baseado nas Tags da IA. | 2 semanas | 📅 |
-| **Sprint 8** | **Finalização:** Refinamento de UI/UX, Testes e Documentação. | 1 semana | 📅 |
+| **Sprint 8** | **Admin:** Area para adminstração do sistema. | 1 semana | 📅 |
+| **Sprint 9** | **Finalização:** Refinamento de UI/UX, Testes e Documentação. | 1 semana | 📅 |
 
 ---
 
