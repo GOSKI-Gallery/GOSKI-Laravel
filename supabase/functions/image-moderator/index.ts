@@ -45,16 +45,19 @@ serve(async (req) => {
 
     if (!safe) throw new Error("Google Vision não retornou dados de SafeSearch.")
 
-    const isUnsafe = 
+    const isExplicit = 
       safe.adult === 'LIKELY' || safe.adult === 'VERY_LIKELY' ||
       safe.violence === 'LIKELY' || safe.violence === 'VERY_LIKELY';
+
+    const needsReview = 
+      safe.adult === 'POSSIBLE' || safe.violence === 'POSSIBLE';
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    if (isUnsafe) {
+    if (isExplicit) {
       console.log(`[!] Conteúdo NSFW detectado no Post ${postId}. Iniciando expurgo...`);
 
       if (filePath) {
@@ -72,6 +75,19 @@ serve(async (req) => {
         .eq('id', postId);
 
       return new Response(JSON.stringify({ status: "expelled" }), { headers: { "Content-Type": "application/json" } });
+    }
+
+    if (needsReview) {
+      console.log(`[?] Conteúdo POSSIBLE no Post ${postId}. Encaminhando para revisão manual.`);
+
+      await supabaseAdmin
+        .from('posts')
+        .update({ moderation_status: 'pending', is_nsfw: true })
+        .eq('id', postId);
+
+      return new Response(JSON.stringify({ status: "pending_review" }), {
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
     await supabaseAdmin
