@@ -25,16 +25,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::prefix('admin')->middleware('admin')->group(function () {
-        Route::get('/', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
         Route::get('/users', [AdminController::class, 'index'])->name('admin.users.index');
 
         Route::get('/users/{id}', [AdminController::class, 'detail'])->name('admin.users.detail');
 
         Route::get('/users/{id}/remove', [AdminController::class, 'remove'])->name('admin.users.remove');
-        Route::post('/users/{id}', [AdminController::class, 'remove'])->name('admin.users.delete');
+        Route::post('/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
     });
 
     Route::get('/feed', [PostController::class, 'index'])->name('feed');
