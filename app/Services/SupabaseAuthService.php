@@ -81,4 +81,16 @@ class SupabaseAuthService extends SupabaseBaseService
     {
         return "{$this->url}/storage/v1/object/public/{$bucket}/{$path}";
     }
+
+    public function deleteUser($userId)
+    {
+        $response = $this->client()
+            ->delete("{$this->url}/auth/v1/admin/users/{$userId}");
+
+        if (!$response->successful()) {
+            throw new \Exception('Erro ao deletar usuário no Supabase Auth: ' . $response->body());
+        }
+
+        return $response->json();
+    }
 }
