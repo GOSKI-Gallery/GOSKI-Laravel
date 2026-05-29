@@ -71,7 +71,7 @@ class UserController extends Controller
         $validatedData = $request->validated();
         $userId = Auth::id();
 
-        $response = $supabaseAuth->updateUser($userId, $validatedData, $request->hasFile('avatar') ? $request->file('avatar') : null);
+        $response = $supabaseAuth->updateUser($userId, $validatedData, $request->hasFile('profile_photo_url') ? $request->file('profile_photo_url') : null);
 
         if (isset($response['error'])) {
             return back()->withErrors(['supabase' => $response['error']['message']]);

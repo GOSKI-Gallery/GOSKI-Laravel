@@ -1,36 +1,38 @@
-<header class="top-0 z-50 sticky backdrop-blur-lg bg-white/80 border-[#D9D9D9] border-b">
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div class="flex items-center justify-between h-16">
-            <div class="flex items-center gap-8">
-                <a href="/admin" class="flex items-center">
-                    <img class="w-10 h-10" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
-                    <h1 class="ml-3 text-xl font-semibold">{{ config('app.name') }}</h1>
-                </a>
+@php
+    $appName = config('app.name', 'GOSKI');
+    $currentRoute = Route::currentRouteName();
+@endphp
 
-                <nav class="hidden sm:flex items-center gap-1">
-                    <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                        Dashboard
-                    </a>
-                    <a href="{{ route('admin.users.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                        Usuários
-                    </a>
-                    <a href="{{ route('admin.posts.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                        Posts
-                    </a>
-                </nav>
-            </div>
+<header class="sticky top-0 z-40 w-full bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 hover:opacity-75 transition-opacity group">
+            <img src="{{ asset('images/logo.svg') }}" alt="{{ $appName }}" class="h-5">
+            <span class="text-xs font-black uppercase tracking-widest text-gray-900 group-hover:text-gray-700">{{ $appName }}</span>
+        </a>
 
-            <div class="flex items-center gap-4">
-                <span class="hidden sm:block text-sm font-medium text-gray-700">@yield('title')</span>
+        <!-- Navigation -->
+        <nav class="hidden md:flex items-center gap-0.5">
+            <a href="{{ route('admin.dashboard') }}" 
+               class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ $currentRoute === 'admin.dashboard' ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' }} rounded-lg transition-all">
+                Dashboard
+            </a>
+            <a href="{{ route('admin.users.index') }}" 
+               class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ str_starts_with($currentRoute, 'admin.users') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' }} rounded-lg transition-all">
+                Usuários
+            </a>
+            <a href="{{ route('admin.posts.index') }}" 
+               class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ str_starts_with($currentRoute, 'admin.posts') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' }} rounded-lg transition-all">
+                Posts
+            </a>
+        </nav>
 
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer">
-                        <img class="w-5 h-5" src="{{ asset('images/icons/exit.png') }}" alt="">
-                        <span class="hidden sm:inline">Sair</span>
-                    </button>
-                </form>
-            </div>
-        </div>
+        <!-- Logout -->
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button class="px-4 py-2 text-xs font-bold uppercase tracking-tight text-gray-500 border border-gray-100 rounded-lg hover:text-gray-900 hover:bg-gray-50 transition-all">
+                Sair
+            </button>
+        </form>
     </div>
 </header>

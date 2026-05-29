@@ -30,7 +30,7 @@ class SupabaseAuthService extends SupabaseBaseService
         ])->get("{$this->url}/auth/v1/user")->json();
     }
 
-    public function updateUser(string $userId, array $validatedData, $avatar = null)
+    public function updateUser(string $userId, array $validatedData, $profile_photo_url = null)
     {
         $dbUpdateData = [];
         $authUpdateResponse = null;
@@ -46,9 +46,9 @@ class SupabaseAuthService extends SupabaseBaseService
             }
         }
 
-        if ($avatar) {
-            $fileName = 'profiles/' . $userId . '/' . time() . '.' . $avatar->extension();
-            $this->uploadImage('profiles', $fileName, $avatar);
+        if ($profile_photo_url) {
+            $fileName = 'profiles/' . $userId . '/' . time() . '.' . $profile_photo_url->extension();
+            $this->uploadImage('profiles', $fileName, $profile_photo_url);
             $dbUpdateData['profile_photo_url'] = $this->getPublicUrl('profiles', $fileName);
         }
 
