@@ -6,10 +6,14 @@
 <header class="sticky top-0 z-40 w-full bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <!-- Logo -->
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 hover:opacity-75 transition-opacity group">
-            <img src="{{ asset('images/logo.svg') }}" alt="{{ $appName }}" class="h-5">
-            <span class="text-xs font-black uppercase tracking-widest text-gray-900 group-hover:text-gray-700">{{ $appName }}</span>
-        </a>
+        <div class="flex items-center hover:opacity-60 cursor-pointer">
+                <a href="/feed" class="flex items-center group">
+                    <img class="w-auto h-10 transition-transform" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
+                    <h1 class="ml-2 font-black text-2xl tracking-tighter text-gray-900">
+                        {{ config('app.name') }}
+                    </h1>
+                </a>
+            </div>
 
         <!-- Navigation -->
         <nav class="hidden md:flex items-center gap-0.5">
