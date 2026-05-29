@@ -24,9 +24,9 @@ class Post extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function likes(): BelongsToMany
+    public function likes(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsToMany(Like::class);
+        return $this->hasMany(Like::class);
     }
 
     public function tags()

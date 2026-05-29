@@ -31,7 +31,7 @@
                         <a href="{{ route('admin.users.detail', $post->users->id) }}" class="font-black text-sm uppercase tracking-tight text-gray-900 hover:underline">
                             {{ $post->users->username }}
                         </a>
-                        <p class="text-xs text-gray-400 font-bold mt-1">{{ $post->created_at->format('d/m/Y H:i') }}</p>
+                        <p class="text-xs text-gray-400 font-bold mt-1">{{ $post->created_at ? $post->created_at->format('d/m/Y H:i') : '' }}</p>
                     </div>
                 </div>
 

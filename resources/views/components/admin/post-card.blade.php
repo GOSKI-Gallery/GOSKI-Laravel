@@ -28,7 +28,7 @@
         @endif
 
         <div class="flex items-center justify-between text-xs text-gray-400 font-bold mb-4">
-            <span>{{ $post->created_at->format('d/m/Y H:i') }}</span>
+            <span>{{ $post->created_at ? $post->created_at->format('d/m/Y H:i') : '' }}</span>
             <span>{{ $post->likes_count ?? 0 }} curtidas</span>
         </div>
 
