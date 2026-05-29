@@ -84,6 +84,25 @@ class AdminController extends Controller
         }
     }
 
+    public function postsIndex()
+    {
+        $posts = Post::with('users')
+            ->withCount('likes')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.posts.index', compact('posts'));
+    }
+
+    public function postsDetail($id)
+    {
+        $post = Post::with('users')
+            ->withCount('likes')
+            ->findOrFail($id);
+
+        return view('admin.posts.detail', compact('post'));
+    }
+
     public function delete(Request $request){
         if ($request->has('id')) {
             return redirect()->back()->with('error', 'Erro ao deletar o usuario. Tente novamente');

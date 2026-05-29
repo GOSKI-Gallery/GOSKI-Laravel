@@ -12,10 +12,10 @@
             <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($totalUsers) }}</p>
         </a>
 
-        <div class="bg-white rounded-xl shadow p-6 border">
+        <a href="{{ route('admin.posts.index') }}" class="bg-white rounded-xl shadow p-6 border hover:shadow-md hover:border-gray-400 transition-all cursor-pointer">
             <p class="text-sm text-gray-500">Posts</p>
             <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($totalPosts) }}</p>
-        </div>
+        </a>
 
         <div class="bg-white rounded-xl shadow p-6 border">
             <p class="text-sm text-gray-500">Moderação pendente</p>

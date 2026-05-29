@@ -14,6 +14,9 @@
                     <a href="{{ route('admin.users.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                         Usuários
                     </a>
+                    <a href="{{ route('admin.posts.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                        Posts
+                    </a>
                 </nav>
             </div>
 
