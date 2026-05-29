@@ -1,10 +1,6 @@
 @extends('layouts.admin')
 
 @section('title')
-    DASHBOARD.
-@endsection
-
-@section('title')
     Painel
 @endsection
 
