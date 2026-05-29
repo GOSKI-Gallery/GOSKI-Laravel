@@ -33,6 +33,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/users/{id}/remove', [AdminController::class, 'remove'])->name('admin.users.remove');
         Route::post('/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+
+        Route::post('/posts/{id}/approve', [AdminController::class, 'approvePost'])->name('admin.posts.approve');
+        Route::delete('/posts/{id}', [AdminController::class, 'destroyPost'])->name('admin.posts.destroy');
     });
 
     Route::get('/feed', [PostController::class, 'index'])->name('feed');

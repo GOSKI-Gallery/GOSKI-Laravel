@@ -16,11 +16,28 @@ class AdminController extends Controller
         $totalPosts = Post::count();
 
         $pendingPosts = Post::with('users')
-            ->where('moderation_status', 'pending')
+            ->where('moderation_status', 'POSSIBLE')
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('admin.dashboard', compact('totalUsers', 'totalPosts', 'pendingPosts'));
+    }
+
+    public function approvePost($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->moderation_status = 'approved';
+        $post->save();
+
+        return redirect()->route('admin.dashboard')->with('success', 'Post aprovado com sucesso.');
+    }
+
+    public function destroyPost($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+
+        return redirect()->route('admin.dashboard')->with('success', 'Post deletado com sucesso.');
     }
 
     public function index()
