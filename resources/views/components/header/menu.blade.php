@@ -26,6 +26,7 @@
             @endif
 
             <form action="/logout" method="POST">
+                @csrf
                 <button type="submit"
                     class="flex items-center justify-between focus:bg-gray-100 px-4 py-2 focus:outline-hidden w-full text-gray-700 focus:text-gray-900 text-sm text-left cursor-pointer">
                     <h1 class='ml-2 text-red-500'>Sair</h1>
