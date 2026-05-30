@@ -1,23 +1,42 @@
-<header class="top-0 z-50 sticky backdrop-blur-lg border-[#D9D9D9] border-b">
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div class='flex items-center'>
-            <a href='/admin' class='flex items-center'> 
-                <img class='w-12 h-12' src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
-                <h1 class='ml-3 text-2xl font-semibold'>{{ env('APP_NAME') }}</h1>
+@php
+    $appName = config('app.name', 'GOSKI');
+    $currentRoute = Route::currentRouteName();
+@endphp
+
+<header class="sticky top-0 z-40 w-full bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center hover:opacity-60 cursor-pointer">
+                <a href="/feed" class="flex items-center group">
+                    <img class="w-auto h-10 transition-transform" src="{{ asset('images/logo.svg') }}" alt="GoskiLogo">
+                    <h1 class="ml-2 font-black text-2xl tracking-tighter text-gray-900">
+                        {{ config('app.name') }}
+                    </h1>
+                </a>
+            </div>
+
+        <!-- Navigation -->
+        <nav class="hidden md:flex items-center gap-0.5">
+            <a href="{{ route('admin.dashboard') }}" 
+               class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ $currentRoute === 'admin.dashboard' ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' }} rounded-lg transition-all">
+                Dashboard
             </a>
-        </div>
-    
-        <div class='flex justify-center items-center py-3'>
-            <h1 class='font-semibold text-xl text-gray-800'>@yield('title')</h1>
-        </div>
-    
-        <div class="flex items-center gap-5"> 
-            <form action="{{  route('logout') }}" method="POST" class="flex items-center gap-2 cursor-pointer">
-                @csrf
-                <button class="cursor-pointer">
-                    <img class="w-8 h-8" src="images/icons/exit.png" alt="Sair">
-                </button>
-            </form>
-        </div>
+            <a href="{{ route('admin.users.index') }}" 
+               class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ str_starts_with($currentRoute, 'admin.users') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' }} rounded-lg transition-all">
+                Usuários
+            </a>
+            <a href="{{ route('admin.posts.index') }}" 
+               class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ str_starts_with($currentRoute, 'admin.posts') ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' }} rounded-lg transition-all">
+                Posts
+            </a>
+        </nav>
+
+        <!-- Logout -->
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button class="px-4 py-2 text-xs font-bold uppercase tracking-tight text-gray-500 border border-gray-100 rounded-lg hover:text-gray-900 hover:bg-gray-50 transition-all">
+                Sair
+            </button>
+        </form>
     </div>
-</header> 
+</header>

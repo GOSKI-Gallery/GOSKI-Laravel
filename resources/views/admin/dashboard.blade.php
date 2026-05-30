@@ -1,50 +1,45 @@
 @extends('layouts.admin')
 
 @section('title')
-    DASHBOARD.
-@endsection
-
-@section('title')
-    Painel
+    Dashboard
 @endsection
 
 @section('content')
 <div class="w-full">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-xl shadow p-6 border">
-            <p class="text-sm text-gray-500">Usuários</p>
-            <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($totalUsers) }}</p>
-        </div>
-
-        <div class="bg-white rounded-xl shadow p-6 border">
-            <p class="text-sm text-gray-500">Posts</p>
-            <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($totalPosts) }}</p>
-        </div>
-
-        <div class="bg-white rounded-xl shadow p-6 border">
-            <p class="text-sm text-gray-500">Moderação pendente</p>
-            <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $pendingPosts->count() }}</p>
-        </div>
+    <!-- Métricas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <x-admin.metric-card 
+            title="Usuários"
+            :value="number_format($totalUsers)"
+            href="{{ route('admin.users.index') }}"
+        />
+        <x-admin.metric-card 
+            title="Posts"
+            :value="number_format($totalPosts)"
+            href="{{ route('admin.posts.index') }}"
+        />
+        <x-admin.metric-card 
+            title="Moderação Pendente"
+            :value="$pendingPosts->count()"
+        />
     </div>
 
-    <div class="mt-8 bg-white rounded-lg shadow p-6 border">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Posts pendentes</h2>
+    <!-- Fila de Moderação -->
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <h2 class="font-black text-lg uppercase tracking-tight text-gray-900">Fila de Moderação</h2>
+        </div>
+
         @if($pendingPosts->isEmpty())
-            <p class="text-sm text-gray-600">Nenhum post pendente no momento.</p>
+            <div class="p-12 text-center">
+                <p class="text-sm text-gray-400 font-bold">✓ Nenhum post pendente</p>
+            </div>
         @else
-            <ul class="space-y-3">
+            <div class="space-y-4 p-6">
                 @foreach($pendingPosts as $post)
-                    <li class="p-3 border rounded hover:bg-gray-50 transition-colors">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-600">{{ $post->users->name ?? '—' }}</p>
-                                <p class="text-gray-900 font-medium">{{ Str::limit($post->content, 120) }}</p>
-                            </div>
-                            <div class="text-sm text-gray-500">{{ $post->created_at->diffForHumans() }}</div>
-                        </div>
-                    </li>
+                    <x-admin.moderation-card :post="$post" />
                 @endforeach
-            </ul>
+            </div>
         @endif
     </div>
 </div>

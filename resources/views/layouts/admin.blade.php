@@ -9,7 +9,7 @@
 
     <x-ui.flash-message />
 
-    <div class="flex flex-col mx-auto px-5 py-24 items-center justify-center w-full max-w-7xl">
+    <div class="flex flex-col mx-auto px-5 pt-20 pb-10 items-center justify-center w-full max-w-7xl">
         @yield('content')
     </div>
 

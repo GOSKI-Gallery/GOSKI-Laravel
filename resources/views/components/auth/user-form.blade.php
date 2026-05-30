@@ -27,7 +27,7 @@
         <div id="upload-area-edit"
             class="group relative flex h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 transition-all hover:border-black/50 hover:bg-gray-100/30">
 
-            <div class="{{ isset($user['avatar_url']) ? 'hidden' : '' }} p-4 text-center transition-transform group-hover:scale-105"
+            <div class="{{ isset($user['profile_photo_url']) ? 'hidden' : '' }} p-4 text-center transition-transform group-hover:scale-105"
                 id="upload-placeholder-edit">
                 <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm">
                     <svg class="h-7 w-7 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,8 +42,8 @@
             <input type="file" name="image_url" id="image_url_edit"
                 class="absolute inset-0 z-20 cursor-pointer opacity-0" accept="image/*">
 
-            <img id="image-preview-edit" src="{{ $user['avatar_url'] ?? '' }}"
-                class="{{ isset($user['avatar_url']) ? '' : 'hidden' }} absolute inset-0 z-10 h-full w-full object-cover" />
+            <img id="image-preview-edit" src="{{ $user['profile_photo_url'] ?? '' }}"
+                class="{{ isset($user['profile_photo_url']) ? '' : 'hidden' }} absolute inset-0 z-10 h-full w-full object-cover" />
         </div>
     </div>
 @endif

@@ -11,13 +11,22 @@
 
     <el-menu anchor="bottom end" popover class="bg-white shadow-lg rounded-md border border-white/20 w-56 ...">
         <div class='py-1'>
-            <a href="/profile"
-                class="flex items-center justify-between focus:bg-gray-100 px-4 py-2 focus:outline-hidden text-gray-700 focus:text-gray-900 text-sm">
-                <h1 class='ml-2 text-black'>Meu perfil</h1>
-                <img class='w-5 h-5' src="{{ asset('images/icons/icon.png') }}">
-            </a>
+            @if(isset(Auth::user()->role) && Auth::user()->role === 'admin')
+                <a href="/admin"
+                    class="flex items-center justify-between focus:bg-gray-100 px-4 py-2 focus:outline-hidden text-gray-700 focus:text-gray-900 text-sm">
+                    <h1 class='ml-2 text-black'>Dashboard</h1>
+                    <img class='w-5 h-5' src="{{ asset('images/icons/icon.png') }}">
+                </a>
+            @else
+                <a href="/profile"
+                    class="flex items-center justify-between focus:bg-gray-100 px-4 py-2 focus:outline-hidden text-gray-700 focus:text-gray-900 text-sm">
+                    <h1 class='ml-2 text-black'>Meu perfil</h1>
+                    <img class='w-5 h-5' src="{{ asset('images/icons/icon.png') }}">
+                </a>
+            @endif
 
             <form action="/logout" method="POST">
+                @csrf
                 <button type="submit"
                     class="flex items-center justify-between focus:bg-gray-100 px-4 py-2 focus:outline-hidden w-full text-gray-700 focus:text-gray-900 text-sm text-left cursor-pointer">
                     <h1 class='ml-2 text-red-500'>Sair</h1>
