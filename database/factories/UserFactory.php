@@ -23,9 +23,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => (string) \Illuminate\Support\Str::uuid(),
             'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
-            'profile_photo_url' => 'https://ui-avatars.com/api/?name='.fake()->userName(),
+            'profile_photo_url' => 'https://ui-avatars.com/api/?name=' . fake()->userName(),
         ];
     }
 
