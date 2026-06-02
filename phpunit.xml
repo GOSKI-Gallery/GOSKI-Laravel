@@ -17,6 +17,11 @@
             <directory>app</directory>
         </include>
     </source>
+    <coverage>
+        <report>
+            <html outputDirectory="coverage" lowUpperBound="50" highLowerBound="90"/>
+        </report>
+    </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:7hD4E21cH0638dQfZUOeWgNnKf45UmeptmQ9jqojVw4="/>
