@@ -15,10 +15,13 @@ class SupabasePostService extends SupabaseBaseService
         }
 
         return array_map(function ($post) {
-            if (is_string($post)) $post = json_decode($post, true);
+            if (is_string($post)) {
+                $post = json_decode($post, true);
+            }
             if (isset($post['users']) && is_string($post['users'])) {
                 $post['users'] = json_decode($post['users'], true);
             }
+
             return $post;
         }, $posts);
     }
@@ -31,15 +34,15 @@ class SupabasePostService extends SupabaseBaseService
     public function uploadImage(string $bucket, string $path, $file)
     {
         $url = "{$this->url}/storage/v1/object/{$bucket}/{$path}";
-        
+
         return Http::withHeaders([
             'apikey' => $this->anonKey,
             'Authorization' => "Bearer {$this->key}",
             'Content-Type' => $file->getMimeType(),
         ])->withBody(file_get_contents($file->getRealPath()), $file->getMimeType())
-        ->post($url)
-        ->throw()
-        ->json();
+            ->post($url)
+            ->throw()
+            ->json();
     }
 
     public function getPublicUrl(string $bucket, string $path)

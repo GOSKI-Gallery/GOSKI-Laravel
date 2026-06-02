@@ -51,6 +51,11 @@ jobs:
           npm ci
           npm run build
 
+      - name: Static analysis
+        run: |
+          vendor/bin/phpstan analyse -c phpstan.neon --no-progress
+          vendor/bin/pint --test
+
       - name: Unit & Feature tests with coverage
         env:
           DB_CONNECTION: mysql

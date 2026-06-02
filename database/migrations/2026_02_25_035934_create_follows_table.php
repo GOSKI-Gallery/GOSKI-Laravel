@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -19,11 +19,11 @@ return new class extends Migration
             $table->timestamps();
             $table->unique(['follower_id', 'followed_id']);
         });
-        DB::unprepared("
+        DB::unprepared('
             ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
-            CREATE POLICY \"Follows públicos\" ON public.follows FOR SELECT USING (true);
-            CREATE POLICY \"Dono gerencia follow\" ON public.follows FOR ALL USING (auth.uid() = follower_id);
-        ");
+            CREATE POLICY "Follows públicos" ON public.follows FOR SELECT USING (true);
+            CREATE POLICY "Dono gerencia follow" ON public.follows FOR ALL USING (auth.uid() = follower_id);
+        ');
     }
 
     /**

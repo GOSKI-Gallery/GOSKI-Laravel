@@ -10,7 +10,7 @@ class LikeController extends Controller
     public function toggleLike(string $postId)
     {
         $userId = Auth::id();
-        $supabase = new SupabasePostService();
+        $supabase = new SupabasePostService;
 
         if ($supabase->hasLikedPost($userId, $postId)) {
             $supabase->unlikePost($userId, $postId);

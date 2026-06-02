@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\Post\PostController;
+use App\Http\Controllers\User\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
@@ -17,7 +17,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 
-    Route::get('/register', function () { return view('register'); });
+    Route::get('/register', function () {
+        return view('register');
+    });
     Route::post('/register', [UserController::class, 'register'])->name('register');
 });
 

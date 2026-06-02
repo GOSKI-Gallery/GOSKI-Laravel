@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -35,24 +36,24 @@ class SupabaseAuthService extends SupabaseBaseService
         $dbUpdateData = [];
         $authUpdateResponse = null;
 
-        if (!empty($validatedData['password'])) {
+        if (! empty($validatedData['password'])) {
             $authUpdateResponse = $this->client()
                 ->put("{$this->url}/auth/v1/admin/users/{$userId}", [
-                    'password' => $validatedData['password']
+                    'password' => $validatedData['password'],
                 ])->json();
-            
+
             if (isset($authUpdateResponse['error'])) {
                 return $authUpdateResponse;
             }
         }
 
         if ($profile_photo_url) {
-            $fileName = 'profiles/' . $userId . '/' . time() . '.' . $profile_photo_url->extension();
+            $fileName = 'profiles/'.$userId.'/'.time().'.'.$profile_photo_url->extension();
             $this->uploadImage('profiles', $fileName, $profile_photo_url);
             $dbUpdateData['profile_photo_url'] = $this->getPublicUrl('profiles', $fileName);
         }
 
-        if (!empty($validatedData['username'])) {
+        if (! empty($validatedData['username'])) {
             $dbUpdateData['username'] = $validatedData['username'];
         }
 
@@ -66,15 +67,15 @@ class SupabaseAuthService extends SupabaseBaseService
     public function uploadImage(string $bucket, string $path, $file)
     {
         $url = "{$this->url}/storage/v1/object/{$bucket}/{$path}";
-        
+
         return Http::withHeaders([
             'apikey' => $this->anonKey,
             'Authorization' => "Bearer {$this->key}",
             'Content-Type' => $file->getMimeType(),
         ])->withBody(file_get_contents($file->getRealPath()), $file->getMimeType())
-        ->post($url)
-        ->throw()
-        ->json();
+            ->post($url)
+            ->throw()
+            ->json();
     }
 
     public function getPublicUrl(string $bucket, string $path)
@@ -87,8 +88,8 @@ class SupabaseAuthService extends SupabaseBaseService
         $response = $this->client()
             ->delete("{$this->url}/auth/v1/admin/users/{$userId}");
 
-        if (!$response->successful()) {
-            throw new \Exception('Erro ao deletar usuário no Supabase Auth: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Erro ao deletar usuário no Supabase Auth: '.$response->body());
         }
 
         return $response->json();

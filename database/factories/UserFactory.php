@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -24,10 +25,10 @@ class UserFactory extends Factory
         return [
             'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
-            'profile_photo_url' => 'https://ui-avatars.com/api/?name=' . fake()->userName(),
+            'profile_photo_url' => 'https://ui-avatars.com/api/?name='.fake()->userName(),
         ];
     }
-    
+
     /**
      * Indicate that the model's email address should be unverified.
      */

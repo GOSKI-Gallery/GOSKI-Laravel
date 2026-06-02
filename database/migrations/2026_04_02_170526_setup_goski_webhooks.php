@@ -21,10 +21,10 @@ return new class extends Migration
             AS $$
             BEGIN
                 PERFORM net.http_post(
-                    url := '" . env('SUPABASE_URL') . "/functions/v1/image-moderator',
+                    url := '".env('SUPABASE_URL')."/functions/v1/image-moderator',
                     headers := jsonb_build_object(
                         'Content-Type', 'application/json',
-                        'Authorization', 'Bearer " . env('SUPABASE_SERVICE_ROLE_KEY') . "'
+                        'Authorization', 'Bearer ".env('SUPABASE_SERVICE_ROLE_KEY')."'
                     ),
                     body := jsonb_build_object('record', row_to_json(NEW))
                 );
@@ -45,9 +45,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::unprepared("
+        DB::unprepared('
             DROP TRIGGER IF EXISTS on_post_created_moderation ON public.posts;
             DROP FUNCTION IF EXISTS public.trigger_image_moderation();
-        ");
+        ');
     }
 };

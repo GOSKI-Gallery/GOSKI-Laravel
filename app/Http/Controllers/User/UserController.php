@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\RegisterUserRequest;
 use App\Http\Requests\User\EditUserRequest;
+use App\Http\Requests\User\RegisterUserRequest;
 use App\Models\Post;
-use App\Services\SupabaseUserService;
 use App\Services\SupabaseAuthService;
+use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -22,7 +22,7 @@ class UserController extends Controller
 
         if (isset($response['error_description']) || isset($response['error'])) {
             return back()->withInput()->withErrors([
-                'supabase' => $response['error_description'] ?? $response['error']['message']
+                'supabase' => $response['error_description'] ?? $response['error']['message'],
             ]);
         }
 
@@ -31,7 +31,7 @@ class UserController extends Controller
 
     public function profile()
     {
-        $supabase = new SupabaseUserService();
+        $supabase = new SupabaseUserService;
         $userId = Auth::id();
         $userPosts = Post::where('user_id', $userId)->latest()->take(9)->get();
 
@@ -46,10 +46,10 @@ class UserController extends Controller
 
     public function show(string $userId)
     {
-        $supabase = new SupabaseUserService();
+        $supabase = new SupabaseUserService;
         $profileUser = $supabase->getUserById($userId);
 
-        if (!$profileUser) {
+        if (! $profileUser) {
             abort(404);
         }
 

@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Seeder;
 use App\Services\SupabaseService;
+use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
@@ -23,14 +23,14 @@ class UserSeeder extends Seeder
         $this->createSupabaseUser([
             'email' => 'admin@teste.com',
             'password' => 'SenhaSegura123',
-            'username' => 'AdminMaster'
+            'username' => 'AdminMaster',
         ]);
 
         User::factory(3)->make()->each(function ($userFake) {
             $this->createSupabaseUser([
                 'email' => $userFake->email,
                 'password' => 'password123',
-                'username' => $userFake->username ?? 'user_' . rand(1, 999),
+                'username' => $userFake->username ?? 'user_'.rand(1, 999),
             ]);
         });
     }
@@ -45,7 +45,8 @@ class UserSeeder extends Seeder
 
         if (isset($response['error_code']) || isset($response['error'])) {
             $error = $response['msg'] ?? $response['error']['message'] ?? 'Erro desconhecido';
-            $this->command->error("Falha: {$data['email']} -> " . $error);
+            $this->command->error("Falha: {$data['email']} -> ".$error);
+
             return;
         }
 
