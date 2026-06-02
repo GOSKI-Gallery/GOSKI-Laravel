@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "dusk": "php artisan dusk",
+        "dusk:headless": "php artisan dusk --headless"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
