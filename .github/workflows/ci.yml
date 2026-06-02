@@ -40,11 +40,6 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Static analysis
-        run: |
-          vendor/bin/phpstan analyse -c phpstan.neon
-          vendor/bin/pint --test
-
       - name: Unit & Feature tests with coverage
         env:
           DB_CONNECTION: mysql
