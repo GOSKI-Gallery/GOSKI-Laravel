@@ -54,5 +54,4 @@ jobs:
         with:
           files: coverage.xml
 
-      - name: End‑to‑End tests (Dusk)
-        run: php artisan dusk --stop-on-failure
+      # End‑to‑End tests (Dusk) – will be added after installing laravel/dusk
