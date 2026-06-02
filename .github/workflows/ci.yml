@@ -75,7 +75,7 @@ jobs:
             \$total = (int) \$metrics['statements'];
             \$percent = \$total > 0 ? round(\$covered / \$total * 100, 2) : 0;
             echo 'Coverage: ' . \$percent . '%' . PHP_EOL;
-            \$minimum = 10;
+            \$minimum = 20;
             if (\$percent < \$minimum) {
               echo 'FAIL: Coverage ' . \$percent . '% is below minimum ' . \$minimum . '%' . PHP_EOL;
               exit(1);
