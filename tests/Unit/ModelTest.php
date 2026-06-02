@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
 use PHPUnit\Framework\TestCase;
 
@@ -48,5 +49,11 @@ class ModelTest extends TestCase
         $casts = $user->getCasts();
         $this->assertArrayHasKey('email_verified_at', $casts);
         $this->assertEquals('datetime', $casts['email_verified_at']);
+    }
+
+    public function test_tag_fillable_attributes(): void
+    {
+        $tag = new Tag;
+        $this->assertEquals(['name'], $tag->getFillable());
     }
 }

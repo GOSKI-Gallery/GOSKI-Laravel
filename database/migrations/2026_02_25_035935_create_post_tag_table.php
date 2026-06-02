@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
             $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
             $table->decimal('confidence', 5, 2);
+            $table->timestamps();
         });
 
         if (DB::getDriverName() === 'pgsql') {
