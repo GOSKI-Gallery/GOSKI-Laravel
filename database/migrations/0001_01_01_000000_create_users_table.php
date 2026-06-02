@@ -67,7 +67,7 @@ return new class extends Migration
             ");
         }
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) use ($driver) {
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('user_id');
             $table->string('token')->unique();
@@ -77,7 +77,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        Schema::create('sessions', function (Blueprint $table) use ($driver) {
+        Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
