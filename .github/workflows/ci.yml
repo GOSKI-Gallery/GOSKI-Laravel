@@ -65,6 +65,24 @@ jobs:
         run: |
           vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
 
+      - name: Check minimum coverage
+        run: |
+          php -r "
+            \$xml = simplexml_load_file('coverage.xml');
+            if (\$xml === false) { echo 'Failed to parse coverage.xml' . PHP_EOL; exit(1); }
+            \$metrics = \$xml->project->metrics;
+            \$covered = (int) \$metrics['coveredstatements'];
+            \$total = (int) \$metrics['statements'];
+            \$percent = \$total > 0 ? round(\$covered / \$total * 100, 2) : 0;
+            echo 'Coverage: ' . \$percent . '%' . PHP_EOL;
+            \$minimum = 20;
+            if (\$percent < \$minimum) {
+              echo 'FAIL: Coverage ' . \$percent . '% is below minimum ' . \$minimum . '%' . PHP_EOL;
+              exit(1);
+            }
+            echo 'PASS: Coverage meets minimum threshold.' . PHP_EOL;
+          "
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
