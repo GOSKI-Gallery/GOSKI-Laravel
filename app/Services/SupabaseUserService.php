@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 class SupabaseUserService extends SupabaseBaseService
@@ -45,7 +46,7 @@ class SupabaseUserService extends SupabaseBaseService
 
         return is_array($response) ? count($response) : 0;
     }
-    
+
     public function hasLikedPost(string $userId, string $postId): bool
     {
         $response = $this->client()

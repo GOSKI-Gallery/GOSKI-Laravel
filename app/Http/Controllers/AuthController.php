@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Services\SupabaseAuthService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use App\Models\User as User;
-use App\Services\SupabaseAuthService;
 
 class AuthController extends Controller
 {
@@ -24,13 +24,13 @@ class AuthController extends Controller
         ]);
 
         $response = $supabase->signIn(
-            $request->email, 
+            $request->email,
             $request->password
         );
 
         if (isset($response['error_code'])) {
-            $message = $response['error_code'] === 'email_not_confirmed' 
-            ? 'Por favor, confirme seu e-mail antes de logar.' 
+            $message = $response['error_code'] === 'email_not_confirmed'
+            ? 'Por favor, confirme seu e-mail antes de logar.'
             : 'Credenciais inválidas.';
 
             return back()->withErrors(['email' => $message])->withInput();
@@ -40,7 +40,7 @@ class AuthController extends Controller
 
         $user = User::where('id', $supabaseUser['id'] ?? null)->first();
 
-        if($user){
+        if ($user) {
             Auth::login($user);
             $request->session()->regenerate();
 
@@ -54,7 +54,7 @@ class AuthController extends Controller
 
         return back()->withErrors([
             'email' => 'Email not found.',
-            'password' => 'Password is incorrect.'
+            'password' => 'Password is incorrect.',
         ])->onlyInput('email');
     }
 
@@ -69,5 +69,3 @@ class AuthController extends Controller
         return redirect()->route('landingPage');
     }
 }
-
-

@@ -26,7 +26,7 @@ class NotificationsController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Notificações marcadas como lidas.'
+            'message' => 'Notificações marcadas como lidas.',
         ]);
     }
 
@@ -36,7 +36,7 @@ class NotificationsController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Notificação removida.'
+            'message' => 'Notificação removida.',
         ]);
     }
 }

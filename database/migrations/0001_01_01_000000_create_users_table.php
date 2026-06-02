@@ -2,10 +2,11 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -69,10 +70,10 @@ return new class extends Migration {
             $table->string('token')->unique();
             $table->timestamp('expires_at');
             $table->timestamps();
-    
+
             $table->foreign('user_id')->references('id')->on('public.users')->onDelete('cascade');
         });
-    
+
         Schema::create('laravel.sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->uuid('user_id')->nullable()->index();
@@ -80,11 +81,10 @@ return new class extends Migration {
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
-    
+
             $table->foreign('user_id')->references('id')->on('public.users')->onDelete('cascade');
         });
     }
-
 
     public function down(): void
     {
