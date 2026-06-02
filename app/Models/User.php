@@ -22,6 +22,7 @@ class User extends Authenticatable
      * The data type of the primary key.
      */
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $hidden = [

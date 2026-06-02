@@ -10,7 +10,7 @@ class RequestRulesTest extends TestCase
 {
     public function test_create_post_request_rules(): void
     {
-        $request = new CreatePostRequest();
+        $request = new CreatePostRequest;
         $rules = $request->rules();
 
         $this->assertArrayHasKey('description', $rules);
@@ -25,13 +25,13 @@ class RequestRulesTest extends TestCase
 
     public function test_create_post_request_is_authorized(): void
     {
-        $request = new CreatePostRequest();
+        $request = new CreatePostRequest;
         $this->assertTrue($request->authorize());
     }
 
     public function test_register_user_request_rules(): void
     {
-        $request = new RegisterUserRequest();
+        $request = new RegisterUserRequest;
         $rules = $request->rules();
 
         $this->assertArrayHasKey('username', $rules);
@@ -52,7 +52,7 @@ class RequestRulesTest extends TestCase
 
     public function test_register_user_request_is_authorized(): void
     {
-        $request = new RegisterUserRequest();
+        $request = new RegisterUserRequest;
         $this->assertTrue($request->authorize());
     }
 }
