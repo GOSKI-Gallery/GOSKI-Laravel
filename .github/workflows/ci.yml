@@ -40,6 +40,17 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
       - name: Unit & Feature tests with coverage
         env:
           DB_CONNECTION: mysql
