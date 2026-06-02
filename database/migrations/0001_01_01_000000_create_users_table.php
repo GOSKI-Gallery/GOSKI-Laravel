@@ -9,72 +9,75 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        $driver = DB::getDriverName();
+
+        Schema::create('users', function (Blueprint $table) use ($driver) {
             $table->uuid('id')->primary();
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('profile_photo_url')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
             $table->rememberToken();
 
-            // Relacionamento com o Auth do Supabase
-            $table->foreign('id')->references('id')->on('auth.users')->onDelete('cascade');
+            if ($driver === 'pgsql') {
+                $table->foreign('id')->references('id')->on('auth.users')->onDelete('cascade');
+            }
         });
 
-        DB::unprepared("
-            -- 1. Ativar RLS em Users
-            ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+        if ($driver === 'pgsql') {
+            DB::unprepared("
+                ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
-            DO $$ 
-            BEGIN
-                IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Perfis visíveis por todos') THEN
-                    CREATE POLICY \"Perfis visíveis por todos\" ON public.users FOR SELECT USING (true);
-                END IF;
-                
-                IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Usuários editam o próprio perfil') THEN
-                    CREATE POLICY \"Usuários editam o próprio perfil\" ON public.users FOR UPDATE USING (auth.uid() = id);
-                END IF;
-            END $$;
+                DO \$\$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Perfis visíveis por todos') THEN
+                        CREATE POLICY \"Perfis visíveis por todos\" ON public.users FOR SELECT USING (true);
+                    END IF;
 
-            -- 2. Trigger de Sincronização (Auth -> Public.Users)
-            CREATE OR REPLACE FUNCTION public.handle_new_user()
-            RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-            BEGIN
-                INSERT INTO public.users (id, email, username, created_at, updated_at)
-                VALUES (new.id, new.email, COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)), now(), now())
-                ON CONFLICT (id) DO NOTHING;
-                RETURN new;
-            END; $$;
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Usuários editam o próprio perfil') THEN
+                        CREATE POLICY \"Usuários editam o próprio perfil\" ON public.users FOR UPDATE USING (auth.uid() = id);
+                    END IF;
+                END \$\$;
 
-            DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-            CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+                CREATE OR REPLACE FUNCTION public.handle_new_user()
+                RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS \$\$
+                BEGIN
+                    INSERT INTO public.users (id, email, username, created_at, updated_at)
+                    VALUES (new.id, new.email, COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)), now(), now())
+                    ON CONFLICT (id) DO NOTHING;
+                    RETURN new;
+                END; \$\$;
 
-            -- 3. Bucket de Perfis
-            INSERT INTO storage.buckets (id, name, public) VALUES ('profiles', 'profiles', true) ON CONFLICT (id) DO NOTHING;
+                DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+                CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
-            DO $$ 
-            BEGIN
-                IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Storage perfis público' AND tablename = 'objects') THEN
-                    CREATE POLICY \"Storage perfis público\" ON storage.objects FOR SELECT USING (bucket_id = 'profiles');
-                END IF;
+                INSERT INTO storage.buckets (id, name, public) VALUES ('profiles', 'profiles', true) ON CONFLICT (id) DO NOTHING;
 
-                IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Upload perfil autenticado' AND tablename = 'objects') THEN
-                    CREATE POLICY \"Upload perfil autenticado\" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'profiles' AND auth.role() = 'authenticated');
-                END IF;
-            END $$;
-        ");
+                DO \$\$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Storage perfis público' AND tablename = 'objects') THEN
+                        CREATE POLICY \"Storage perfis público\" ON storage.objects FOR SELECT USING (bucket_id = 'profiles');
+                    END IF;
 
-        Schema::create('laravel.password_reset_tokens', function (Blueprint $table) {
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Upload perfil autenticado' AND tablename = 'objects') THEN
+                        CREATE POLICY \"Upload perfil autenticado\" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'profiles' AND auth.role() = 'authenticated');
+                    END IF;
+                END \$\$;
+            ");
+        }
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) use ($driver) {
             $table->id();
             $table->foreignUuid('user_id');
             $table->string('token')->unique();
             $table->timestamp('expires_at');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('public.users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        Schema::create('laravel.sessions', function (Blueprint $table) {
+        Schema::create('sessions', function (Blueprint $table) use ($driver) {
             $table->string('id')->primary();
             $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
@@ -82,15 +85,18 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
 
-            $table->foreign('user_id')->references('id')->on('public.users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
-        DB::unprepared('DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users; DROP FUNCTION IF EXISTS public.handle_new_user;');
+        $driver = DB::getDriverName();
+        if ($driver === 'pgsql') {
+            DB::unprepared('DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users; DROP FUNCTION IF EXISTS public.handle_new_user;');
+        }
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('users');
-        Schema::dropIfExists('laravel.password_reset_tokens');
-        Schema::dropIfExists('laravel.sesseions');
     }
 };

@@ -19,11 +19,13 @@ return new class extends Migration
             $table->timestamps();
             $table->unique(['follower_id', 'followed_id']);
         });
-        DB::unprepared('
-            ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
-            CREATE POLICY "Follows públicos" ON public.follows FOR SELECT USING (true);
-            CREATE POLICY "Dono gerencia follow" ON public.follows FOR ALL USING (auth.uid() = follower_id);
-        ');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::unprepared('
+                ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
+                CREATE POLICY "Follows públicos" ON public.follows FOR SELECT USING (true);
+                CREATE POLICY "Dono gerencia follow" ON public.follows FOR ALL USING (auth.uid() = follower_id);
+            ');
+        }
     }
 
     /**

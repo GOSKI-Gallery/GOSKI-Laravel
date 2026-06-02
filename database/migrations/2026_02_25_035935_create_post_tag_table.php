@@ -19,10 +19,12 @@ return new class extends Migration
             $table->decimal('confidence', 5, 2);
         });
 
-        DB::unprepared('
-        ALTER TABLE public.post_tag ENABLE ROW LEVEL SECURITY;
-        CREATE POLICY "Leitura pública post_tag" ON public.post_tag FOR SELECT USING (true);
-    ');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::unprepared('
+                ALTER TABLE public.post_tag ENABLE ROW LEVEL SECURITY;
+                CREATE POLICY "Leitura pública post_tag" ON public.post_tag FOR SELECT USING (true);
+            ');
+        }
     }
 
     /**

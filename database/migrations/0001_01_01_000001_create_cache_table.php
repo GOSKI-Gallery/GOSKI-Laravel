@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('laravel.cache', function (Blueprint $table) {
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::create($prefix.'cache', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');
             $table->integer('expiration')->index();
         });
 
-        Schema::create('laravel.cache_locks', function (Blueprint $table) {
+        Schema::create($prefix.'cache_locks', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->string('owner');
             $table->integer('expiration')->index();
@@ -29,7 +32,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('laravel.cache');
-        Schema::dropIfExists('laravel.cache_locks');
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::dropIfExists($prefix.'cache');
+        Schema::dropIfExists($prefix.'cache_locks');
     }
 };

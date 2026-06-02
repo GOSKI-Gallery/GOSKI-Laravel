@@ -18,10 +18,12 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::unprepared('
-            ALTER TABLE public.tags ENABLE ROW LEVEL SECURITY;
-            CREATE POLICY "Leitura pública tags" ON public.tags FOR SELECT USING (true);
-        ');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::unprepared('
+                ALTER TABLE public.tags ENABLE ROW LEVEL SECURITY;
+                CREATE POLICY "Leitura pública tags" ON public.tags FOR SELECT USING (true);
+            ');
+        }
     }
 
     /**
