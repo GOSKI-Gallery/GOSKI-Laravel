@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -6,14 +7,16 @@ use Illuminate\Support\Facades\Http;
 abstract class SupabaseBaseService
 {
     protected string $url;
+
     protected string $key;
+
     protected string $anonKey;
 
     public function __construct()
     {
-        $this->url = rtrim(env('SUPABASE_URL'), '/');
-        $this->key = env('SUPABASE_SERVICE_ROLE_KEY');
-        $this->anonKey = env('SUPABASE_ANON_KEY');
+        $this->url = rtrim(config('supabase.url'), '/');
+        $this->key = config('supabase.service_role_key');
+        $this->anonKey = config('supabase.anon_key');
     }
 
     protected function client(bool $useServiceKey = true)

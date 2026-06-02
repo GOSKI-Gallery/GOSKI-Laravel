@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
 
 class User extends Authenticatable
 {
@@ -40,24 +39,23 @@ class User extends Authenticatable
         ];
     }
 
-    public function posts(): hasMany
+    public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
     }
 
-    public function likedPosts(): belongsToMany
+    public function likedPosts(): BelongsToMany
     {
         return $this->belongsToMany(Like::class, 'likes', 'user_id', 'post_id');
     }
 
-    public function followers(): belongsToMany
+    public function followers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id');
     }
 
-    public function following():belongsToMany
+    public function following(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id');
     }
-
 }

@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Like extends Model
 {
-    public function posts(): belongsTo
+    public function posts(): BelongsTo
     {
         return $this->belongsTo(Post::class);
     }
 
-    public function users():belongsTo
+    public function users(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
 }

@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\CreatePostRequest;
+use App\Models\Post;
 use App\Services\SupabasePostService;
 use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Models\Post;
 
 class PostController extends Controller
 {
@@ -21,14 +21,14 @@ class PostController extends Controller
 
     public function index()
     {
-        $supabase = new SupabasePostService();
+        $supabase = new SupabasePostService;
         $supabaseUser = new SupabaseUserService;
         $allPosts = Post::with('users')->latest()->get();
         $userPosts = Post::where('user_id', Auth::id())->latest()->take(9)->get();
 
         foreach ($allPosts as $post) {
-            $post->likes_count = $supabase->getLikeCount($post->id);
-            $post->is_liked_by_user = $supabaseUser->hasLikedPost(Auth::id(), $post->id);
+            $post->likes_count = $supabase->getLikeCount((string) $post->id);
+            $post->is_liked_by_user = $supabaseUser->hasLikedPost(Auth::id(), (string) $post->id);
             $post->is_followed_by_user = $supabaseUser->isFollowing(Auth::id(), $post->users['id']);
         }
 
