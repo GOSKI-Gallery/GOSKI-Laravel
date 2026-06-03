@@ -58,11 +58,13 @@ class PostSeeder extends Seeder
                 'image_url' => $internalUrl,
             ]);
 
-            Http::withHeaders([
-                'Authorization' => 'Bearer '.env('SUPABASE_ANON_KEY'),
-            ])->post(env('SUPABASE_FUNCTION_URL'), [
-                'record' => $post,
-            ]);
+            if ($functionUrl = env('SUPABASE_FUNCTION_URL')) {
+                Http::withHeaders([
+                    'Authorization' => 'Bearer '.env('SUPABASE_ANON_KEY'),
+                ])->post($functionUrl, [
+                    'record' => $post,
+                ]);
+            }
 
             $this->command->info("Post #{$post->id} criado e imagem enviada ao Storage!");
 
