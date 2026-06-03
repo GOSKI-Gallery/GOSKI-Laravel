@@ -20,11 +20,13 @@ return new class extends Migration
             $table->unique(['user_id', 'post_id']);
         });
 
-        DB::unprepared('
-            ALTER TABLE public.likes ENABLE ROW LEVEL SECURITY;
-            CREATE POLICY "Likes públicos" ON public.likes FOR SELECT USING (true);
-            CREATE POLICY "Dono gerencia like" ON public.likes FOR ALL USING (auth.uid() = user_id);
-        ');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::unprepared('
+                ALTER TABLE public.likes ENABLE ROW LEVEL SECURITY;
+                CREATE POLICY "Likes públicos" ON public.likes FOR SELECT USING (true);
+                CREATE POLICY "Dono gerencia like" ON public.likes FOR ALL USING (auth.uid() = user_id);
+            ');
+        }
     }
 
     /**

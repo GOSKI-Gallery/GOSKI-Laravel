@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<User>
@@ -23,6 +24,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => (string) Str::uuid(),
             'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'profile_photo_url' => 'https://ui-avatars.com/api/?name='.fake()->userName(),

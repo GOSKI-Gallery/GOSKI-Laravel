@@ -17,12 +17,15 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
             $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
             $table->decimal('confidence', 5, 2);
+            $table->timestamps();
         });
 
-        DB::unprepared('
-        ALTER TABLE public.post_tag ENABLE ROW LEVEL SECURITY;
-        CREATE POLICY "Leitura pública post_tag" ON public.post_tag FOR SELECT USING (true);
-    ');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::unprepared('
+                ALTER TABLE public.post_tag ENABLE ROW LEVEL SECURITY;
+                CREATE POLICY "Leitura pública post_tag" ON public.post_tag FOR SELECT USING (true);
+            ');
+        }
     }
 
     /**

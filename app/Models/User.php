@@ -23,6 +23,8 @@ class User extends Authenticatable
      */
     protected $keyType = 'string';
 
+    public $incrementing = false;
+
     protected $hidden = [
         'remember_token',
     ];
@@ -46,7 +48,7 @@ class User extends Authenticatable
 
     public function likedPosts(): BelongsToMany
     {
-        return $this->belongsToMany(Like::class, 'likes', 'user_id', 'post_id');
+        return $this->belongsToMany(Post::class, 'likes', 'user_id', 'post_id');
     }
 
     public function followers(): BelongsToMany
