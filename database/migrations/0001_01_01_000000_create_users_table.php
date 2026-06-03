@@ -10,6 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
 
         Schema::create('users', function (Blueprint $table) use ($driver) {
             $table->uuid('id')->primary();
@@ -67,7 +68,7 @@ return new class extends Migration
             ");
         }
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
+        Schema::create($prefix.'password_reset_tokens', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('user_id');
             $table->string('token')->unique();
@@ -77,7 +78,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create($prefix.'sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
@@ -92,11 +93,15 @@ return new class extends Migration
     public function down(): void
     {
         $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
         if ($driver === 'pgsql') {
+            DB::unprepared('DELETE FROM auth.users WHERE id IN (SELECT id FROM users)');
             DB::unprepared('DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users; DROP FUNCTION IF EXISTS public.handle_new_user;');
         }
-        Schema::dropIfExists('sessions');
-        Schema::dropIfExists('password_reset_tokens');
+
+        Schema::dropIfExists($prefix.'sessions');
+        Schema::dropIfExists($prefix.'password_reset_tokens');
         Schema::dropIfExists('users');
     }
 };
