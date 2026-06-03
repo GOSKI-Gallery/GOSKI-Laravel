@@ -49,9 +49,9 @@ jobs:
       - name: Setup environment file
         run: |
           cp .env.example .env
-          echo "SUPABASE_URL=https://test.supabase.co" >> .env
-          echo "SUPABASE_SERVICE_ROLE_KEY=test_service_role_key" >> .env
-          echo "SUPABASE_ANON_KEY=test_anon_key" >> .env
+          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=https://test.supabase.co|" .env
+          sed -i "s|^SUPABASE_SERVICE_ROLE_KEY=.*|SUPABASE_SERVICE_ROLE_KEY=test_service_role_key|" .env
+          sed -i "s|^SUPABASE_ANON_KEY=.*|SUPABASE_ANON_KEY=test_anon_key|" .env
           php artisan key:generate
 
       - name: Build frontend assets
