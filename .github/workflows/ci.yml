@@ -148,7 +148,9 @@ jobs:
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m', 'APP_KEY=base64:' . base64_encode(random_bytes(32)), file_get_contents('.env')));"
 
       - name: Install ChromeDriver
-        run: php artisan dusk:chrome-driver
+        run: |
+          CHROME_MAJOR=$(google-chrome --version | awk '{print $NF}' | cut -d. -f1)
+          php artisan dusk:chrome-driver "$CHROME_MAJOR"
 
       - name: Setup Dusk environment
         run: |
