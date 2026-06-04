@@ -109,14 +109,15 @@ class AuthControllerTest extends TestCase
     {
         $accessToken = 'valid-access-token';
 
-        Http::fake([
+Http::fake([
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
             ]),
             "{$this->supabaseUrl}/auth/v1/user" => Http::response([
-                'id' => 'non-existent-supabase-id',
+                'id' => $user->id,
             ]),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->from('/login')->post('/login', [
