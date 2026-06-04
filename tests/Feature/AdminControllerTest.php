@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class AdminControllerTest extends TestCase
@@ -78,5 +79,69 @@ class AdminControllerTest extends TestCase
 
         $response = $this->actingAs($this->admin)->get("/admin/posts/{$post->id}");
         $response->assertStatus(200);
+    }
+
+    public function test_approve_post_updates_status(): void
+    {
+        $post = Post::factory()->create(['moderation_status' => 'POSSIBLE']);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.posts.approve', $post->id));
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertEquals('approved', $post->fresh()->moderation_status);
+    }
+
+    public function test_destroy_post_deletes_post(): void
+    {
+        $post = Post::factory()->create();
+
+        $response = $this->actingAs($this->admin)->delete(route('admin.posts.destroy', $post->id));
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertNull(Post::find($post->id));
+    }
+
+    public function test_destroy_user_requires_correct_username(): void
+    {
+        $user = User::factory()->create(['username' => 'correct_user']);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.users.destroy', $user->id), [
+            'username' => 'wrong_user',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('username');
+        $this->assertNotNull(User::find($user->id));
+    }
+
+    public function test_destroy_user_success(): void
+    {
+        Http::fake(["{$this->supabaseUrl}/*" => Http::response([], 200)]);
+
+        $user = User::factory()->create(['username' => 'testuser']);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.users.destroy', $user->id), [
+            'username' => 'testuser',
+        ]);
+
+        $response->assertRedirect(route('admin.users.index'));
+        $this->assertNull(User::find($user->id));
+    }
+
+    public function test_destroy_user_handles_supabase_error(): void
+    {
+        Http::fake([
+            "{$this->supabaseUrl}/*" => Http::response([], 500),
+        ]);
+
+        $user = User::factory()->create(['username' => 'erroruser']);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.users.destroy', $user->id), [
+            'username' => 'erroruser',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('error');
+        $this->assertNotNull(User::find($user->id));
     }
 }

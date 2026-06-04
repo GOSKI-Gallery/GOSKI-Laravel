@@ -83,4 +83,54 @@ class ModelFactoryTest extends TestCase
 
         $this->assertCount(2, $user->likedPosts);
     }
+
+    public function test_like_belongs_to_post(): void
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+        $like = Like::create(['user_id' => $user->id, 'post_id' => $post->id]);
+
+        $this->assertInstanceOf(Post::class, $like->post);
+        $this->assertEquals($post->id, $like->post->id);
+    }
+
+    public function test_like_belongs_to_user(): void
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+        $like = Like::create(['user_id' => $user->id, 'post_id' => $post->id]);
+
+        $this->assertInstanceOf(User::class, $like->user);
+        $this->assertEquals($user->id, $like->user->id);
+    }
+
+    public function test_user_has_followers(): void
+    {
+        $user = User::factory()->create();
+        $followers = User::factory()->count(2)->create();
+
+        foreach ($followers as $follower) {
+            $user->followers()->attach($follower->id, [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->assertCount(2, $user->followers);
+    }
+
+    public function test_user_has_following(): void
+    {
+        $user = User::factory()->create();
+        $followed = User::factory()->count(3)->create();
+
+        foreach ($followed as $target) {
+            $user->following()->attach($target->id, [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->assertCount(3, $user->following);
+    }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
@@ -19,6 +20,10 @@ class UserProfileTest extends TestCase
     public function test_authenticated_user_can_access_profile(): void
     {
         $user = User::factory()->create();
+
+        Http::fake([
+            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
+        ]);
 
         $response = $this->actingAs($user)->get('/profile');
         $response->assertStatus(200);
