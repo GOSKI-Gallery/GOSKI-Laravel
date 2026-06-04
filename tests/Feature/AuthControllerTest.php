@@ -11,8 +11,6 @@ class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private string $supabaseUrl = 'https://fuckjwtltqvngejerkzo.supabase.co';
-
     public function test_login_returns_landing_view(): void
     {
         $response = $this->get('/login');
@@ -30,10 +28,11 @@ class AuthControllerTest extends TestCase
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
-            ]),
+            ], 200),
             "{$this->supabaseUrl}/auth/v1/user" => Http::response([
                 'id' => $user->id,
-            ]),
+            ], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->post('/login', [
@@ -54,10 +53,11 @@ class AuthControllerTest extends TestCase
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
-            ]),
+            ], 200),
             "{$this->supabaseUrl}/auth/v1/user" => Http::response([
                 'id' => $user->id,
-            ]),
+            ], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->post('/login', [
@@ -75,6 +75,7 @@ class AuthControllerTest extends TestCase
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'error_code' => 'invalid_credentials',
             ], 401),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->from('/login')->post('/login', [
@@ -93,6 +94,7 @@ class AuthControllerTest extends TestCase
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'error_code' => 'email_not_confirmed',
             ], 401),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->from('/login')->post('/login', [
@@ -113,10 +115,10 @@ class AuthControllerTest extends TestCase
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
-            ]),
+            ], 200),
             "{$this->supabaseUrl}/auth/v1/user" => Http::response([
                 'id' => '550e8400-e29b-41d4-a716-446655440000',
-            ]),
+            ], 200),
             "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 

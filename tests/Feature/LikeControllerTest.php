@@ -21,7 +21,7 @@ class LikeControllerTest extends TestCase
     public function test_toggle_like_when_not_liked_yet_ajax()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -39,7 +39,7 @@ class LikeControllerTest extends TestCase
     public function test_toggle_like_when_not_liked_yet_regular()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -52,7 +52,14 @@ class LikeControllerTest extends TestCase
     public function test_toggle_like_when_already_liked_ajax()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/rest/v1/likes*' => Http::response([['id' => 1]], 200),
+            "{$this->supabaseUrl}/rest/v1/likes*" => function ($request) {
+                if ($request->method() === 'DELETE') {
+                    return Http::response([], 204);
+                }
+
+                return Http::response([['id' => 1]], 200);
+            },
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -70,7 +77,14 @@ class LikeControllerTest extends TestCase
     public function test_toggle_like_when_already_liked_regular()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/rest/v1/likes*' => Http::response([['id' => 1]], 200),
+            "{$this->supabaseUrl}/rest/v1/likes*" => function ($request) {
+                if ($request->method() === 'DELETE') {
+                    return Http::response([], 204);
+                }
+
+                return Http::response([['id' => 1]], 200);
+            },
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();

@@ -3,16 +3,8 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\Http;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Http::fake([
-            'https://test.supabase.co/*' => Http::response([], 200),
-        ]);
-    }
+    protected string $supabaseUrl = 'https://fuckjwtltqvngejerkzo.supabase.co';
 }

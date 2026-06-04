@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PostControllerTest extends TestCase
@@ -18,7 +19,9 @@ class PostControllerTest extends TestCase
     {
         parent::setUp();
 
-        config(['supabase.url' => 'https://test.supabase.co']);
+        Http::fake([
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
+        ]);
 
         $this->user = User::factory()->create();
     }

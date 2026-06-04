@@ -29,8 +29,8 @@ class UserControllerTest extends TestCase
     public function test_register_success()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/auth/v1/signup*' => Http::response(['id' => 'new-user'], 200),
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/auth/v1/signup*" => Http::response(['id' => 'new-user'], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->post('/register', [
@@ -47,11 +47,11 @@ class UserControllerTest extends TestCase
     public function test_register_with_error()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/auth/v1/signup*' => Http::response(
+            "{$this->supabaseUrl}/auth/v1/signup*" => Http::response(
                 ['error_description' => 'User already exists'],
                 400
             ),
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $response = $this->post('/register', [
@@ -74,7 +74,8 @@ class UserControllerTest extends TestCase
     public function test_profile_returns_view()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -88,7 +89,8 @@ class UserControllerTest extends TestCase
     public function test_profile_shows_user_posts()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -111,11 +113,12 @@ class UserControllerTest extends TestCase
     public function test_show_user_profile()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/rest/v1/users*' => Http::response(
+            "{$this->supabaseUrl}/rest/v1/users?id=eq.displayed-user*" => Http::response(
                 [['id' => 'displayed-user', 'username' => 'displayed']],
                 200
             ),
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -129,7 +132,9 @@ class UserControllerTest extends TestCase
     public function test_show_nonexistent_user_returns_404()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/rest/v1/users?id=eq.nonexistent*" => Http::response([], 200),
+            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -152,8 +157,8 @@ class UserControllerTest extends TestCase
     public function test_update_profile_success()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/rest/v1/users*' => Http::response([], 200),
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/rest/v1/users*" => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -170,11 +175,11 @@ class UserControllerTest extends TestCase
     public function test_update_profile_with_error()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/rest/v1/users*' => Http::response(
+            "{$this->supabaseUrl}/rest/v1/users*" => Http::response(
                 ['error' => ['message' => 'Database error']],
                 400
             ),
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();

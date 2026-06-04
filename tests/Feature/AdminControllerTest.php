@@ -130,7 +130,9 @@ class AdminControllerTest extends TestCase
 
     public function test_destroy_user_handles_supabase_error(): void
     {
-        Http::fake(['https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 500)]);
+        Http::fake([
+            "{$this->supabaseUrl}/*" => Http::response([], 500),
+        ]);
 
         $user = User::factory()->create(['username' => 'erroruser']);
 

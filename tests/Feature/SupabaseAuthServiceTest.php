@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class SupabaseAuthServiceTest extends TestCase
 {
-    private string $supabaseUrl;
+    protected string $supabaseUrl;
 
     private SupabaseAuthService $service;
 
