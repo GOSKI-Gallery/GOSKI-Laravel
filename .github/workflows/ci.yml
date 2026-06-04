@@ -109,4 +109,61 @@ jobs:
         with:
           files: coverage.xml
 
-      # End‑to‑End tests (Dusk) – will be added after installing laravel/dusk
+  dusk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP with Chrome
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, tokenizer, xml, curl, bcmath, pdo_sqlite
+          tools: chrome
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Create .env for artisan boot
+        run: |
+          cp .env.example .env
+          php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m', 'APP_KEY=base64:' . base64_encode(random_bytes(32)), file_get_contents('.env')));"
+
+      - name: Install ChromeDriver
+        run: |
+          CHROME_MAJOR=$(google-chrome --version | awk '{print $NF}' | cut -d. -f1)
+          php artisan dusk:chrome-driver "$CHROME_MAJOR"
+
+      - name: Setup Dusk environment
+        run: |
+          cp .env.example .env.dusk
+          sed -i "s|^APP_KEY=.*|APP_KEY=$(php -r "echo 'base64:' . base64_encode(random_bytes(32));")|" .env.dusk
+          sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=sqlite|" .env.dusk
+          sed -i "s|^DB_DATABASE=.*|DB_DATABASE=./database/dusk.sqlite|" .env.dusk
+          sed -i "s|^SESSION_DRIVER=.*|SESSION_DRIVER=array|" .env.dusk
+          sed -i "s|^CACHE_STORE=.*|CACHE_STORE=array|" .env.dusk
+          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=https://test.supabase.co|" .env.dusk
+          sed -i "s|^SUPABASE_SERVICE_ROLE_KEY=.*|SUPABASE_SERVICE_ROLE_KEY=test_service_role_key|" .env.dusk
+          sed -i "s|^SUPABASE_ANON_KEY=.*|SUPABASE_ANON_KEY=test_anon_key|" .env.dusk
+          touch database/dusk.sqlite
+
+      - name: Run Dusk tests
+        run: php artisan dusk --stop-on-failure

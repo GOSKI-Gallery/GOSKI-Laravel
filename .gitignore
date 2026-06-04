@@ -26,3 +26,6 @@ Thumbs.db
 .idx
 .vscode
 AGENTS.md
+.env.dusk
+/tests/Browser/screenshots
+/tests/Browser/console
