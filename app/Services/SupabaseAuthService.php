@@ -17,7 +17,10 @@ class SupabaseAuthService extends SupabaseBaseService
 
     public function signIn(string $email, string $password)
     {
-        return $this->client(false)->post("{$this->url}/auth/v1/token?grant_type=password", [
+        // Send grant_type as a form parameter instead of embedding it in the URL query
+        // This avoids subtle mismatches when tests fake the token endpoint URL.
+        return $this->client(false)->post("{$this->url}/auth/v1/token", [
+            'grant_type' => 'password',
             'email' => $email,
             'password' => $password,
         ])->json();

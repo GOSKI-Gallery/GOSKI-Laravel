@@ -25,7 +25,8 @@ class AuthControllerTest extends TestCase
         $accessToken = 'admin-access-token';
 
         Http::fake([
-            "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
+            // Match token endpoint regardless of query string ordering/encoding
+            "{$this->supabaseUrl}/auth/v1/token*" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
             ], 200),
@@ -50,7 +51,7 @@ class AuthControllerTest extends TestCase
         $accessToken = 'regular-access-token';
 
         Http::fake([
-            "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
+            "{$this->supabaseUrl}/auth/v1/token*" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
             ], 200),
@@ -72,7 +73,7 @@ class AuthControllerTest extends TestCase
     public function test_authenticate_with_invalid_credentials_returns_error(): void
     {
         Http::fake([
-            "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
+            "{$this->supabaseUrl}/auth/v1/token*" => Http::response([
                 'error_code' => 'invalid_credentials',
             ], 401),
             "{$this->supabaseUrl}/*" => Http::response([], 200),
@@ -91,7 +92,7 @@ class AuthControllerTest extends TestCase
     public function test_authenticate_with_email_not_confirmed(): void
     {
         Http::fake([
-            "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
+            "{$this->supabaseUrl}/auth/v1/token*" => Http::response([
                 'error_code' => 'email_not_confirmed',
             ], 401),
             "{$this->supabaseUrl}/*" => Http::response([], 200),
@@ -112,7 +113,7 @@ class AuthControllerTest extends TestCase
         $accessToken = 'valid-access-token';
 
         Http::fake([
-            "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
+            "{$this->supabaseUrl}/auth/v1/token*" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
             ], 200),
