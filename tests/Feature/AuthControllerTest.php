@@ -109,13 +109,13 @@ class AuthControllerTest extends TestCase
     {
         $accessToken = 'valid-access-token';
 
-Http::fake([
+        Http::fake([
             "{$this->supabaseUrl}/auth/v1/token?grant_type=password" => Http::response([
                 'access_token' => $accessToken,
                 'token_type' => 'bearer',
             ]),
             "{$this->supabaseUrl}/auth/v1/user" => Http::response([
-                'id' => $user->id,
+                'id' => '550e8400-e29b-41d4-a716-446655440000',
             ]),
             "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);

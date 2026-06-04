@@ -61,7 +61,7 @@
         "ci": [
             "@php artisan config:clear --ansi",
             "vendor/bin/pint --test",
-            "vendor/bin/phpstan analyse -c phpstan.neon --no-progress",
+            "vendor/bin/phpstan analyse -c phpstan.neon --no-progress --memory-limit=512M",
             "vendor/bin/phpunit"
         ],
         "post-autoload-dump": [
