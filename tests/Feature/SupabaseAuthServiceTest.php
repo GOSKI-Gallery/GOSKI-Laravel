@@ -10,6 +10,7 @@ use Tests\TestCase;
 class SupabaseAuthServiceTest extends TestCase
 {
     private string $supabaseUrl;
+
     private SupabaseAuthService $service;
 
     protected function setUp(): void

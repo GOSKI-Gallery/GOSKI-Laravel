@@ -142,5 +142,4 @@ class AdminControllerTest extends TestCase
         $response->assertSessionHasErrors('error');
         $this->assertNotNull(User::find($user->id));
     }
-
 }

@@ -10,6 +10,7 @@ use Tests\TestCase;
 class SupabasePostServiceTest extends TestCase
 {
     private SupabasePostService $service;
+
     private string $baseUrl;
 
     protected function setUp(): void
