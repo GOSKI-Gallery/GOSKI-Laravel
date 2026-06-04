@@ -62,7 +62,7 @@
             "@php artisan config:clear --ansi",
             "vendor/bin/pint --test",
             "vendor/bin/phpstan analyse -c phpstan.neon --no-progress",
-            "vendor/bin/phpunit"
+            "vendor/bin/phpunit --no-coverage"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
