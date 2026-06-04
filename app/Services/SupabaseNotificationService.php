@@ -26,7 +26,7 @@ class SupabaseNotificationService extends SupabaseBaseService
                 'users.username',
                 'users.profile_photo_url',
                 DB::raw("'follow' as type"),
-                DB::raw('CAST(NULL AS BIGINT) as post_id'),
+                DB::raw('CAST(NULL AS UNSIGNED) as post_id'),
                 'follows.created_at'
             );
 
