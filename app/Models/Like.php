@@ -15,12 +15,12 @@ class Like extends Model
         'post_id',
     ];
 
-    public function posts(): BelongsTo
+    public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
     }
 
-    public function users(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
