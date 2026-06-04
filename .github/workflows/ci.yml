@@ -147,6 +147,9 @@ jobs:
           cp .env.example .env
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m', 'APP_KEY=base64:' . base64_encode(random_bytes(32)), file_get_contents('.env')));"
 
+      - name: Install ChromeDriver
+        run: php artisan dusk:chrome-driver
+
       - name: Setup Dusk environment
         run: |
           cp .env.example .env.dusk
