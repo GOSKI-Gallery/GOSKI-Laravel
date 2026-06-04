@@ -3,14 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Services\SupabaseService;
+use App\Services\SupabaseAuthService;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
     protected $supabase;
 
-    public function __construct(SupabaseService $supabase)
+    public function __construct(SupabaseAuthService $supabase)
     {
         $this->supabase = $supabase;
     }
