@@ -44,7 +44,7 @@ class FollowControllerTest extends TestCase
     public function test_follow_another_user_success_ajax()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -63,7 +63,7 @@ class FollowControllerTest extends TestCase
     public function test_follow_another_user_success_regular()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -84,7 +84,7 @@ class FollowControllerTest extends TestCase
     public function test_unfollow_success_ajax()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
@@ -103,7 +103,7 @@ class FollowControllerTest extends TestCase
     public function test_unfollow_success_regular()
     {
         Http::fake([
-            'https://fuckjwtltqvngejerkzo.supabase.co/*' => Http::response([], 200),
+            "{$this->supabaseUrl}/*" => Http::response([], 200),
         ]);
 
         $user = User::factory()->create();
