@@ -45,6 +45,7 @@ class PostControllerTest extends TestCase
         $this->assertCount(5, $response->viewData('posts'));
         $response->assertViewHas('userPosts');
         $this->assertCount(3, $response->viewData('userPosts'));
+        $response->assertViewHas('suggestedUsers');
         $response->assertViewHas('followersCount');
         $response->assertViewHas('followingCount');
     }
