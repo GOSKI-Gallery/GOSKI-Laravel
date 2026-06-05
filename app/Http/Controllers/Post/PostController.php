@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\CreatePostRequest;
 use App\Models\Post;
+use App\Services\RecommendationService;
 use App\Services\SupabasePostService;
 use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
@@ -14,29 +15,42 @@ class PostController extends Controller
 {
     protected SupabasePostService $supabase;
 
-    public function __construct(SupabasePostService $supabase)
+    protected RecommendationService $recommendation;
+
+    public function __construct(SupabasePostService $supabase, RecommendationService $recommendation)
     {
         $this->supabase = $supabase;
+        $this->recommendation = $recommendation;
     }
 
     public function index()
     {
+        $user = Auth::user();
         $supabase = new SupabasePostService;
         $supabaseUser = new SupabaseUserService;
-        $allPosts = Post::with('users')->latest()->get();
-        $userPosts = Post::where('user_id', Auth::id())->latest()->take(9)->get();
 
-        foreach ($allPosts as $post) {
-            $post->likes_count = $supabase->getLikeCount((string) $post->id);
-            $post->is_liked_by_user = $supabaseUser->hasLikedPost(Auth::id(), (string) $post->id);
-            $post->is_followed_by_user = $supabaseUser->isFollowing(Auth::id(), $post->users['id']);
+        $paginator = $this->recommendation->getRankedFeed($user);
+
+        if (request()->ajax()) {
+            return view('components.feed.posts.list', ['posts' => $paginator->items()]);
         }
 
+        $userPosts = Post::where('user_id', $user->id)->latest()->take(9)->get();
+
+        foreach ($paginator->items() as $post) {
+            $post->likes_count = $supabase->getLikeCount((string) $post->id);
+            $post->is_liked_by_user = $supabaseUser->hasLikedPost($user->id, (string) $post->id);
+            $post->is_followed_by_user = $post->is_following ?? $supabaseUser->isFollowing($user->id, $post->users['id']);
+        }
+
+        $suggestedUsers = $this->recommendation->getSuggestedUsers($user);
+
         return view('feed', [
-            'posts' => $allPosts,
+            'posts' => $paginator->items(),
             'userPosts' => $userPosts,
-            'followersCount' => $supabaseUser->getFollowCount(Auth::id(), 'followers'),
-            'followingCount' => $supabaseUser->getFollowCount(Auth::id(), 'following'),
+            'suggestedUsers' => $suggestedUsers,
+            'followersCount' => $supabaseUser->getFollowCount($user->id, 'followers'),
+            'followingCount' => $supabaseUser->getFollowCount($user->id, 'following'),
         ]);
     }
 
