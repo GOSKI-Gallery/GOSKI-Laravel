@@ -8,22 +8,37 @@ class SupabaseAuthService extends SupabaseBaseService
 {
     public function signUp(string $email, string $password, string $username)
     {
-        return $this->client(false)->post("{$this->url}/auth/v1/signup", [
+        $response = $this->client(false)->post("{$this->url}/auth/v1/signup", [
             'email' => $email,
             'password' => $password,
             'data' => ['username' => $username],
         ])->json();
+
+        if (isset($response['error_code']) || isset($response['error'])) {
+            return $response;
+        }
+
+        $userId = $response['id'] ?? $response['user']['id'] ?? null;
+
+        if ($userId !== null) {
+            try {
+                $this->client(true)->put("{$this->url}/auth/v1/admin/users/{$userId}", [
+                    'email_confirmed_at' => now()->toIso8601String(),
+                ]);
+            } catch (\Exception) {
+            }
+        }
+
+        return $response;
     }
 
     public function signIn(string $email, string $password)
     {
-        // Send grant_type as a form parameter instead of embedding it in the URL query
-        // This avoids subtle mismatches when tests fake the token endpoint URL.
-        return $this->client(false)->post("{$this->url}/auth/v1/token", [
-            'grant_type' => 'password',
-            'email' => $email,
-            'password' => $password,
-        ])->json();
+        return $this->client(false)
+            ->post("{$this->url}/auth/v1/token?grant_type=password", [
+                'email' => $email,
+                'password' => $password,
+            ])->json();
     }
 
     public function getUser(string $token)
@@ -84,6 +99,53 @@ class SupabaseAuthService extends SupabaseBaseService
     public function getPublicUrl(string $bucket, string $path)
     {
         return "{$this->url}/storage/v1/object/public/{$bucket}/{$path}";
+    }
+
+    public function listUsers(): array
+    {
+        $allUsers = [];
+        $page = 0;
+        $perPage = 200;
+
+        do {
+            $response = $this->client(true)
+                ->get("{$this->url}/auth/v1/admin/users", [
+                    'page' => $page + 1,
+                    'per_page' => $perPage,
+                ]);
+
+            if (! $response->successful()) {
+                throw new \Exception('Erro ao listar usuários no Supabase Auth: '.$response->body());
+            }
+
+            $data = $response->json();
+            $users = $data['users'] ?? [];
+
+            $allUsers = array_merge($allUsers, $users);
+
+            $total = $data['total'] ?? 0;
+            $page++;
+        } while (count($allUsers) < $total);
+
+        return $allUsers;
+    }
+
+    public function deleteAllUsers(): array
+    {
+        $users = $this->listUsers();
+        $deleted = [];
+
+        foreach ($users as $user) {
+            $userId = $user['id'];
+            try {
+                $this->deleteUser($userId);
+                $deleted[] = $userId;
+            } catch (\Exception $e) {
+                throw new \Exception("Erro ao deletar usuário {$userId}: ".$e->getMessage());
+            }
+        }
+
+        return $deleted;
     }
 
     public function deleteUser($userId)

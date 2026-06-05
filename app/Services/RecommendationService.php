@@ -38,7 +38,7 @@ class RecommendationService
                     ->where('f.follower_id', $user->id);
             })
             ->orderByRaw(
-                "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + COALESCE(matching_tags_count, 0) * 600) DESC")
+                "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + (SELECT COUNT(*) FROM post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) * 600) DESC")
             ->with('users')
             ->paginate($perPage);
     }
