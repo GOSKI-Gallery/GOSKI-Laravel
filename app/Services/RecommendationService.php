@@ -22,9 +22,11 @@ class RecommendationService
             : $tagIds->implode(',');
 
         $driver = DB::getDriverName();
-        $epochExpr = $driver === 'sqlite'
-            ? "strftime('%%s', posts.created_at)"
-            : 'EXTRACT(EPOCH FROM posts.created_at)';
+        $epochExpr = match ($driver) {
+            'sqlite' => "strftime('%%s', posts.created_at)",
+            'mysql'  => 'UNIX_TIMESTAMP(posts.created_at)',
+            default  => 'EXTRACT(EPOCH FROM posts.created_at)',
+        };
 
         return Post::select('posts.*')
             ->addSelect(DB::raw(
