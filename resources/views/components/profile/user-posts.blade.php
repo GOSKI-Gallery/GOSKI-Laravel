@@ -1,17 +1,14 @@
-@props(['userPosts' => []])
+@props(['posts'])
 
-<div class='grid grid-cols-3 gap-2'>
-    @forelse ($userPosts as $post)
-        <div class="aspect-square group relative overflow-hidden rounded-lg bg-gray-100">
-            <img src="{{ $post['image_url'] ?? '' }}" 
-                 alt="Post image"
-                 class='w-full h-full object-cover transition-all duration-300 group-hover:scale-110'>
-            
-            <div class="absolute inset-0 bg-gray-900/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-        </div>
-    @empty
-        <div class="col-span-3 py-4 text-center">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Nenhuma publicação</p>
-        </div>
-    @endforelse
+<div class="mt-6">
+    <h2 class="text-xs font-black uppercase tracking-wider text-[var(--text-tertiary)] mb-3">Publicações</h2>
+    <div class="grid grid-cols-3 gap-2">
+        @forelse($posts as $post)
+            <div class="aspect-square bg-[var(--bg-skeleton)] rounded-lg overflow-hidden hover:opacity-80 transition-all cursor-pointer">
+                <img class="w-full h-full object-cover" src="{{ $post->image_url }}" alt="Post">
+            </div>
+        @empty
+            <p class="col-span-3 text-center text-[var(--text-tertiary)] py-8">Nenhuma publicação ainda.</p>
+        @endforelse
+    </div>
 </div>

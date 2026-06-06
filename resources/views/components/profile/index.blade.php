@@ -1,81 +1,54 @@
-@props([
-    'profileUser',
-    'userPosts' => [],
-    'followersCount' => 0,
-    'followingCount' => 0,
-    'isOwnProfile' => true,
-    'isFollowed' => false,
-])
+@props(['user', 'followersCount', 'followingCount'])
 
-<div class="max-w-4xl mx-auto py-10 px-4">
-    <div class="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16 mb-12">
+<div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-sm p-6">
+    <div class="flex flex-col items-center">
+        <div class="w-28 h-28 rounded-full bg-[var(--bg-avatar)] border-2 border-[var(--border-color)] overflow-hidden mb-4">
+            <img class="w-full h-full object-cover"
+                src="{{ $user->profile_photo_url ?? asset('images/icons/icon.png') }}"
+                alt="{{ $user->username }}">
+        </div>
 
-        <div class="relative">
-            <div class="w-20 h-20 md:w-40 md:h-40 rounded-full p-1 bg-gray-200">
-                <div class="w-full h-full rounded-full border-4 border-white overflow-hidden bg-gray-100">
-                    <img src="{{ $profileUser['profile_photo_url'] ?? asset('images/icons/icon.png') }}"
-                        class="w-full h-full object-cover">
-                </div>
+        <h1 class="text-xl font-bold text-[var(--text-primary)]">{{ $user->name ?? $user->username }}</h1>
+        <p class="text-sm font-light text-[var(--text-tertiary)]">@ {{ $user->username }}</p>
+
+        <div class="flex items-center gap-8 mt-6">
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-lg font-bold text-[var(--text-primary)]">{{ $userPostsCount ?? $user->posts_count ?? 0 }}</span>
+                <span class="text-xs text-[var(--text-tertiary)]">Posts</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-lg font-bold text-[var(--text-primary)]">{{ $followersCount ?? 0 }}</span>
+                <span class="text-xs text-[var(--text-tertiary)]">Seguidores</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-lg font-bold text-[var(--text-primary)]">{{ $followingCount ?? 0 }}</span>
+                <span class="text-xs text-[var(--text-tertiary)]">Seguindo</span>
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col items-center md:items-start">
-            <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
-                <h2 class="text-2xl font-light text-gray-900 tracking-tight">{{ $profileUser['username'] }}</h2>
-
-                <div class="flex gap-2">
-                    @if ($isOwnProfile)
-                        <button type="button" id="open-edit-profile-modal-btn"
-                            class="follow-btn bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
-                            Editar perfil
-                        </button>
-                    @else
-                        <form
-                            action="{{ $isFollowed ? route('user.unfollow', $profileUser['id']) : route('user.follow', $profileUser['id']) }}"
-                            method="POST">
-                            @csrf
-                            <button type="submit"
-                                class="follow-btn bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100">
-                                {{ $isFollowed ? 'Seguindo' : 'Seguir' }}
-                            </button>
-                        </form>
-                    @endif
-                </div>
-            </div>
-
-            <div class="flex gap-8 mb-6">
-                <div class="flex flex-col md:flex-row items-center gap-1">
-                    <span class="font-black text-gray-900">{{ count($userPosts) }}</span>
-                    <span class="text-gray-500 text-sm lowercase">publicações</span>
-                </div>
-                <div class="flex flex-col md:flex-row items-center gap-1 cursor-pointer hover:opacity-70">
-                    <span class="font-black text-gray-900">{{ $followersCount }}</span>
-                    <span class="text-gray-500 text-sm lowercase">seguidores</span>
-                </div>
-                <div class="flex flex-col md:flex-row items-center gap-1 cursor-pointer hover:opacity-70">
-                    <span class="font-black text-gray-900">{{ $followingCount }}</span>
-                    <span class="text-gray-500 text-sm lowercase">seguindo</span>
-                </div>
-            </div>
-        </div>
+        @if(Auth::id() !== $user->id)
+            <button type="button"
+                class="follow-btn mt-6 bg-zinc-900 dark:bg-zinc-200 text-white dark:text-zinc-900 text-sm font-bold px-6 py-2 rounded-lg hover:opacity-80 transition-all cursor-pointer"
+                data-user-id="{{ $user->id }}">
+                Seguir
+            </button>
+        @else
+            <button id="edit-profile-btn"
+                class="mt-6 text-sm font-bold px-6 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-[var(--text-primary)] hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer">
+                Editar Perfil
+            </button>
+        @endif
     </div>
-
-    <div class="border-t border-gray-100">
-        <div class="flex justify-start gap-12">
-            <div
-                class="flex items-center gap-2 py-4 border-t border-gray-900 -mt-px text-xs font-black uppercase tracking-widest text-gray-900">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                Publicações
-            </div>
-        </div>
-    </div>
-
-    <x-profile.user-posts :userPosts="$userPosts" />
 </div>
 
-@if ($isOwnProfile)
-    <x-profile.edit-profile-modal :user="$profileUser" />
-@endif
+@push('scripts')
+<script>
+    document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
+        const modal = document.getElementById('edit-profile-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    });
+</script>
+@endpush

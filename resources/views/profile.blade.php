@@ -1,13 +1,7 @@
 @extends('layouts.public')
 
 @section('content')
-    <x-profile
-        :profileUser="$profileUser"
-        :userPosts="$userPosts"
-        :followersCount="$followersCount"
-        :followingCount="$followingCount"
-        :isOwnProfile="$isOwnProfile ?? true"
-        :isFollowed="$isFollowed ?? false"
-    />
-
+<div class="max-w-2xl mx-auto w-full mt-4">
+    <x-profile.index :user="$profileUser" :followersCount="$followersCount" :followingCount="$followingCount" />
+</div>
 @endsection
