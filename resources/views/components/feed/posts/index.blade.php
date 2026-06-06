@@ -1,207 +1,134 @@
-@props(['posts'])
+@props(['posts', 'lastPage', 'currentPage'])
 
-<div id="feed-posts" class="max-w-2xl mx-auto space-y-8 pb-12 gap-4">
-    <x-feed.posts.list :posts="$posts" />
+<div id="posts-container" class="space-y-4">
+    @foreach ($posts as $post)
+        <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-sm overflow-hidden post-item">
+            <div class="flex items-center justify-between px-5 py-3">
+                <div class="flex items-center gap-3">
+                    <img class="w-10 h-10 rounded-full bg-[var(--bg-avatar)] border border-[var(--border-color)] object-cover"
+                        src="{{ $post->users['profile_picture'] ?? $post->users->profile_photo_url ?? asset('images/icons/icon.png') }}"
+                        alt="{{ $post->users['username'] ?? $post->users->username ?? 'Usuário' }}">
+                    <div>
+                        <h1 class="text-lg font-bold text-[var(--text-primary)]">
+                            {{ $post->users['username'] ?? $post->users->username ?? 'Usuário' }}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="aspect-square bg-[var(--bg-skeleton)] overflow-hidden">
+                <img class="w-full h-full object-cover" src="{{ $post->image_url }}" alt="Post">
+            </div>
+
+            <div class="px-5 py-3">
+                <div class="flex items-center gap-3 mb-2">
+                    <button type="button" class="like-btn cursor-pointer hover:opacity-80 transition-all"
+                        data-post-id="{{ $post->id }}"
+                        data-liked="{{ $post->is_liked_by_user ? 'true' : 'false' }}">
+                        <div class="like-icon {{ $post->is_liked_by_user ? 'text-red-600' : 'text-[var(--icon-primary)] dark:text-zinc-300' }}">
+                            @if($post->is_liked_by_user)
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z"/>
+                                </svg>
+                            @else
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16.5 3C14.76 3 13.09 3.81 12 5.08C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.41 2 8.5C2 12.27 5.4 15.36 10.55 20.03L12 21.35L13.45 20.03C18.6 15.36 22 12.27 22 8.5C22 5.41 19.58 3 16.5 3Z"/>
+                                </svg>
+                            @endif
+                        </div>
+                    </button>
+                    <span class="like-count text-xs font-black text-[var(--text-primary)]">{{ $post->likes_count ?? 0 }}</span>
+
+                    @if((int) $post->user_id === (int) Auth::id())
+                        <button type="button" class="delete-post-btn cursor-pointer hover:opacity-80 transition-all ml-auto text-[var(--icon-primary)]"
+                            data-post-id="{{ $post->id }}">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9H16V19H8V9ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z"/>
+                            </svg>
+                        </button>
+                    @endif
+                </div>
+
+                <p class="text-sm text-[var(--text-secondary)]">
+                    <span class="font-bold text-[var(--text-primary)]">{{ $post->users['username'] ?? $post->users->username ?? 'Usuário' }}</span>
+                    {{ $post->description }}
+                </p>
+                <p class="text-xs text-[var(--text-tertiary)] mt-1">{{ $post->created_at->diffForHumans() }}</p>
+            </div>
+        </div>
+    @endforeach
+
+    @if ($currentPage < $lastPage)
+        <div id="load-more-trigger" class="text-center py-4" data-next-page="{{ $currentPage + 1 }}">
+            <div class="inline-block w-6 h-6 border-2 border-zinc-300 dark:border-zinc-600 border-t-zinc-900 dark:border-t-white rounded-full animate-spin"></div>
+        </div>
+    @endif
 </div>
 
-@if ($posts && count($posts) > 0)
-    <div id="feed-sentinel" class="h-10"></div>
-@else
-    <div class="flex flex-col items-center justify-center py-32 text-center px-6">
-        <div class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-        </div>
-        <h3 class="text-xl font-black text-gray-900 tracking-tight">Nenhum post cadastrado.<h3>
-
-                <button id="open-modal-btn-empty"
-                    class="mt-8 bg-gray-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 active:scale-95 transition-all cursor-pointer">
-                    Fazer minha primeira postagem
-                </button>
-    </div>
-@endif
-
+@push('scripts')
 <script>
-(function() {
-    const csrf = '{{ csrf_token() }}';
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const icon = this.querySelector('.like-icon');
+            const count = this.parentElement.querySelector('.like-count');
+            const isLiked = this.dataset.liked === 'true';
 
-    document.addEventListener('submit', function(e) {
-        const form = e.target;
-
-        if (form.classList.contains('like-form')) {
-            e.preventDefault();
-            const btn = form.querySelector('.like-btn');
-            const icon = btn.querySelector('.like-icon');
-            const countEl = btn.querySelector('.like-count');
-            const postId = btn.dataset.postId;
-            const wasLiked = btn.dataset.liked === '1';
-
-            if (btn.disabled) return;
-            btn.disabled = true;
-
-            const newLiked = !wasLiked;
-            let currentCount = parseInt(countEl.textContent);
-            countEl.textContent = newLiked ? currentCount + 1 : Math.max(currentCount - 1, 0);
-            btn.dataset.liked = newLiked ? '1' : '0';
-
-            if (newLiked) {
-                icon.classList.add('liked-active');
-                countEl.classList.remove('text-gray-700');
-                countEl.classList.add('text-red-600');
-                icon.style.transform = 'scale(1.3)';
-                icon.style.opacity = '1';
-                setTimeout(() => { icon.style.transform = ''; }, 200);
-            } else {
-                icon.classList.remove('liked-active');
-                countEl.classList.remove('text-red-600');
-                countEl.classList.add('text-gray-700');
-            }
-
-            fetch(form.action, {
+            const likeUrl = '{{ route("post.like.toggle", "POST_ID") }}'.replace('POST_ID', postId);
+            fetch(likeUrl, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrf,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
-                body: JSON.stringify({_token: csrf}),
+                body: JSON.stringify({ post_id: postId }),
             })
             .then(r => r.json())
             .then(data => {
-                if (!data.success) {
-                    btn.dataset.liked = wasLiked ? '1' : '0';
-                    countEl.textContent = wasLiked ? Math.max(currentCount - 1, 0) : currentCount + 1;
-                    if (wasLiked) {
-                        icon.classList.add('liked-active');
-                        countEl.classList.remove('text-gray-700');
-                        countEl.classList.add('text-red-600');
-                    } else {
-                        icon.classList.remove('liked-active');
-                        countEl.classList.remove('text-red-600');
-                        countEl.classList.add('text-gray-700');
-                    }
+                if (data.liked !== undefined) {
+                    this.dataset.liked = data.liked ? 'true' : 'false';
+                    icon.className = 'like-icon ' + (data.liked ? 'text-red-600' : 'text-[var(--icon-primary)] dark:text-zinc-300');
+                    icon.innerHTML = data.liked
+                        ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z"/></svg>'
+                        : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 3C14.76 3 13.09 3.81 12 5.08C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.41 2 8.5C2 12.27 5.4 15.36 10.55 20.03L12 21.35L13.45 20.03C18.6 15.36 22 12.27 22 8.5C22 5.41 19.58 3 16.5 3Z"/></svg>';
+                    count.textContent = data.likes_count ?? count.textContent;
                 }
-            })
-            .catch(() => {
-                btn.dataset.liked = wasLiked ? '1' : '0';
-                countEl.textContent = wasLiked ? Math.max(currentCount - 1, 0) : currentCount + 1;
-                if (wasLiked) {
-                    icon.classList.add('liked-active');
-                    countEl.classList.remove('text-gray-700');
-                    countEl.classList.add('text-red-600');
-                } else {
-                    icon.classList.remove('liked-active');
-                    countEl.classList.remove('text-red-600');
-                    countEl.classList.add('text-gray-700');
-                }
-            })
-            .finally(() => {
-                btn.disabled = false;
             });
-        }
-
-        if (form.classList.contains('follow-form')) {
-            e.preventDefault();
-            const btn = form.querySelector('.follow-btn');
-            const userId = btn.dataset.userId;
-            const isFollowing = btn.dataset.following === '1';
-
-            if (btn.disabled) return;
-            btn.disabled = true;
-
-            const newFollowing = !isFollowing;
-            btn.textContent = newFollowing ? 'Seguindo' : 'Seguir';
-            btn.dataset.following = newFollowing ? '1' : '0';
-
-            if (newFollowing) {
-                btn.classList.add('bg-gray-600', 'text-white');
-                btn.classList.remove('bg-gray-50', 'text-gray-900');
-            } else {
-                btn.classList.remove('bg-gray-600', 'text-white');
-                btn.classList.add('bg-gray-50', 'text-gray-900');
-            }
-
-            const url = newFollowing
-                ? '{{ route('user.follow', ':id') }}'.replace(':id', userId)
-                : '{{ route('user.unfollow', ':id') }}'.replace(':id', userId);
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrf,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({_token: csrf}),
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (!data.success) {
-                    btn.dataset.following = isFollowing ? '1' : '0';
-                    btn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
-                    if (isFollowing) {
-                        btn.classList.add('bg-gray-600', 'text-white');
-                        btn.classList.remove('bg-gray-50', 'text-gray-900');
-                    } else {
-                        btn.classList.remove('bg-gray-600', 'text-white');
-                        btn.classList.add('bg-gray-50', 'text-gray-900');
-                    }
-                }
-            })
-            .catch(() => {
-                btn.dataset.following = isFollowing ? '1' : '0';
-                btn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
-                if (isFollowing) {
-                    btn.classList.add('bg-gray-600', 'text-white');
-                    btn.classList.remove('bg-gray-50', 'text-gray-900');
-                } else {
-                    btn.classList.remove('bg-gray-600', 'text-white');
-                    btn.classList.add('bg-gray-50', 'text-gray-900');
-                }
-            })
-            .finally(() => {
-                btn.disabled = false;
-            });
-        }
+        });
     });
 
-    const sentinel = document.getElementById('feed-sentinel');
-    if (sentinel) {
-        let page = 1;
-        let loading = false;
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const trigger = document.getElementById('load-more-trigger');
+                if (!trigger) return;
+                const nextPage = trigger.dataset.nextPage;
+                observer.unobserve(trigger);
 
-        const observer = new IntersectionObserver(async ([entry]) => {
-            if (entry.isIntersecting && !loading) {
-                loading = true;
-                page++;
-                try {
-                    const html = await fetch(`/feed?page=${page}`, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    }).then(r => r.text());
-                    if (html.trim()) {
-                        document.getElementById('feed-posts').insertAdjacentHTML('beforeend', html);
-                    } else {
-                        observer.disconnect();
-                    }
-                } catch {
-                    observer.disconnect();
-                } finally {
-                    loading = false;
-                }
+                fetch('?page=' + nextPage, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById('posts-container').insertAdjacentHTML('beforeend', html);
+                    trigger.remove();
+                });
             }
         });
-        observer.observe(sentinel);
-    }
-})();
-</script>
+    });
 
-<style>
-.liked-active {
-    filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.4));
-    opacity: 1 !important;
-}
-</style>
+    const trigger = document.getElementById('load-more-trigger');
+    if (trigger) observer.observe(trigger);
+
+    document.querySelectorAll('.delete-post-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!confirm('Tem certeza que deseja excluir este post?')) return;
+            const postId = this.dataset.postId;
+            fetch('/post/' + postId, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            }).then(() => location.reload());
+        });
+    });
+</script>
+@endpush

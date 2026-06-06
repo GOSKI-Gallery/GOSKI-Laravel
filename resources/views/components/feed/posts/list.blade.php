@@ -1,70 +1,58 @@
 @props(['posts'])
 
 @foreach ($posts as $post)
-    @if (!empty($post['users']))
-        <article
-            class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md">
-
-            <div class="px-5 py-4 flex items-center justify-between bg-white/50 backdrop-blur-sm">
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('profile.show', $post['users']['id']) }}" class="relative group">
-                        <img src="{{ $post['users']['profile_photo_url'] ?? asset('images/icons/icon.png') }}"
-                            alt="Profile"
-                            class="w-10 h-10 rounded-xl object-cover border-2 border-gray-50 group-hover:border-gray-400 transition-all">
-                    </a>
-                    <div>
-                        <a href="{{ route('profile.show', $post['users']['id']) }}" class="font-bold text-gray-900 text-sm tracking-tight hover:underline">
-                            {{ $post['users']['username'] }}
-                        </a>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-                            {{ \Carbon\Carbon::parse($post['created_at'])->diffForHumans() }}
-                        </p>
-                    </div>
+    <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-sm overflow-hidden post-item">
+        <div class="flex items-center justify-between px-5 py-3">
+            <div class="flex items-center gap-3">
+                <img class="w-10 h-10 rounded-full bg-[var(--bg-avatar)] border border-[var(--border-color)] object-cover"
+                    src="{{ $post->users['profile_picture'] ?? $post->users->profile_photo_url ?? asset('images/icons/icon.png') }}"
+                    alt="{{ $post->users['username'] ?? $post->users->username ?? 'Usuário' }}">
+                <div>
+                    <h1 class="text-lg font-bold text-[var(--text-primary)]">
+                        {{ $post->users['username'] ?? $post->users->username ?? 'Usuário' }}
+                    </h1>
                 </div>
+            </div>
+        </div>
 
-                @if (auth()->check() && auth()->id() !== $post['users']['id'])
-                    <form action="{{ route('user.follow', $post['users']['id']) }}" method="POST" class="follow-form" data-follow-form>
-                        @csrf
-                        <button type="submit"
-                            class="follow-btn bg-gray-50 text-gray-900 hover:bg-gray-600 hover:text-white px-5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer uppercase tracking-tighter shadow-sm border border-gray-100"
-                            data-user-id="{{ $post['users']['id'] }}"
-                            data-following="{{ $post['is_followed_by_user'] ?? false ? '1' : '0' }}">
-                            {{ ($post['is_followed_by_user'] ?? false) ? 'Seguindo' : 'Seguir' }}
-                        </button>
-                    </form>
+        <div class="aspect-square bg-[var(--bg-skeleton)] overflow-hidden">
+            <img class="w-full h-full object-cover" src="{{ $post->image_url }}" alt="Post">
+        </div>
+
+        <div class="px-5 py-3">
+            <div class="flex items-center gap-3 mb-2">
+                <button type="button" class="like-btn cursor-pointer hover:opacity-80 transition-all"
+                    data-post-id="{{ $post->id }}"
+                    data-liked="{{ $post->is_liked_by_user ? 'true' : 'false' }}">
+                    <div class="like-icon {{ $post->is_liked_by_user ? 'text-red-600' : 'text-[var(--icon-primary)] dark:text-zinc-300' }}">
+                        @if($post->is_liked_by_user)
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z"/>
+                            </svg>
+                        @else
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16.5 3C14.76 3 13.09 3.81 12 5.08C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.41 2 8.5C2 12.27 5.4 15.36 10.55 20.03L12 21.35L13.45 20.03C18.6 15.36 22 12.27 22 8.5C22 5.41 19.58 3 16.5 3Z"/>
+                            </svg>
+                        @endif
+                    </div>
+                </button>
+                <span class="like-count text-xs font-black text-[var(--text-primary)]">{{ $post->likes_count ?? 0 }}</span>
+
+                @if((int) $post->user_id === (int) Auth::id())
+                    <button type="button" class="delete-post-btn cursor-pointer hover:opacity-80 transition-all ml-auto text-[var(--icon-primary)]"
+                        data-post-id="{{ $post->id }}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9H16V19H8V9ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z"/>
+                        </svg>
+                    </button>
                 @endif
             </div>
 
-            <div class="relative aspect-square w-full bg-gray-50 border-y border-gray-50 overflow-hidden">
-                <img src="{{ $post['image_url'] ?? '' }}" alt="Conteúdo do post"
-                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]">
-            </div>
-
-            <div class="px-6 py-5">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="text-sm leading-snug">
-                        <p class="text-gray-800">
-                            <a href="{{ route('profile.show', $post['users']['id']) }}"
-                                class="font-black text-gray-900 mr-2 uppercase tracking-tighter hover:underline">{{ $post['users']['username'] }}</a>
-                            {{ $post['description'] }}
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <form action="{{ route('post.like.toggle', $post['id']) }}" method="POST" class="m-0 p-0 like-form">
-                            @csrf
-                            <button type="submit"
-                                class="like-btn group flex items-center gap-2 pr-3 py-2 rounded-xl hover:bg-red-50 transition-all cursor-pointer"
-                                data-post-id="{{ $post['id'] }}"
-                                data-liked="{{ $post['is_liked_by_user'] ?? false ? '1' : '0' }}">
-                                <img class="w-6 h-6 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all like-icon"
-                                    src="{{ asset('images/icons/like.png') }}" alt="Like">
-                                <span class="text-sm font-black text-gray-700 group-hover:text-red-600 like-count">{{ $post['likes_count'] ?? 0 }}</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        </article>
-    @endif
+            <p class="text-sm text-[var(--text-secondary)]">
+                <span class="font-bold text-[var(--text-primary)]">{{ $post->users['username'] ?? $post->users->username ?? 'Usuário' }}</span>
+                {{ $post->description }}
+            </p>
+            <p class="text-xs text-[var(--text-tertiary)] mt-1">{{ $post->created_at->diffForHumans() }}</p>
+        </div>
+    </div>
 @endforeach
