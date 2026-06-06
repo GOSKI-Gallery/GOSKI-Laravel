@@ -1,31 +1,15 @@
-@props(['title', 'value', 'href' => null, 'icon' => null])
+@props(['title', 'value', 'icon' => null])
 
-@if ($href)
-    <a href="{{ $href }}" class="bg-white border border-gray-100 rounded-xl p-6 transition-all hover:shadow-md hover:border-gray-200 cursor-pointer group">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-widest text-gray-500">{{ $title }}</p>
-                <p class="mt-3 text-3xl font-black text-gray-900">{{ $value }}</p>
-            </div>
-            @if ($icon)
-                <div class="text-gray-200 group-hover:text-gray-300 transition-colors">
-                    {{ $icon }}
-                </div>
-            @endif
+<div class="bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)] p-6 shadow-sm">
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-sm font-medium text-[var(--text-tertiary)]">{{ $title }}</p>
+            <p class="text-3xl font-bold text-[var(--text-primary)] mt-1">{{ $value }}</p>
         </div>
-    </a>
-@else
-    <div class="bg-white border border-gray-100 rounded-xl p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-widest text-gray-500">{{ $title }}</p>
-                <p class="mt-3 text-3xl font-black text-gray-900">{{ $value }}</p>
+        @if($icon)
+            <div class="text-[var(--icon-primary)] opacity-50">
+                {{ $icon }}
             </div>
-            @if ($icon)
-                <div class="text-gray-200">
-                    {{ $icon }}
-                </div>
-            @endif
-        </div>
+        @endif
     </div>
-@endif
+</div>

@@ -7,8 +7,8 @@
 @section('content')
 <div class="w-full">
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-lg font-black uppercase tracking-tight text-gray-900">Usuários</h2>
-        <span class="text-xs font-bold text-gray-400">Total: {{ $users->total() }}</span>
+        <h2 class="text-lg font-black uppercase tracking-tight text-[var(--text-primary)]">Usuários</h2>
+        <span class="text-xs font-bold text-[var(--text-tertiary)]">Total: {{ $users->total() }}</span>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

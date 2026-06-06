@@ -3,9 +3,8 @@
 
 @include('shared.head')
 
-<body class='flex flex-col bg-[#ECECEC] min-h-screen'>
+<body class="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
     <x-admin.header />
-
 
     <x-ui.flash-message />
 
@@ -14,5 +13,4 @@
     </div>
 
 </body>
-
 </html>

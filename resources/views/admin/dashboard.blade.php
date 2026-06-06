@@ -1,46 +1,26 @@
-@extends('layouts.admin')
+@php
+    $currentRoute = 'admin.dashboard';
+@endphp
 
-@section('title')
-    Dashboard
-@endsection
+@extends('layouts.admin')
 
 @section('content')
 <div class="w-full">
-    <!-- Métricas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <x-admin.metric-card 
-            title="Usuários"
-            :value="number_format($totalUsers)"
-            href="{{ route('admin.users.index') }}"
-        />
-        <x-admin.metric-card 
-            title="Posts"
-            :value="number_format($totalPosts)"
-            href="{{ route('admin.posts.index') }}"
-        />
-        <x-admin.metric-card 
-            title="Moderação Pendente"
-            :value="$pendingPosts->count()"
-        />
+    <h1 class="text-2xl font-bold text-[var(--text-primary)] mb-6">Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <x-admin.metric-card title="Total de Usuários" :value="$totalUsers ?? 0" />
+        <x-admin.metric-card title="Total de Posts" :value="$totalPosts ?? 0" />
+        <x-admin.metric-card title="Posts Pendentes" :value="$pendingPosts ?? 0" />
     </div>
 
-    <!-- Fila de Moderação -->
-    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h2 class="font-black text-lg uppercase tracking-tight text-gray-900">Fila de Moderação</h2>
+    @if(isset($pendingModerations) && $pendingModerations->isNotEmpty())
+        <h2 class="text-lg font-bold text-[var(--text-primary)] mb-4">Moderação Pendente</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach($pendingModerations as $post)
+                <x-admin.moderation-card :post="$post" />
+            @endforeach
         </div>
-
-        @if($pendingPosts->isEmpty())
-            <div class="p-12 text-center">
-                <p class="text-sm text-gray-400 font-bold">✓ Nenhum post pendente</p>
-            </div>
-        @else
-            <div class="space-y-4 p-6">
-                @foreach($pendingPosts as $post)
-                    <x-admin.moderation-card :post="$post" />
-                @endforeach
-            </div>
-        @endif
-    </div>
+    @endif
 </div>
 @endsection
