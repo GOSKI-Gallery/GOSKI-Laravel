@@ -53,6 +53,8 @@ class UserController extends Controller
             abort(404);
         }
 
+        $profileUser = (object) $profileUser;
+
         $userPosts = Post::where('user_id', $userId)->latest()->take(9)->get();
         $isOwnProfile = Auth::id() === $userId;
 

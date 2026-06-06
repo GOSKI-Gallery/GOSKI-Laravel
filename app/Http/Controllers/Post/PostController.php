@@ -47,6 +47,7 @@ class PostController extends Controller
 
         return view('feed', [
             'posts' => $paginator->items(),
+            'paginator' => $paginator,
             'userPosts' => $userPosts,
             'suggestedUsers' => $suggestedUsers,
             'followersCount' => $supabaseUser->getFollowCount($user->id, 'followers'),
