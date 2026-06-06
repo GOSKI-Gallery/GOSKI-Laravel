@@ -1,41 +1,18 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+@extends('layouts.public')
 
-@include('shared.head')
-
-<body class='flex min-h-screen flex-col bg-[#FAFAFA]'>
-
-    <x-ui.flash-message />
-
-    <x-auth.header-auth />
-
-    <div class="flex justify-center">
-        <div class="flex w-full max-w-fit flex-col items-start">
-            <div class="flex flex-col items-start justify-center gap-3 py-24">
-                <div class="pb-6 font-black text-6xl text-start leading-[0.9] tracking-tighter text-gray-900">
-                    <h2>Crie sua conta e se</h2>
-                    <p>
-                        <span
-                            class="bg-clip-text text-transparent bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">
-                            expresse.
-                        </span>
-                    </p>
-                </div>
-
-                <h3 class="text-center text-xl font-bold">
-                    Crie sua conta.
-                </h3>
-
-                <x-auth.user-form 
-                    action="/register" 
-                    buttonText="Cadastrar" 
-                    :show-password="true" 
-                    :show-password-confirmation="true"
-                    :show-avatar="false" 
-                />
-            </div>
-        </div>
+@section('content')
+<div class="flex flex-col items-center justify-center min-h-[80vh] gap-8">
+    <div class="flex flex-col items-center">
+        <img class="w-auto h-16 mb-4" src="{{ asset('images/logo.svg') }}" alt="GOSKI">
+        <h1 class="font-black text-5xl tracking-tighter text-[var(--text-primary)]">GOSKI</h1>
+        <p class="text-[var(--text-secondary)] mt-2 text-lg">Compartilhe suas aventuras.</p>
     </div>
-</body>
 
-</html>
+    <x-auth.user-form :action="route('register')" />
+
+    <p class="text-[var(--text-tertiary)] text-sm mt-4">
+        Já tem uma conta?
+        <a href="{{ route('login') }}" class="text-[var(--color-link)] dark:text-[var(--color-link-dark)] font-bold">Faça login</a>
+    </p>
+</div>
+@endsection

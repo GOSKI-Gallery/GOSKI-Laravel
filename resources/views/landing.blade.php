@@ -1,38 +1,18 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+@extends('layouts.public')
 
-@include('shared.head')
-
-<body class='flex flex-col bg-[#FAFAFA] min-h-screen'>
-
-    <x-ui.flash-message />
-
-    <x-auth.header-auth />
-
-    <div class="flex justify-center">
-        <div class="flex flex-col items-start w-full max-w-fit">
-            <div class="flex flex-col justify-center items-start gap-3 py-24">
-                <div class="pb-6 font-black text-6xl text-start leading-[0.9] tracking-tighter text-gray-900">
-                    <h2>Acompanhe as</h2>
-                    <p>
-                        <span
-                            class="bg-clip-text text-transparent bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">
-                            expressões
-                        </span>
-                        <span>do</span>
-                        <span
-                            class="bg-clip-text text-transparent bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB]">
-                            mundo.
-                        </span>
-                    </p>
-                </div>
-
-                <h3 class="font-bold text-xl text-center">
-                    Faça seu login.
-                </h3>
-
-                <x-auth.login-form />
-            </div>
-        </div>
+@section('content')
+<div class="flex flex-col items-center justify-center min-h-[80vh] gap-8">
+    <div class="flex flex-col items-center">
+        <img class="w-auto h-16 mb-4" src="{{ asset('images/logo.svg') }}" alt="GOSKI">
+        <h1 class="font-black text-5xl tracking-tighter text-[var(--text-primary)]">GOSKI</h1>
+        <p class="text-[var(--text-secondary)] mt-2 text-lg">Compartilhe suas aventuras.</p>
     </div>
-</body>
+
+    <x-auth.login-form />
+
+    <p class="text-[var(--text-tertiary)] text-sm mt-4">
+        Não tem uma conta?
+        <a href="{{ route('register') }}" class="text-[var(--color-link)] dark:text-[var(--color-link-dark)] font-bold">Cadastre-se</a>
+    </p>
+</div>
+@endsection

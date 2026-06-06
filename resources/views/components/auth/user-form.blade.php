@@ -1,157 +1,62 @@
-@props([
-    'action',
-    'user' => [],
-    'buttonText' => 'Salvar Alterações',
-    'wrapInForm' => true,
-    'showUsername' => true,
-    'showEmail' => true,
-    'showPassword' => false,
-    'showPasswordConfirmation' => false,
-    'showButton' => true,
-    'method' => 'POST',
-    'showAvatar' => false,
-])
+@props(['action', 'method' => 'POST', 'user' => null])
 
-@if ($wrapInForm)
-    <div class="mx-auto mt-6 w-full max-w-sm mb-2">
-        <form action="{{ $action }}" method="{{ $method === 'POST' ? 'POST' : 'GET' }}" class="space-y-4"
-            enctype="multipart/form-data">
-            @if ($method !== 'POST' && $method !== 'GET')
-                @method($method)
-            @endif
-            @csrf
-@endif
-
-@if ($showAvatar)
-    <div class="mb-6">
-        <div id="upload-area-edit"
-            class="group relative flex h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 transition-all hover:border-black/50 hover:bg-gray-100/30">
-
-            <div class="{{ isset($user['profile_photo_url']) ? 'hidden' : '' }} p-4 text-center transition-transform group-hover:scale-105"
-                id="upload-placeholder-edit">
-                <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm">
-                    <svg class="h-7 w-7 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                </div>
-                <p class="text-sm font-semibold text-gray-600">Clique para alterar foto</p>
-                <p class="mt-1 text-[11px] uppercase tracking-tighter text-gray-400">PNG, JPG ou GIF até 10MB</p>
-            </div>
-
-            <input type="file" name="image_url" id="image_url_edit"
-                class="absolute inset-0 z-20 cursor-pointer opacity-0" accept="image/*">
-
-            <img id="image-preview-edit" src="{{ $user['profile_photo_url'] ?? '' }}"
-                class="{{ isset($user['profile_photo_url']) ? '' : 'hidden' }} absolute inset-0 z-10 h-full w-full object-cover" />
-        </div>
-    </div>
-@endif
-
-@if ($showUsername)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <img class="h-4 w-4 opacity-30 transition-opacity group-focus-within:opacity-100"
-                    src="{{ asset('images/icons/icon.png') }}" alt="User Icon">
-            </div>
-            <input type="text" name="username" id="username" placeholder="Nome de usuário"
-                value="{{ old('username', $user['username'] ?? '') }}"
-                class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10">
-        </div>
-        @error('username')
-            <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
-        @enderror
-    </div>
-@endif
-
-@if ($showEmail)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <img class="h-4 w-4 opacity-30 transition-opacity group-focus-within:opacity-100"
-                    src="{{ asset('images/icons/email.png') }}" alt="Email Icon">
-            </div>
-            <input type="email" name="email" id="email" placeholder="E-mail"
-                value="{{ old('email', $user['email'] ?? '') }}"
-                class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10">
-        </div>
-        @error('email')
-            <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
-        @enderror
-    </div>
-@endif
-
-@if ($showPassword)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <img class="h-4 w-4 opacity-30 transition-opacity group-focus-within:opacity-100"
-                    src="{{ asset('images/icons/lock.png') }}" alt="Lock Icon">
-            </div>
-            <input type="password" name="password" id="password" placeholder="Nova Senha"
-                class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10">
-        </div>
-        @error('password')
-            <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
-        @enderror
-    </div>
-@endif
-
-@if ($showPasswordConfirmation)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <img class="h-4 w-4 opacity-30 transition-opacity group-focus-within:opacity-100"
-                    src="{{ asset('images/icons/lock.png') }}" alt="Lock Icon">
-            </div>
-            <input type="password" name="password_confirmation" placeholder="Confirme a nova senha"
-                class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10">
-        </div>
-    </div>
-@endif
-
-@if ($wrapInForm)
-    @if ($showButton)
-        <button type="submit"
-            class="mt-2 w-full cursor-pointer rounded-xl bg-gray-900 py-3 font-bold text-white shadow-lg shadow-gray-200 transition-all hover:bg-gray-600 hover:shadow-gray-100 active:scale-[0.98]">
-            {{ $buttonText }}
-        </button>
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="flex flex-col items-center w-full max-w-sm mx-auto gap-4">
+    @csrf
+    @if(strtoupper($method) !== 'POST')
+        @method($method)
     @endif
-    </form>
+
+    @if(!$user)
+        <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-2">Crie sua conta.</h2>
+    @endif
+
+    <div class="flex items-center rounded-xl w-full h-14 px-4 bg-zinc-200 dark:bg-zinc-800">
+        <svg class="w-5 h-5 mr-3 opacity-30 text-[var(--icon-primary)]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+        </svg>
+        <input type="text" name="username" id="username" value="{{ old('username', $user->username ?? '') }}" placeholder="Username" required
+            class="flex-1 bg-transparent text-black dark:text-white font-bold text-center focus:outline-none placeholder:text-zinc-400" />
+        <div class="w-5 h-5 ml-3 opacity-0"></div>
     </div>
-@endif
+    @error('username')
+        <p class="text-red-600 text-sm w-full text-center">{{ $message }}</p>
+    @enderror
 
-@if (!$wrapInForm && $showButton)
+    <div class="flex items-center rounded-xl w-full h-14 px-4 bg-zinc-200 dark:bg-zinc-800">
+        <svg class="w-5 h-5 mr-3 opacity-30 text-[var(--icon-primary)]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"/>
+        </svg>
+        <input type="email" name="email" id="email" value="{{ old('email', $user->email ?? '') }}" placeholder="Email" required
+            class="flex-1 bg-transparent text-black dark:text-white font-bold text-center focus:outline-none placeholder:text-zinc-400" />
+        <div class="w-5 h-5 ml-3 opacity-0"></div>
+    </div>
+    @error('email')
+        <p class="text-red-600 text-sm w-full text-center">{{ $message }}</p>
+    @enderror
+
+    <div class="flex items-center rounded-xl w-full h-14 px-4 bg-zinc-200 dark:bg-zinc-800">
+        <svg class="w-5 h-5 mr-3 opacity-30 text-[var(--icon-primary)]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z"/>
+        </svg>
+        <input type="password" name="password" id="password" placeholder="Senha" {{ $user ? '' : 'required' }}
+            class="flex-1 bg-transparent text-black dark:text-white font-bold text-center focus:outline-none placeholder:text-zinc-400" />
+        <div class="w-5 h-5 ml-3 opacity-0"></div>
+    </div>
+    @error('password')
+        <p class="text-red-600 text-sm w-full text-center">{{ $message }}</p>
+    @enderror
+
+    <div class="flex items-center rounded-xl w-full h-14 px-4 bg-zinc-200 dark:bg-zinc-800">
+        <svg class="w-5 h-5 mr-3 opacity-30 text-[var(--icon-primary)]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z"/>
+        </svg>
+        <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Confirmar senha" {{ $user ? '' : 'required' }}
+            class="flex-1 bg-transparent text-black dark:text-white font-bold text-center focus:outline-none placeholder:text-zinc-400" />
+        <div class="w-5 h-5 ml-3 opacity-0"></div>
+    </div>
+
     <button type="submit"
-        class="mt-2 w-full cursor-pointer rounded-xl bg-gray-900 py-3 font-bold text-white shadow-lg shadow-gray-200 transition-all hover:bg-gray-600 hover:shadow-gray-100 active:scale-[0.98]">
-        {{ $buttonText }}
+        class="w-full h-14 bg-zinc-900 dark:bg-zinc-200 text-white dark:text-zinc-900 font-bold text-lg rounded-xl border border-zinc-900 dark:border-zinc-200 hover:opacity-80 active:opacity-80 transition-all duration-200 cursor-pointer px-20 mt-2">
+        {{ $user ? 'Salvar' : 'Criar conta' }}
     </button>
-@endif
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const input = document.getElementById('image_url_edit');
-        const preview = document.getElementById('image-preview-edit');
-        const placeholder = document.getElementById('upload-placeholder-edit');
-
-        if (input && preview) {
-            input.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        preview.classList.remove('hidden');
-                        if (placeholder) {
-                            placeholder.classList.add('hidden');
-                        }
-                    }
-
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    });
-</script>
+</form>

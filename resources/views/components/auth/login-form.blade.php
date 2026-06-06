@@ -1,37 +1,47 @@
-<div class="w-full max-w-sm mt-6 mx-auto">
-    <form action="{{ route('authenticate') }}" method="POST" class="space-y-4">
-        @csrf
-        
-        <div class="flex flex-col gap-3">
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <img class="opacity-30 w-4 h-4 group-focus-within:opacity-100 transition-opacity" src="{{ asset('images/icons/email.png') }}" alt="Email Icon">
-                </div>
-                <input type="email" name="email" placeholder="Seu e-mail"
-                    value="{{ old('email', $user['email'] ?? '') }}"
-                    class="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-gray-500/10 focus:border-gray-500 transition-all placeholder:text-gray-400">
-            </div>
-            @error('email')
-                <p class="text-red-500 text-[10px] font-bold uppercase ml-2 tracking-tight">{{ $message }}</p>
-            @enderror
-        </div>
+<form method="POST" action="{{ route('authenticate') }}" class="flex flex-col items-center w-full max-w-sm mx-auto gap-4">
+    @csrf
 
-        <div class="flex flex-col gap-1.5">
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <img class="opacity-30 w-4 h-4 group-focus-within:opacity-100 transition-opacity" src="{{ asset('images/icons/lock.png') }}" alt="Lock Icon">
-                </div>
-                <input type="password" name="password" placeholder="Sua senha"
-                    class="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-gray-500/10 focus:border-gray-500 transition-all placeholder:text-gray-400">
-            </div>
-            @error('password')
-                <p class="text-red-500 text-[10px] font-bold uppercase ml-2 tracking-tight">{{ $message }}</p>
-            @enderror
-        </div>
+    <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-2">Faça seu login.</h2>
 
-        <button type="submit"
-            class="w-full bg-gray-900 hover:bg-gray-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-gray-200 hover:shadow-gray-100 transition-all active:scale-[0.98] cursor-pointer mt-2">
-            Entrar
-        </button>
-    </form>
-</div>
+    <div class="flex items-center rounded-xl w-full h-14 px-4 bg-zinc-200 dark:bg-zinc-800">
+        <svg class="w-5 h-5 mr-3 opacity-30 text-[var(--icon-primary)]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"/>
+        </svg>
+        <input
+            type="email"
+            name="email"
+            id="email"
+            value="{{ old('email') }}"
+            placeholder="Email"
+            required
+            class="flex-1 bg-transparent text-black dark:text-white font-bold text-center focus:outline-none placeholder:text-zinc-400"
+        />
+        <div class="w-5 h-5 ml-3 opacity-0"></div>
+    </div>
+    @error('email')
+        <p class="text-red-600 text-sm w-full text-center">{{ $message }}</p>
+    @enderror
+
+    <div class="flex items-center rounded-xl w-full h-14 px-4 bg-zinc-200 dark:bg-zinc-800">
+        <svg class="w-5 h-5 mr-3 opacity-30 text-[var(--icon-primary)]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z"/>
+        </svg>
+        <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Senha"
+            required
+            class="flex-1 bg-transparent text-black dark:text-white font-bold text-center focus:outline-none placeholder:text-zinc-400"
+        />
+        <div class="w-5 h-5 ml-3 opacity-0"></div>
+    </div>
+    @error('password')
+        <p class="text-red-600 text-sm w-full text-center">{{ $message }}</p>
+    @enderror
+
+    <button type="submit"
+        class="w-full h-14 bg-zinc-900 dark:bg-zinc-200 text-white dark:text-zinc-900 font-bold text-lg rounded-xl border border-zinc-900 dark:border-zinc-200 hover:opacity-80 active:opacity-80 transition-all duration-200 cursor-pointer px-20 mt-2">
+        Entrar
+    </button>
+</form>
