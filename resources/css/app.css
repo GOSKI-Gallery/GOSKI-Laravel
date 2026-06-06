@@ -1,9 +1,90 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../views/**/*.blade.php';
 @source '../js/**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji', 'Krona One';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Krona One';
+}
+
+:root {
+    --bg-primary: #ECECEC;
+    --bg-card: #ffffff;
+    --bg-header: #ffffff;
+    --bg-modal: #ffffff;
+    --bg-input: #e4e4e7;
+    --bg-menu: #f4f4f5;
+    --bg-avatar: #f4f4f5;
+    --bg-skeleton: #e4e4e7;
+    --bg-like-active: #fef2f2;
+    --text-primary: #18181b;
+    --text-secondary: #52525b;
+    --text-tertiary: #71717a;
+    --text-placeholder: #a1a1aa;
+    --border-color: #e4e4e7;
+    --color-accent: #18181b;
+    --color-danger: #dc2626;
+    --color-link: #2563eb;
+    --color-link-dark: #60a5fa;
+    --icon-primary: #18181b;
+    --icon-like-unliked: #18181b;
+    --icon-fallback: #71717a;
+    --color-unread-dot: #3b82f6;
+    --color-unread-bg: rgba(239, 246, 255, 0.5);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+}
+
+.dark {
+    --bg-primary: #18181b;
+    --bg-card: #09090b;
+    --bg-header: #09090b;
+    --bg-modal: #18181b;
+    --bg-input: #27272a;
+    --bg-menu: #18181b;
+    --bg-avatar: #27272a;
+    --bg-skeleton: #27272a;
+    --bg-like-active: #27272a;
+    --text-primary: #ffffff;
+    --text-secondary: #d4d4d8;
+    --text-tertiary: #a1a1aa;
+    --text-placeholder: #a1a1aa;
+    --border-color: #3f3f3f;
+    --color-accent: #e4e4e7;
+    --color-danger: #dc2626;
+    --color-link: #60a5fa;
+    --color-link-dark: #60a5fa;
+    --icon-primary: #ffffff;
+    --icon-like-unliked: #d4d4d8;
+    --icon-fallback: #a1a1aa;
+    --color-unread-dot: #3b82f6;
+    --color-unread-bg: #27272a;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+@keyframes bounce-short {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.animate-bounce-short {
+    animation: bounce-short 0.4s ease-in-out;
+}
+
+.animate-shake {
+    animation: shake 0.3s ease-in-out;
 }
