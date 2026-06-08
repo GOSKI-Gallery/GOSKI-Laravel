@@ -19,6 +19,10 @@ class Post extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'is_nsfw' => 'boolean',
+    ];
+
     public function users(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
