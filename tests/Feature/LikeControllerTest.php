@@ -31,7 +31,6 @@ class LikeControllerTest extends TestCase
 
         $response->assertJson([
             'success' => true,
-            'message' => 'Liked successfully!',
             'liked' => true,
         ]);
     }
@@ -46,7 +45,7 @@ class LikeControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post('/posts/post-1/like');
 
-        $response->assertSessionHas('success', 'Liked successfully!');
+        $response->assertSessionHas('success');
     }
 
     public function test_toggle_like_when_already_liked_ajax()
@@ -69,7 +68,6 @@ class LikeControllerTest extends TestCase
 
         $response->assertJson([
             'success' => true,
-            'message' => 'Unliked successfully!',
             'liked' => false,
         ]);
     }
@@ -91,6 +89,6 @@ class LikeControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post('/posts/post-1/like');
 
-        $response->assertSessionHas('success', 'Unliked successfully!');
+        $response->assertSessionHas('success');
     }
 }

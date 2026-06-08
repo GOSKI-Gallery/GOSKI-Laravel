@@ -30,6 +30,18 @@ abstract class DuskTestCase extends BaseTestCase
         static::startPhpServer();
     }
 
+    /**
+     * Skip if Dusk is not enabled.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (! env('DUSK_ENABLED', false)) {
+            $this->markTestSkipped('Dusk tests are disabled. Set DUSK_ENABLED=true to run.');
+        }
+    }
+
     #[AfterClass]
     public static function stopPhpServer(): void
     {

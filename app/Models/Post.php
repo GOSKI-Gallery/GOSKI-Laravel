@@ -11,12 +11,6 @@ class Post extends Model
 {
     use HasFactory;
 
-    public int $likes_count = 0;
-
-    public bool $is_liked_by_user = false;
-
-    public bool $is_followed_by_user = false;
-
     protected $fillable = [
         'description',
         'image_url',
