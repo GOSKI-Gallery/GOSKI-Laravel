@@ -15,12 +15,12 @@ Route::middleware('guest')->group(function () {
     })->name('landingPage');
 
     Route::get('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
+    Route::post('/login', [AuthController::class, 'authenticate'])->middleware('throttle:5,1')->name('authenticate');
 
     Route::get('/register', function () {
         return view('register');
     })->name('register');
-    Route::post('/register', [UserController::class, 'register'])->name('register');
+    Route::post('/register', [UserController::class, 'register'])->middleware('throttle:2,1')->name('register');
 });
 
 Route::middleware('auth')->group(function () {
