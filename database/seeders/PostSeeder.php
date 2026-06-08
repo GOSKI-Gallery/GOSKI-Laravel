@@ -105,13 +105,13 @@ class PostSeeder extends Seeder
             }
         }
 
-        $post = Post::factory()->create([
-            'user_id' => $user->id,
-            'image_url' => $internalUrl,
-            'is_nsfw' => true,
-            'moderation_status' => 'POSSIBLE',
-            'description' => 'Post de teste para verificar o blur e a fila de moderação.',
-        ]);
+        $post = new Post();
+        $post->user_id = $user->id;
+        $post->image_url = $internalUrl;
+        $post->is_nsfw = 'true';
+        $post->moderation_status = 'POSSIBLE';
+        $post->description = 'Post de teste para verificar o blur e a fila de moderação.';
+        $post->save();
 
         $this->command->info("Post NSFW test #{$post->id} criado com moderação pendente (URL: {$internalUrl})!");
     }
