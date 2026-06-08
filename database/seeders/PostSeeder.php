@@ -105,7 +105,7 @@ class PostSeeder extends Seeder
             }
         }
 
-        $post = new Post();
+        $post = new Post;
         $post->user_id = $user->id;
         $post->image_url = $internalUrl;
         $post->is_nsfw = 'true';

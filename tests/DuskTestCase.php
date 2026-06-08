@@ -37,7 +37,7 @@ abstract class DuskTestCase extends BaseTestCase
     {
         parent::setUp();
 
-        if (! env('DUSK_ENABLED', false)) {
+        if (! getenv('DUSK_ENABLED')) {
             $this->markTestSkipped('Dusk tests are disabled. Set DUSK_ENABLED=true to run.');
         }
     }

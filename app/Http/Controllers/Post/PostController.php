@@ -29,7 +29,6 @@ class PostController extends Controller
         $supabaseUser = new SupabaseUserService;
 
         $paginator = $this->recommendation->getRankedFeed($user);
-        $paginator->getCollection()->loadCount('likes');
 
         foreach ($paginator->items() as $post) {
             $post->setAttribute('is_liked_by_user', $supabaseUser->hasLikedPost($user->id, (string) $post->id));
