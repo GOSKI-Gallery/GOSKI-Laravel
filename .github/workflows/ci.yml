@@ -8,87 +8,33 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: secret
-          MYSQL_DATABASE: goski_test
-        ports: [3306:3306]
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+
+    env:
+      SUPABASE_URL: https://test.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: test_service_role_key
+      SUPABASE_ANON_KEY: test_anon_key
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: mbstring, tokenizer, xml, curl, bcmath, pdo_mysql
-          coverage: xdebug
+      - name: Build Docker image
+        run: docker compose build app
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.composer/cache
-          key: composer-${{ hashFiles('composer.lock') }}
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-
-      - name: Setup environment file
-        run: |
-          cp .env.example .env
-          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=https://test.supabase.co|" .env
-          sed -i "s|^SUPABASE_SERVICE_ROLE_KEY=.*|SUPABASE_SERVICE_ROLE_KEY=test_service_role_key|" .env
-          sed -i "s|^SUPABASE_ANON_KEY=.*|SUPABASE_ANON_KEY=test_anon_key|" .env
-          php artisan key:generate
-
-      - name: Build frontend assets
-        run: |
-          npm ci
-          npm run build
+      - name: Start services
+        run: docker compose up -d postgres app worker
 
       - name: Static analysis
         run: |
-          vendor/bin/phpstan analyse -c phpstan.neon --no-progress
-          vendor/bin/pint --test
-
-      - name: Run database migrations
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: goski_test
-          DB_USERNAME: root
-          DB_PASSWORD: secret
-        run: |
-          php artisan migrate
+          docker compose exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
+          docker compose exec -T app vendor/bin/pint --test
 
       - name: Unit & Feature tests with coverage
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: goski_test
-          DB_USERNAME: root
-          DB_PASSWORD: secret
         run: |
-          vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
+          docker compose exec -T app vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
 
       - name: Check minimum coverage
         run: |
-          php -r "
+          docker compose exec -T app php -r "
             \$xml = simplexml_load_file('coverage.xml');
             if (\$xml === false) { echo 'Failed to parse coverage.xml' . PHP_EOL; exit(1); }
             \$metrics = \$xml->project->metrics;
