@@ -3,7 +3,7 @@
 
     @include('shared.head')
 
-    <body class='min-h-screen bg-[#FAFAFA]'>
+    <body class='min-h-screen bg-[var(--bg-body)]'>
         <x-header />
 
         @auth

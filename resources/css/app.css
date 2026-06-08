@@ -6,4 +6,46 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji', 'Krona One';
+
+    --radius-xs: 0.25rem;
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@layer base {
+    :root {
+        --bg-body: #FAFAFA;
+        --bg-surface: #FFFFFF;
+        --bg-card: #FFFFFF;
+        --bg-header: #FFFFFF;
+        --bg-input: #FFFFFF;
+        --bg-overlay: rgba(0, 0, 0, 0.6);
+    }
+
+    html:not([data-theme]) {
+        color-scheme: light dark;
+    }
+
+    [data-theme="dark"] {
+        --bg-body: #27272a;
+        --bg-surface: #09090b;
+        --bg-card: #09090b;
+        --bg-header: #09090b;
+        --bg-input: #09090b;
+        --bg-overlay: rgba(0, 0, 0, 0.8);
+    }
+
+    [data-theme="light"] {
+        --bg-body: #FAFAFA;
+        --bg-surface: #FFFFFF;
+        --bg-card: #FFFFFF;
+        --bg-header: #FFFFFF;
+        --bg-input: #FFFFFF;
+        --bg-overlay: rgba(0, 0, 0, 0.6);
+    }
 }
