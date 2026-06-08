@@ -24,6 +24,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@teste.com',
             'password' => 'SenhaSegura123',
             'username' => 'AdminMaster',
+            'role' => 'admin',
         ]);
 
         User::factory(3)->make()->each(function ($userFake) {
@@ -48,6 +49,12 @@ class UserSeeder extends Seeder
             $this->command->error("Falha: {$data['email']} -> ".$error);
 
             return;
+        }
+
+        $userId = $response['id'] ?? $response['user']['id'] ?? null;
+
+        if ($userId !== null && isset($data['role'])) {
+            User::where('id', $userId)->update(['role' => $data['role']]);
         }
 
         $this->command->info("Sucesso: Usuário {$data['username']} criado no Supabase!");
