@@ -1,4 +1,4 @@
-<script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module" integrity="sha384-E7dy6eN+cKffMM/2+QF5MMP1q8KS0AT4IlmT4v3mG2mNZ7ISeLRPdlHrlWJK/8yx" crossorigin="anonymous"></script>
 <el-dropdown class="inline-block">
     <button class="flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2 py-1 rounded-full transition cursor-pointer">
         <div class="w-8 h-8 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">

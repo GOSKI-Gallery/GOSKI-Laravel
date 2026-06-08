@@ -28,13 +28,13 @@ class ModelTest extends TestCase
     public function test_user_fillable_attributes(): void
     {
         $user = new User;
-        $this->assertEquals(['username', 'email', 'password', 'role'], $user->getFillable());
+        $this->assertEquals(['username', 'email', 'role'], $user->getFillable());
     }
 
     public function test_user_hidden_attributes(): void
     {
         $user = new User;
-        $this->assertEquals(['remember_token'], $user->getHidden());
+        $this->assertEquals(['password', 'remember_token'], $user->getHidden());
     }
 
     public function test_user_key_type(): void

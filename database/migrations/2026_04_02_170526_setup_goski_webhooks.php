@@ -24,8 +24,7 @@ return new class extends Migration
                     PERFORM net.http_post(
                         url := '".config('supabase.url')."/functions/v1/image-moderator',
                         headers := jsonb_build_object(
-                            'Content-Type', 'application/json',
-                            'Authorization', 'Bearer ".config('supabase.service_role_key')."'
+                            'Content-Type', 'application/json'
                         ),
                         body := jsonb_build_object('record', row_to_json(NEW))
                     );

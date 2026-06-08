@@ -28,9 +28,6 @@
                 <input type="password" name="password" placeholder="Sua senha"
                     class="w-full bg-[var(--bg-input)] border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-zinc-500/10 focus:border-zinc-500 transition-all placeholder:text-zinc-400 dark:text-zinc-200">
             </div>
-            @error('password')
-                <p class="text-red-500 text-[10px] font-bold uppercase ml-2 tracking-tight">{{ $message }}</p>
-            @enderror
         </div>
 
         <button type="submit"

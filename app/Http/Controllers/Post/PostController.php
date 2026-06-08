@@ -10,6 +10,7 @@ use App\Services\SupabasePostService;
 use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -58,7 +59,7 @@ class PostController extends Controller
         $file = $request->file('image_url');
 
         try {
-            $fileName = 'post_'.time().'_'.uniqid().'.'.$file->extension();
+            $fileName = 'post_'.Str::uuid().'.'.$file->extension();
 
             $this->supabase->uploadImage('posts', $fileName, $file);
 

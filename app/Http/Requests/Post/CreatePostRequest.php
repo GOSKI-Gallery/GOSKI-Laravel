@@ -15,7 +15,7 @@ class CreatePostRequest extends FormRequest
     {
         return [
             'description' => 'required|string|max:255',
-            'image_url' => 'required|image',
+            'image_url' => 'required|image|max:10240',
         ];
     }
 }

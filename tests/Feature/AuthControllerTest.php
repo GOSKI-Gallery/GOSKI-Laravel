@@ -104,7 +104,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertRedirect('/login');
-        $response->assertSessionHasErrors(['email' => 'Por favor, confirme seu e-mail antes de logar.']);
+        $response->assertSessionHasErrors(['email' => 'Credenciais inválidas.']);
         $this->assertGuest();
     }
 
@@ -130,8 +130,7 @@ class AuthControllerTest extends TestCase
 
         $response->assertRedirect('/login');
         $response->assertSessionHasErrors([
-            'email' => 'Email not found.',
-            'password' => 'Password is incorrect.',
+            'email' => 'Email ou senha inválidos.',
         ]);
         $this->assertGuest();
     }

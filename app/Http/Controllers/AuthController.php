@@ -29,11 +29,7 @@ class AuthController extends Controller
         );
 
         if (isset($response['error_code'])) {
-            $message = $response['error_code'] === 'email_not_confirmed'
-            ? 'Por favor, confirme seu e-mail antes de logar.'
-            : 'Credenciais inválidas.';
-
-            return back()->withErrors(['email' => $message])->withInput();
+            return back()->withErrors(['email' => 'Credenciais inválidas.'])->withInput();
         }
 
         $supabaseUser = $supabase->getUser($response['access_token']);
@@ -53,8 +49,7 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Email not found.',
-            'password' => 'Password is incorrect.',
+            'email' => 'Email ou senha inválidos.',
         ])->onlyInput('email');
     }
 

@@ -17,9 +17,10 @@ class EditUserRequest extends FormRequest
         $userId = Auth::id();
 
         return [
-            'username' => 'required|string|max:255|unique:users,username,'.$userId,
+            'username' => 'required|string|max:30|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,'.$userId,
             'email' => 'required|string|email|max:255|unique:users,email,'.$userId,
             'password' => 'nullable|string|min:6|confirmed',
+            'profile_photo_url' => 'nullable|image|max:10240',
         ];
     }
 }

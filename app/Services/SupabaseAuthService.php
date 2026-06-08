@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class SupabaseAuthService extends SupabaseBaseService
 {
@@ -66,7 +67,7 @@ class SupabaseAuthService extends SupabaseBaseService
         }
 
         if ($profile_photo_url) {
-            $fileName = 'profiles/'.$userId.'/'.time().'.'.$profile_photo_url->extension();
+            $fileName = 'profiles/'.$userId.'/'.Str::uuid().'.'.$profile_photo_url->extension();
             $this->uploadImage('profiles', $fileName, $profile_photo_url);
             $dbUpdateData['profile_photo_url'] = $this->getPublicUrl('profiles', $fileName);
         }

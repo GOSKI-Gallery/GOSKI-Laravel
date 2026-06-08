@@ -66,20 +66,44 @@
                                 dot = '<div class="notification-dot w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4"></div>';
                             }
 
-                            item.innerHTML = `
-                                <img src="${avatar}" class="w-10 h-10 rounded-full object-cover bg-gray-200">
-                                <div class="flex-1 min-w-0 pr-6">
-                                    <p class="text-sm text-gray-800">
-                                        <a href="/profile/${notification.user_id}" class="font-bold cursor-pointer hover:underline">${notification.username}</a>
-                                        <span>${actionText}</span>
-                                    </p>
-                                    <p class="text-xs text-gray-500 mt-1">${notification.created_at_for_humans}</p>
-                                </div>
-                                <button class="delete-notification-btn opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 absolute top-3 right-8 transition-opacity" data-id="${notification.id}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                                ${dot}
-                            `;
+                            const img = document.createElement('img');
+                            img.src = avatar;
+                            img.className = 'w-10 h-10 rounded-full object-cover bg-gray-200';
+
+                            const usernameLink = document.createElement('a');
+                            usernameLink.href = `/profile/${notification.user_id}`;
+                            usernameLink.className = 'font-bold cursor-pointer hover:underline';
+                            usernameLink.textContent = notification.username;
+
+                            const actionSpan = document.createElement('span');
+                            actionSpan.textContent = ' ' + actionText;
+
+                            const textP = document.createElement('p');
+                            textP.className = 'text-sm text-gray-800';
+                            textP.appendChild(usernameLink);
+                            textP.appendChild(actionSpan);
+
+                            const timeP = document.createElement('p');
+                            timeP.className = 'text-xs text-gray-500 mt-1';
+                            timeP.textContent = notification.created_at_for_humans || '';
+
+                            const textDiv = document.createElement('div');
+                            textDiv.className = 'flex-1 min-w-0 pr-6';
+                            textDiv.appendChild(textP);
+                            textDiv.appendChild(timeP);
+
+                            const closeBtn = document.createElement('button');
+                            closeBtn.className = 'delete-notification-btn opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 absolute top-3 right-8 transition-opacity';
+                            closeBtn.setAttribute('data-id', notification.id);
+                            closeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+                            item.append(img, textDiv, closeBtn);
+
+                            if (!notification.is_read) {
+                                const dot = document.createElement('div');
+                                dot.className = 'notification-dot w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4';
+                                item.appendChild(dot);
+                            }
 
                             notificationContent.appendChild(item);
                         });
