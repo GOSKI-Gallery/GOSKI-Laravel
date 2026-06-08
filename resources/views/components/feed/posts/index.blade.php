@@ -8,16 +8,16 @@
     <div id="feed-sentinel" class="h-10"></div>
 @else
     <div class="flex flex-col items-center justify-center py-32 text-center px-6">
-        <div class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
         </div>
-        <h3 class="text-xl font-black text-gray-900 tracking-tight">Nenhum post cadastrado.<h3>
+        <h3 class="text-xl font-black text-gray-900 dark:text-gray-200 tracking-tight">Nenhum post cadastrado.<h3>
 
                 <button id="open-modal-btn-empty"
-                    class="mt-8 bg-gray-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 active:scale-95 transition-all cursor-pointer">
+                    class="mt-8 bg-gray-600 dark:bg-gray-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 dark:shadow-none active:scale-95 transition-all cursor-pointer">
                     Fazer minha primeira postagem
                 </button>
     </div>
@@ -47,16 +47,17 @@
             btn.dataset.liked = newLiked ? '1' : '0';
 
             if (newLiked) {
-                icon.classList.add('liked-active');
-                countEl.classList.remove('text-gray-700');
+                icon.setAttribute('fill', '#dc2626');
+                icon.querySelector('path').setAttribute('stroke', 'none');
+                countEl.classList.remove('text-zinc-900', 'dark:text-zinc-300');
                 countEl.classList.add('text-red-600');
                 icon.style.transform = 'scale(1.3)';
-                icon.style.opacity = '1';
                 setTimeout(() => { icon.style.transform = ''; }, 200);
             } else {
-                icon.classList.remove('liked-active');
+                icon.setAttribute('fill', 'none');
+                icon.querySelector('path').setAttribute('stroke', 'currentColor');
                 countEl.classList.remove('text-red-600');
-                countEl.classList.add('text-gray-700');
+                countEl.classList.add('text-zinc-900', 'dark:text-zinc-300');
             }
 
             fetch(form.action, {
@@ -71,31 +72,49 @@
             })
             .then(r => r.json())
             .then(data => {
-                if (!data.success) {
-                    btn.dataset.liked = wasLiked ? '1' : '0';
-                    countEl.textContent = wasLiked ? Math.max(currentCount - 1, 0) : currentCount + 1;
-                    if (wasLiked) {
-                        icon.classList.add('liked-active');
-                        countEl.classList.remove('text-gray-700');
+                if (data.success) {
+                    countEl.textContent = data.likes_count;
+                    btn.dataset.liked = data.liked ? '1' : '0';
+                    if (data.liked) {
+                        icon.setAttribute('fill', '#dc2626');
+                        icon.querySelector('path').setAttribute('stroke', 'none');
+                        countEl.classList.remove('text-zinc-900', 'dark:text-zinc-300');
                         countEl.classList.add('text-red-600');
                     } else {
-                        icon.classList.remove('liked-active');
+                        icon.setAttribute('fill', 'none');
+                        icon.querySelector('path').setAttribute('stroke', 'currentColor');
                         countEl.classList.remove('text-red-600');
-                        countEl.classList.add('text-gray-700');
+                        countEl.classList.add('text-zinc-900', 'dark:text-zinc-300');
+                    }
+                } else {
+                    btn.dataset.liked = wasLiked ? '1' : '0';
+                    countEl.textContent = currentCount;
+                    if (wasLiked) {
+                        icon.setAttribute('fill', '#dc2626');
+                        icon.querySelector('path').setAttribute('stroke', 'none');
+                        countEl.classList.remove('text-zinc-900', 'dark:text-zinc-300');
+                        countEl.classList.add('text-red-600');
+                    } else {
+                        icon.setAttribute('fill', 'none');
+                        icon.querySelector('path').setAttribute('stroke', 'currentColor');
+                        countEl.classList.remove('text-red-600');
+                        countEl.classList.add('text-zinc-900', 'dark:text-zinc-300');
                     }
                 }
             })
             .catch(() => {
                 btn.dataset.liked = wasLiked ? '1' : '0';
-                countEl.textContent = wasLiked ? Math.max(currentCount - 1, 0) : currentCount + 1;
+                countEl.textContent = currentCount;
                 if (wasLiked) {
-                    icon.classList.add('liked-active');
-                    countEl.classList.remove('text-gray-700');
+                    icon.setAttribute('fill', '#dc2626');
+                    icon.querySelector('path').setAttribute('stroke', 'none');
+                    countEl.classList.remove('text-zinc-900', 'dark:text-zinc-300');
                     countEl.classList.add('text-red-600');
                 } else {
-                    icon.classList.remove('liked-active');
+                    icon.setAttribute('fill', 'none');
+                    icon.querySelector('path').setAttribute('stroke', 'currentColor');
                     countEl.classList.remove('text-red-600');
-                    countEl.classList.add('text-gray-700');
+                    countEl.classList.add('text-zinc-900', 'dark:text-zinc-300');
                 }
             })
             .finally(() => {
@@ -116,14 +135,6 @@
             btn.textContent = newFollowing ? 'Seguindo' : 'Seguir';
             btn.dataset.following = newFollowing ? '1' : '0';
 
-            if (newFollowing) {
-                btn.classList.add('bg-gray-600', 'text-white');
-                btn.classList.remove('bg-gray-50', 'text-gray-900');
-            } else {
-                btn.classList.remove('bg-gray-600', 'text-white');
-                btn.classList.add('bg-gray-50', 'text-gray-900');
-            }
-
             const url = newFollowing
                 ? '{{ route('user.follow', ':id') }}'.replace(':id', userId)
                 : '{{ route('user.unfollow', ':id') }}'.replace(':id', userId);
@@ -143,25 +154,11 @@
                 if (!data.success) {
                     btn.dataset.following = isFollowing ? '1' : '0';
                     btn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
-                    if (isFollowing) {
-                        btn.classList.add('bg-gray-600', 'text-white');
-                        btn.classList.remove('bg-gray-50', 'text-gray-900');
-                    } else {
-                        btn.classList.remove('bg-gray-600', 'text-white');
-                        btn.classList.add('bg-gray-50', 'text-gray-900');
-                    }
                 }
             })
             .catch(() => {
                 btn.dataset.following = isFollowing ? '1' : '0';
                 btn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
-                if (isFollowing) {
-                    btn.classList.add('bg-gray-600', 'text-white');
-                    btn.classList.remove('bg-gray-50', 'text-gray-900');
-                } else {
-                    btn.classList.remove('bg-gray-600', 'text-white');
-                    btn.classList.add('bg-gray-50', 'text-gray-900');
-                }
             })
             .finally(() => {
                 btn.disabled = false;

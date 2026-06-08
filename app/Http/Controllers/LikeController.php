@@ -21,19 +21,23 @@ class LikeController extends Controller
         if ($supabase->hasLikedPost((string) $userId, $postId)) {
             $supabase->unlikePost((string) $userId, $postId);
             $liked = false;
-            $message = 'Unliked successfully!';
         } else {
             $supabase->likePost((string) $userId, $postId);
             $liked = true;
-            $message = 'Liked successfully!';
         }
 
         app(RecommendationService::class)->clearTagCache((string) $userId);
 
+        $likesCount = $supabase->getLikeCount($postId);
+
         if (request()->expectsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
-            return response()->json(['success' => true, 'message' => $message, 'liked' => $liked]);
+            return response()->json([
+                'success' => true,
+                'liked' => $liked,
+                'likes_count' => $likesCount,
+            ]);
         }
 
-        return back()->with('success', $message);
+        return back()->with('success', $liked ? 'Like adicionado!' : 'Like removido!');
     }
 }

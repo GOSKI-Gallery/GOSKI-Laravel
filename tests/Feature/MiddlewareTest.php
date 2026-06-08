@@ -32,21 +32,21 @@ class MiddlewareTest extends TestCase
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get('/');
-        $response->assertRedirect('/');
+        $response->assertRedirect('/feed');
     }
 
     public function test_authenticated_user_is_redirected_from_login(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get('/login');
-        $response->assertRedirect('/');
+        $response->assertRedirect('/feed');
     }
 
     public function test_authenticated_user_is_redirected_from_register(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get('/register');
-        $response->assertRedirect('/');
+        $response->assertRedirect('/feed');
     }
 
     public function test_guest_is_redirected_from_authenticated_routes(): void

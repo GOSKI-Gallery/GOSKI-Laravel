@@ -3,7 +3,7 @@
 
 @include('shared.head')
 
-<body class='flex flex-col bg-[#ECECEC] min-h-screen'>
+<body class='flex flex-col bg-[var(--bg-body)] min-h-screen'>
     <x-admin.header />
 
 

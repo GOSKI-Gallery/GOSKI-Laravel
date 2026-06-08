@@ -23,7 +23,7 @@ class UserControllerTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertRedirect('/');
+        $response->assertRedirect('/feed');
     }
 
     public function test_register_success()

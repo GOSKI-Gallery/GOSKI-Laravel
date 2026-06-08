@@ -26,22 +26,20 @@ class PostController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $supabase = new SupabasePostService;
         $supabaseUser = new SupabaseUserService;
 
         $paginator = $this->recommendation->getRankedFeed($user);
+
+        foreach ($paginator->items() as $post) {
+            $post->setAttribute('is_liked_by_user', $supabaseUser->hasLikedPost($user->id, (string) $post->id));
+            $post->setAttribute('is_followed_by_user', $post->is_following ?? $supabaseUser->isFollowing($user->id, $post->users['id']));
+        }
 
         if (request()->ajax()) {
             return view('components.feed.posts.list', ['posts' => $paginator->items()]);
         }
 
         $userPosts = Post::where('user_id', $user->id)->latest()->take(9)->get();
-
-        foreach ($paginator->items() as $post) {
-            $post->likes_count = $supabase->getLikeCount((string) $post->id);
-            $post->is_liked_by_user = $supabaseUser->hasLikedPost($user->id, (string) $post->id);
-            $post->is_followed_by_user = $post->is_following ?? $supabaseUser->isFollowing($user->id, $post->users['id']);
-        }
 
         $suggestedUsers = $this->recommendation->getSuggestedUsers($user);
 

@@ -20,15 +20,15 @@ class ModelTest extends TestCase
     public function test_post_default_properties(): void
     {
         $post = new Post;
-        $this->assertEquals(0, $post->likes_count);
-        $this->assertFalse($post->is_liked_by_user);
-        $this->assertFalse($post->is_followed_by_user);
+        $this->assertNull($post->likes_count);
+        $this->assertNull($post->is_liked_by_user);
+        $this->assertNull($post->is_followed_by_user);
     }
 
     public function test_user_fillable_attributes(): void
     {
         $user = new User;
-        $this->assertEquals(['username', 'email', 'password'], $user->getFillable());
+        $this->assertEquals(['username', 'email', 'password', 'role'], $user->getFillable());
     }
 
     public function test_user_hidden_attributes(): void
