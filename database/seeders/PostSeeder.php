@@ -79,38 +79,40 @@ class PostSeeder extends Seeder
     {
         $imageUrl = 'https://images.unsplash.com/photo-1518173946687-a36f968f7da6';
 
-        try {
-            $imageContent = Http::get($imageUrl)->body();
-            $filename = 'post_nsfw_test_'.Str::random(8).'.jpg';
+        $this->command->info('Criando post NSFW de teste...');
 
-            $this->command->info("Fazendo upload da imagem NSFW test {$filename} para o Supabase...");
+        $internalUrl = $imageUrl;
 
-            $uploadUrl = env('SUPABASE_URL')."/storage/v1/object/posts/{$filename}";
+        if (env('SUPABASE_URL')) {
+            try {
+                $imageContent = Http::timeout(10)->get($imageUrl)->body();
+                $filename = 'post_nsfw_test_'.Str::random(8).'.jpg';
 
-            $uploadResponse = Http::withHeaders([
-                'Authorization' => 'Bearer '.env('SUPABASE_SERVICE_ROLE_KEY'),
-                'Content-Type' => 'image/jpeg',
-            ])->send('POST', $uploadUrl, [
-                'body' => $imageContent,
-            ]);
+                $uploadUrl = env('SUPABASE_URL')."/storage/v1/object/posts/{$filename}";
 
-            if (! $uploadResponse->successful()) {
-                throw new \Exception('Falha no upload para o Storage: '.$uploadResponse->body());
+                $uploadResponse = Http::withHeaders([
+                    'Authorization' => 'Bearer '.env('SUPABASE_SERVICE_ROLE_KEY'),
+                    'Content-Type' => 'image/jpeg',
+                ])->send('POST', $uploadUrl, [
+                    'body' => $imageContent,
+                ]);
+
+                if ($uploadResponse->successful()) {
+                    $internalUrl = env('SUPABASE_URL')."/storage/v1/object/public/posts/{$filename}";
+                }
+            } catch (\Exception $e) {
+                $this->command->warn('Upload Supabase falhou, usando URL direta: '.$e->getMessage());
             }
-
-            $internalUrl = env('SUPABASE_URL')."/storage/v1/object/public/posts/{$filename}";
-
-            $post = Post::factory()->create([
-                'user_id' => $user->id,
-                'image_url' => $internalUrl,
-                'is_nsfw' => true,
-                'moderation_status' => 'POSSIBLE',
-                'description' => 'Post de teste para verificar o blur e a fila de moderação.',
-            ]);
-
-            $this->command->info("Post NSFW test #{$post->id} criado com moderação pendente!");
-        } catch (\Exception $e) {
-            $this->command->error('Erro no processo NSFW test: '.$e->getMessage());
         }
+
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'image_url' => $internalUrl,
+            'is_nsfw' => true,
+            'moderation_status' => 'POSSIBLE',
+            'description' => 'Post de teste para verificar o blur e a fila de moderação.',
+        ]);
+
+        $this->command->info("Post NSFW test #{$post->id} criado com moderação pendente (URL: {$internalUrl})!");
     }
 }
