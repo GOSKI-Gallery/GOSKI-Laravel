@@ -1,12 +1,12 @@
-<div id="notification-modal" class="fixed inset-0 z-100 hidden items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
-    <div class="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden mx-4" @click.stop>
+<div id="notification-modal" class="fixed inset-0 z-100 hidden items-center justify-center bg-[var(--bg-overlay)] backdrop-blur-sm transition-opacity">
+    <div class="relative w-full max-w-md bg-[var(--bg-card)] dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden mx-4" @click.stop>
         
-        <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
             <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold text-gray-800">Notificações</h2>
-                <button id="mark-as-read-btn" class="text-sm font-medium text-blue-600 hover:underline hidden">Marcar todas como lidas</button>
+                <h2 class="text-lg font-bold text-gray-800 dark:text-white">Notificações</h2>
+                <button id="mark-as-read-btn" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline hidden">Marcar todas como lidas</button>
             </div>
-            <button id="close-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <button id="close-modal" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
