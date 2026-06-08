@@ -25,14 +25,14 @@
     </div>
 
     <!-- Fila de Moderação -->
-    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h2 class="font-black text-lg uppercase tracking-tight text-gray-900">Fila de Moderação</h2>
+    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
+            <h2 class="font-black text-lg uppercase tracking-tight text-gray-900 dark:text-white">Fila de Moderação</h2>
         </div>
 
         @if($pendingPosts->isEmpty())
             <div class="p-12 text-center">
-                <p class="text-sm text-gray-400 font-bold">✓ Nenhum post pendente</p>
+                <p class="text-sm text-gray-400 dark:text-gray-500 font-bold">✓ Nenhum post pendente</p>
             </div>
         @else
             <div class="space-y-4 p-6">
