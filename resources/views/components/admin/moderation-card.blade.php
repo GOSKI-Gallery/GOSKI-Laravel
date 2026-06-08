@@ -18,14 +18,17 @@
 
     <div class="relative aspect-square bg-gray-50 dark:bg-gray-900 overflow-hidden">
         @if ($isNSFW)
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-lg z-10 flex items-center justify-center">
+            <div id="nsfw-overlay-{{ $post->id }}" class="absolute inset-0 bg-black/40 backdrop-blur-lg z-10 flex items-center justify-center">
                 <div class="text-center">
                     <p class="text-white font-black text-lg uppercase tracking-wider">⚠️ Conteúdo NSFW</p>
                     <p class="text-white/60 text-xs font-bold mt-2">Desfocado por segurança</p>
+                    <button onclick="document.getElementById('nsfw-overlay-{{ $post->id }}').classList.add('hidden'); document.getElementById('nsfw-img-{{ $post->id }}').classList.remove('blur-3xl')" class="mt-4 px-5 py-2 text-xs font-black uppercase tracking-tight text-white bg-white/20 hover:bg-white/30 border border-white/40 rounded-xl transition-colors">
+                        Visualizar
+                    </button>
                 </div>
             </div>
         @endif
-        <img src="{{ $post->image_url }}" 
+        <img id="nsfw-img-{{ $post->id }}" src="{{ $post->image_url }}" 
              alt=""
              class="w-full h-full object-cover {{ $isNSFW ? 'blur-3xl' : '' }}">
     </div>
