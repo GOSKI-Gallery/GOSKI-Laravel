@@ -17,11 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker compose build app
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: goski-app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
 
       - name: Start services
-        run: docker compose up -d postgres app worker
+        run: docker compose up -d --no-build postgres app worker
 
       - name: Static analysis
         run: |
