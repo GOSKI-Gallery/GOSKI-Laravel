@@ -24,7 +24,6 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
     volumes:
-      - .:/var/www/html
       - app_storage:/var/www/html/storage
 
   nginx:
@@ -58,7 +57,6 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
     volumes:
-      - .:/var/www/html
       - app_storage:/var/www/html/storage
     command: php artisan queue:listen --tries=1 --timeout=0
 
