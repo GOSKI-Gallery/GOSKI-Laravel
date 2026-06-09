@@ -8,6 +8,7 @@ RUN apk add --no-cache \
     libxml2-dev \
     curl-dev \
     postgresql-dev \
+    sqlite-dev \
     libzip-dev \
     icu-dev
 
