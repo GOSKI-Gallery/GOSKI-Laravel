@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      APP_ENV: testing
       APP_KEY: base64:7hD4E21cH0638dQfZUOeWgNnKf45UmeptmQ9jqojVw4=
       DB_CONNECTION: sqlite
       DB_DATABASE: ':memory:'
@@ -32,6 +33,7 @@ jobs:
         with:
           context: .
           tags: goski-app:latest
+          build-args: APP_ENV=${{ env.APP_ENV }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           load: true

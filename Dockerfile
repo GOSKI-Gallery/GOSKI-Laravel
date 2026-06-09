@@ -17,6 +17,7 @@ RUN docker-php-ext-install \
     bcmath \
     curl \
     pdo_pgsql \
+    pdo_sqlite \
     fileinfo \
     zip \
     intl
