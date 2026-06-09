@@ -9,8 +9,6 @@ RUN docker-php-ext-install \
     bcmath \
     curl \
     pdo_pgsql \
-    pdo_mysql \
-    pdo_sqlite \
     fileinfo
 
 RUN pecl install redis && docker-php-ext-enable redis
