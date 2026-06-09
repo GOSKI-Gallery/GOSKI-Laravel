@@ -10,14 +10,16 @@ RUN apk add --no-cache \
 
 RUN docker-php-ext-install \
     mbstring \
-    tokenizer \
     xml \
     bcmath \
     curl \
     pdo_pgsql \
     fileinfo
 
-RUN pecl install redis && docker-php-ext-enable redis
+RUN apk add --no-cache autoconf g++ make \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del autoconf g++ make
 
 RUN apk add --no-cache nodejs npm
 
