@@ -43,8 +43,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public, laravel',
-            'schema' => 'laravel',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'sslmode' => env('DB_SSLMODE', 'require'),
             'prepared' => false,
             'options' => [
                 PDO::ATTR_EMULATE_PREPARES => true,
