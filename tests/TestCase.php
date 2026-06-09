@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
 
@@ -12,6 +13,8 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $supabaseUrl = env('SUPABASE_URL', 'https://test.supabase.co');
         $supabaseAnon = env('SUPABASE_ANON_KEY', 'test_anon_key');

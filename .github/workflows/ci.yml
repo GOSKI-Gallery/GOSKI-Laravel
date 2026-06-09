@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      APP_KEY: base64:7hD4E21cH0638dQfZUOeWgNnKf45UmeptmQ9jqojVw4=
+      DB_CONNECTION: sqlite
+      DB_DATABASE: :memory:
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+      QUEUE_CONNECTION: sync
+      SKIP_DB_CHECK: true
       SUPABASE_URL: https://test.supabase.co
       SUPABASE_SERVICE_ROLE_KEY: test_service_role_key
       SUPABASE_ANON_KEY: test_anon_key
@@ -30,7 +37,7 @@ jobs:
           load: true
 
       - name: Start services
-        run: docker compose up -d --no-build postgres app worker
+        run: docker compose up -d --no-build app worker
 
       - name: Static analysis
         run: |
