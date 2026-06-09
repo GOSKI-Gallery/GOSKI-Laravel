@@ -7,5 +7,4 @@ storage/logs/
 .env
 .git
 .gitignore
-docker/
 *.md

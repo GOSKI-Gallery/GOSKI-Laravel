@@ -2,6 +2,12 @@ FROM php:8.4-fpm-alpine
 
 ARG APP_ENV=production
 
+RUN apk add --no-cache \
+    oniguruma-dev \
+    libxml2-dev \
+    curl-dev \
+    postgresql-dev
+
 RUN docker-php-ext-install \
     mbstring \
     tokenizer \
