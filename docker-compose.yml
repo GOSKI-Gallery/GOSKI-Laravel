@@ -1,20 +1,4 @@
 services:
-  postgres:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_DB: goski
-      POSTGRES_USER: goski
-      POSTGRES_PASSWORD: goski
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U goski"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   app:
     build:
       context: .
@@ -25,13 +9,13 @@ services:
       APP_ENV: ${APP_ENV:-production}
       APP_KEY: ${APP_KEY:-}
       APP_URL: ${APP_URL:-http://localhost}
-      DB_CONNECTION: pgsql
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: goski
-      DB_USERNAME: goski
-      DB_PASSWORD: goski
-      DB_SSLMODE: disable
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
       SESSION_DRIVER: database
       CACHE_STORE: database
       QUEUE_CONNECTION: database
@@ -41,14 +25,11 @@ services:
     volumes:
       - .:/var/www/html
       - app_storage:/var/www/html/storage
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   nginx:
     image: nginx:alpine
     ports:
-      - "${HTTP_PORT:-80}:80"
+      - "${HTTP_PORT:-8000}:80"
     volumes:
       - .:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
@@ -65,13 +46,13 @@ services:
       APP_ENV: ${APP_ENV:-production}
       APP_KEY: ${APP_KEY:-}
       APP_URL: ${APP_URL:-http://localhost}
-      DB_CONNECTION: pgsql
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: goski
-      DB_USERNAME: goski
-      DB_PASSWORD: goski
-      DB_SSLMODE: disable
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
       SESSION_DRIVER: database
       CACHE_STORE: database
       QUEUE_CONNECTION: database
@@ -81,11 +62,7 @@ services:
     volumes:
       - .:/var/www/html
       - app_storage:/var/www/html/storage
-    depends_on:
-      postgres:
-        condition: service_healthy
     command: php artisan queue:listen --tries=1 --timeout=0
 
 volumes:
-  postgres_data:
   app_storage:

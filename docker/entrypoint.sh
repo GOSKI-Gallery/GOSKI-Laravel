@@ -1,27 +1,32 @@
 #!/bin/sh
 set -e
 
-echo "→ Aguardando PostgreSQL ficar pronto..."
-max_tries=30
-try=0
-until php artisan db:show --quiet 2>/dev/null || [ $try -ge $max_tries ]; do
-    try=$((try + 1))
-    sleep 1
-done
+if [ "${SKIP_DB_CHECK:-false}" != "true" ]; then
+    echo "→ Aguardando banco de dados ficar pronto..."
+    max_tries=30
+    try=0
+    until php -r "new PDO('pgsql:host=${DB_HOST};port=${DB_PORT:-5432};dbname=${DB_DATABASE};sslmode=${DB_SSLMODE:-require}', '${DB_USERNAME}', '${DB_PASSWORD}');" 2>/dev/null || [ $try -ge $max_tries ]; do
+        try=$((try + 1))
+        sleep 1
+    done
 
-if [ $try -ge $max_tries ]; then
-    echo "✗ PostgreSQL não respondeu após $max_tries segundos"
-    exit 1
+    if [ $try -ge $max_tries ]; then
+        echo "✗ Banco não respondeu após $max_tries segundos"
+        exit 1
+    fi
+    echo "✓ Banco pronto"
+
+    echo "→ Criando schema laravel..."
+    php -r "new PDO('pgsql:host=${DB_HOST};port=${DB_PORT:-5432};dbname=${DB_DATABASE};sslmode=${DB_SSLMODE:-require}', '${DB_USERNAME}', '${DB_PASSWORD}')->exec('CREATE SCHEMA IF NOT EXISTS laravel');" 2>&1
+
+    if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ] || [ ${#APP_KEY} -lt 20 ]; then
+        echo "→ Gerando APP_KEY..."
+        php artisan key:generate --force
+    fi
+
+    echo "→ Rodando migrations..."
+    php artisan migrate --force
 fi
-echo "✓ PostgreSQL pronto"
-
-if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ] || [ ${#APP_KEY} -lt 20 ]; then
-    echo "→ Gerando APP_KEY..."
-    php artisan key:generate --force
-fi
-
-echo "→ Rodando migrations..."
-php artisan migrate --force
 
 if [ "$APP_ENV" = "production" ]; then
     echo "→ Cache de produção..."

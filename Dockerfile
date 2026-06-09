@@ -1,3 +1,4 @@
+FROM composer:latest AS composer
 FROM php:8.4-fpm-alpine
 
 ARG APP_ENV=production
@@ -6,7 +7,9 @@ RUN apk add --no-cache \
     oniguruma-dev \
     libxml2-dev \
     curl-dev \
-    postgresql-dev
+    postgresql-dev \
+    libzip-dev \
+    icu-dev
 
 RUN docker-php-ext-install \
     mbstring \
@@ -14,7 +17,9 @@ RUN docker-php-ext-install \
     bcmath \
     curl \
     pdo_pgsql \
-    fileinfo
+    fileinfo \
+    zip \
+    intl
 
 RUN apk add --no-cache autoconf g++ make \
     && pecl install redis \
@@ -27,13 +32,17 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
 
 WORKDIR /var/www/html
 
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+
 COPY composer.json composer.lock package.json package-lock.json ./
 
-RUN composer install --no-interaction --prefer-dist --no-progress
+RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
-RUN npm ci && npm run build
+RUN npm ci
 
 COPY . .
+
+RUN npm run build
 
 RUN if [ "$APP_ENV" = "production" ]; then \
         composer install --no-dev --no-interaction; \
