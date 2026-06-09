@@ -21,7 +21,11 @@ class RecommendationService
             ? 'NULL'
             : $tagIds->implode(',');
 
-        $epochExpr = 'EXTRACT(EPOCH FROM posts.created_at)';
+        $driver = DB::getDriverName();
+        $epochExpr = match ($driver) {
+            'sqlite' => "strftime('%%s', posts.created_at)",
+            default => 'EXTRACT(EPOCH FROM posts.created_at)',
+        };
 
         return Post::select('posts.*')
             ->addSelect(DB::raw(
