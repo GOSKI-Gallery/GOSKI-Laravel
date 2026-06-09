@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('username')->unique();
             $table->string('email')->unique();
+            $table->string('role')->nullable()->after('email');
             $table->string('profile_photo_url')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
@@ -28,6 +29,15 @@ return new class extends Migration
 
         if ($driver === 'pgsql') {
             DB::unprepared("
+                ALTER TABLE laravel.migrations ENABLE ROW LEVEL SECURITY;
+
+                DO \$\$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'service_role_all' AND tablename = 'migrations') THEN
+                        CREATE POLICY \"service_role_all\" ON laravel.migrations FOR ALL USING (true) WITH CHECK (true);
+                    END IF;
+                END \$\$;
+
                 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
                 DO \$\$

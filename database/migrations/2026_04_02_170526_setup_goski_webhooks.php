@@ -11,6 +11,11 @@ return new class extends Migration
     public function up(): void
     {
         if (DB::getDriverName() === 'pgsql') {
+            $hasPgNet = DB::select("SELECT 1 FROM pg_available_extensions WHERE name = 'pg_net'");
+            if (empty($hasPgNet)) {
+                return;
+            }
+
             DB::unprepared("
                 CREATE EXTENSION IF NOT EXISTS pg_net SCHEMA extensions;
 
