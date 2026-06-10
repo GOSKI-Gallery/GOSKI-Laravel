@@ -36,6 +36,10 @@ services:
       - app
 
   worker:
+    build:
+      context: .
+      args:
+        APP_ENV: ${APP_ENV:-production}
     image: goski-app
     environment:
       APP_ENV: ${APP_ENV:-production}
