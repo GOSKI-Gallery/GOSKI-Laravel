@@ -40,32 +40,32 @@ jobs:
           load: true
 
       - name: Start services
-        run: docker compose up -d --no-build app worker
+        run: docker compose -f docker-compose.yml up -d --no-build app worker
 
       - name: Install dev dependencies
-        run: docker compose exec -T app composer install --no-interaction --prefer-dist --no-progress
+        run: docker compose -f docker-compose.yml exec -T app composer install --no-interaction --prefer-dist --no-progress
 
       - name: Clear Laravel caches
         run: |
-          docker compose exec -T app php artisan view:clear
-          docker compose exec -T app php artisan config:clear
+          docker compose -f docker-compose.yml exec -T app php artisan view:clear
+          docker compose -f docker-compose.yml exec -T app php artisan config:clear
 
       - name: Ensure Vite manifest exists
         run: |
-          docker compose exec -T app sh -c "if [ ! -f public/build/manifest.json ]; then mkdir -p public/build && echo '{\"resources/css/app.css\":{\"file\":\"assets/app.css\",\"src\":\"resources/css/app.css\",\"isEntry\":true},\"resources/js/app.js\":{\"file\":\"assets/app.js\",\"src\":\"resources/js/app.js\",\"isEntry\":true}}' > public/build/manifest.json; fi"
+          docker compose -f docker-compose.yml exec -T app sh -c "if [ ! -f public/build/manifest.json ]; then mkdir -p public/build && echo '{\"resources/css/app.css\":{\"file\":\"assets/app.css\",\"src\":\"resources/css/app.css\",\"isEntry\":true},\"resources/js/app.js\":{\"file\":\"assets/app.js\",\"src\":\"resources/js/app.js\",\"isEntry\":true}}' > public/build/manifest.json; fi"
 
       - name: Static analysis
         run: |
-          docker compose exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
-          docker compose exec -T app vendor/bin/pint --test
+          docker compose -f docker-compose.yml exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
+          docker compose -f docker-compose.yml exec -T app vendor/bin/pint --test
 
       - name: Unit & Feature tests with coverage
         run: |
-          docker compose exec -T app vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
+          docker compose -f docker-compose.yml exec -T app vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
 
       - name: Check minimum coverage
         run: |
-          docker compose exec -T app php -r "
+          docker compose -f docker-compose.yml exec -T app php -r "
             \$xml = simplexml_load_file('coverage.xml');
             if (\$xml === false) { echo 'Failed to parse coverage.xml' . PHP_EOL; exit(1); }
             \$metrics = \$xml->project->metrics;
