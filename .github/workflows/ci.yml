@@ -41,6 +41,9 @@ jobs:
       - name: Start services
         run: docker compose up -d --no-build app worker
 
+      - name: Install dev dependencies
+        run: docker compose exec -T app composer install --no-interaction --prefer-dist --no-progress
+
       - name: Static analysis
         run: |
           docker compose exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
