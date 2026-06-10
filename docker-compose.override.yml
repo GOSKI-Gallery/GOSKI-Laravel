@@ -2,6 +2,7 @@ services:
   app:
     volumes:
       - .:/var/www/html
+      - app_storage:/var/www/html/storage
 
   nginx:
     volumes:
@@ -10,3 +11,7 @@ services:
   worker:
     volumes:
       - .:/var/www/html
+      - app_storage:/var/www/html/storage
+
+volumes:
+  app_storage:
