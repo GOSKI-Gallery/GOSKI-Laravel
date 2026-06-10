@@ -45,6 +45,11 @@ jobs:
       - name: Install dev dependencies
         run: docker compose exec -T app composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Clear Laravel caches
+        run: |
+          docker compose exec -T app php artisan view:clear
+          docker compose exec -T app php artisan config:clear
+
       - name: Static analysis
         run: |
           docker compose exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
