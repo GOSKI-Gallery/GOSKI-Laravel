@@ -24,8 +24,8 @@ RUN docker-php-ext-install \
     intl
 
 RUN apk add --no-cache autoconf g++ make \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+    && pecl install redis pcov \
+    && docker-php-ext-enable redis pcov \
     && apk del autoconf g++ make
 
 RUN apk add --no-cache nodejs npm
