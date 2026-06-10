@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs bootstrap/cache
+
 if [ "${SKIP_DB_CHECK:-false}" != "true" ]; then
     echo "→ Aguardando banco de dados ficar pronto..."
     max_tries=30
