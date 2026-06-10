@@ -22,9 +22,9 @@ class RecommendationService
             : $tagIds->implode(',');
 
         $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
         $epochExpr = match ($driver) {
             'sqlite' => "strftime('%%s', posts.created_at)",
-            'mysql' => 'UNIX_TIMESTAMP(posts.created_at)',
             default => 'EXTRACT(EPOCH FROM posts.created_at)',
         };
 
@@ -33,14 +33,14 @@ class RecommendationService
                 'CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END AS is_following'
             ))
             ->addSelect(DB::raw(
-                "(SELECT COUNT(*) FROM post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) AS matching_tags_count"
+                "(SELECT COUNT(*) FROM {$prefix}post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) AS matching_tags_count"
             ))
-            ->leftJoin('follows as f', function ($join) use ($user) {
+            ->leftJoin($prefix.'follows as f', function ($join) use ($user) {
                 $join->on('f.followed_id', 'posts.user_id')
                     ->where('f.follower_id', $user->id);
             })
             ->orderByRaw(
-                "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + (SELECT COUNT(*) FROM post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) * 600) DESC")
+                "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + (SELECT COUNT(*) FROM {$prefix}post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) * 600) DESC")
             ->with('users')
             ->withCount('likes')
             ->paginate($perPage);
@@ -50,25 +50,26 @@ class RecommendationService
     public function getSuggestedUsers(User $user, int $limit = 5): Collection
     {
         $authId = $user->id;
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
 
-        $alreadyFollowing = DB::table('follows')
+        $alreadyFollowing = DB::table($prefix.'follows')
             ->where('follower_id', $authId)
             ->pluck('followed_id')
             ->toArray();
 
         $likedAuthorIds = Like::where('likes.user_id', $authId)
-            ->join('posts', 'posts.id', '=', 'likes.post_id')
+            ->join($prefix.'posts', 'posts.id', '=', 'likes.post_id')
             ->where('posts.user_id', '!=', $authId)
             ->distinct()
             ->pluck('posts.user_id')
             ->filter()
             ->values();
 
-        $followingIds = DB::table('follows')
+        $followingIds = DB::table($prefix.'follows')
             ->where('follower_id', $authId)
             ->pluck('followed_id');
 
-        $mutualIds = DB::table('follows')
+        $mutualIds = DB::table($prefix.'follows')
             ->whereIn('follower_id', $followingIds)
             ->where('followed_id', '!=', $authId)
             ->selectRaw('followed_id, COUNT(*) as cnt')
@@ -104,9 +105,11 @@ class RecommendationService
     /** @return Collection<int, mixed> */
     public function getUserLikedTagIds(User $user): Collection
     {
-        return Cache::remember("user:{$user->id}:liked_tag_ids", 3600, function () use ($user) {
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
+
+        return Cache::remember("user:{$user->id}:liked_tag_ids", 3600, function () use ($user, $prefix) {
             return Like::where('user_id', $user->id)
-                ->join('post_tag', 'post_tag.post_id', '=', 'likes.post_id')
+                ->join($prefix.'post_tag', 'post_tag.post_id', '=', 'likes.post_id')
                 ->distinct()
                 ->pluck('post_tag.tag_id');
         });

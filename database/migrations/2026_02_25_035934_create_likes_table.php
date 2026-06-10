@@ -7,33 +7,41 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('likes', function (Blueprint $table) {
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::create($prefix.'likes', function (Blueprint $table) use ($prefix) {
             $table->id();
-            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained($prefix.'users')->onDelete('cascade');
+            $table->foreignId('post_id')->constrained($prefix.'posts')->onDelete('cascade');
             $table->timestamps();
+
             $table->unique(['user_id', 'post_id']);
         });
 
-        if (DB::getDriverName() === 'pgsql') {
-            DB::unprepared('
-                ALTER TABLE public.likes ENABLE ROW LEVEL SECURITY;
-                CREATE POLICY "Likes públicos" ON public.likes FOR SELECT USING (true);
-                CREATE POLICY "Dono gerencia like" ON public.likes FOR ALL USING (auth.uid() = user_id);
-            ');
+        if ($driver === 'pgsql') {
+            DB::unprepared("
+                ALTER TABLE laravel.likes ENABLE ROW LEVEL SECURITY;
+                DO \$\$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Likes públicos' AND tablename = 'likes') THEN
+                        CREATE POLICY \"Likes públicos\" ON laravel.likes FOR SELECT USING (true);
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono gerencia like' AND tablename = 'likes') THEN
+                        CREATE POLICY \"Dono gerencia like\" ON laravel.likes FOR ALL USING (auth.uid() = user_id);
+                    END IF;
+                END \$\$;
+            ");
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('likes');
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::dropIfExists($prefix.'likes');
     }
 };

@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSchemaPrefix;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property string $username
+ * @property string $role
+ */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, HasSchemaPrefix, Notifiable;
 
     protected $fillable = [
         'username',
@@ -18,9 +23,6 @@ class User extends Authenticatable
         'role',
     ];
 
-    /**
-     * The data type of the primary key.
-     */
     protected $keyType = 'string';
 
     public $incrementing = false;
@@ -30,11 +32,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -49,16 +46,16 @@ class User extends Authenticatable
 
     public function likedPosts(): BelongsToMany
     {
-        return $this->belongsToMany(Post::class, 'likes', 'user_id', 'post_id');
+        return $this->belongsToMany(Post::class, self::qualifyTable('likes'), 'user_id', 'post_id');
     }
 
     public function followers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id');
+        return $this->belongsToMany(User::class, self::qualifyTable('follows'), 'followed_id', 'follower_id');
     }
 
     public function following(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id');
+        return $this->belongsToMany(User::class, self::qualifyTable('follows'), 'follower_id', 'followed_id');
     }
 }

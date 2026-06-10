@@ -12,10 +12,11 @@ return new class extends Migration
         $driver = DB::getDriverName();
         $prefix = $driver === 'pgsql' ? 'laravel.' : '';
 
-        Schema::create('users', function (Blueprint $table) use ($driver) {
+        Schema::create($prefix.'users', function (Blueprint $table) use ($driver) {
             $table->uuid('id')->primary();
             $table->string('username')->unique();
             $table->string('email')->unique();
+            $table->string('role')->nullable()->after('email');
             $table->string('profile_photo_url')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
@@ -26,25 +27,39 @@ return new class extends Migration
             }
         });
 
-        if ($driver === 'pgsql') {
+        if ($driver === 'pgsql' && app()->environment('local', 'testing', 'development')) {
             DB::unprepared("
-                ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-
                 DO \$\$
                 BEGIN
-                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Perfis visíveis por todos') THEN
-                        CREATE POLICY \"Perfis visíveis por todos\" ON public.users FOR SELECT USING (true);
+                    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'auth' AND table_name = 'users') THEN
+                        DELETE FROM auth.users;
                     END IF;
+                END \$\$;
+            ");
+        }
 
-                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Usuários editam o próprio perfil') THEN
-                        CREATE POLICY \"Usuários editam o próprio perfil\" ON public.users FOR UPDATE USING (auth.uid() = id);
+        if ($driver === 'pgsql') {
+
+            DB::unprepared("
+                DO \$\$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'laravel' AND table_name = 'users') THEN
+                        ALTER TABLE laravel.users ENABLE ROW LEVEL SECURITY;
+
+                        IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Perfis visíveis por todos' AND tablename = 'users') THEN
+                            CREATE POLICY \"Perfis visíveis por todos\" ON laravel.users FOR SELECT USING (true);
+                        END IF;
+
+                        IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Usuários editam o próprio perfil' AND tablename = 'users') THEN
+                            CREATE POLICY \"Usuários editam o próprio perfil\" ON laravel.users FOR UPDATE USING (auth.uid() = id);
+                        END IF;
                     END IF;
                 END \$\$;
 
                 CREATE OR REPLACE FUNCTION public.handle_new_user()
                 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS \$\$
                 BEGIN
-                    INSERT INTO public.users (id, email, username, created_at, updated_at)
+                    INSERT INTO laravel.users (id, email, username, created_at, updated_at)
                     VALUES (new.id, new.email, COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)), now(), now())
                     ON CONFLICT (id) DO NOTHING;
                     RETURN new;
@@ -68,17 +83,17 @@ return new class extends Migration
             ");
         }
 
-        Schema::create($prefix.'password_reset_tokens', function (Blueprint $table) {
+        Schema::create('password_reset_tokens', function (Blueprint $table) use ($prefix) {
             $table->id();
             $table->foreignUuid('user_id');
             $table->string('token')->unique();
             $table->timestamp('expires_at');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on($prefix.'users')->onDelete('cascade');
         });
 
-        Schema::create($prefix.'sessions', function (Blueprint $table) {
+        Schema::create('sessions', function (Blueprint $table) use ($prefix) {
             $table->string('id')->primary();
             $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
@@ -86,7 +101,7 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on($prefix.'users')->onDelete('cascade');
         });
     }
 
@@ -96,12 +111,24 @@ return new class extends Migration
         $prefix = $driver === 'pgsql' ? 'laravel.' : '';
 
         if ($driver === 'pgsql') {
-            DB::unprepared('DELETE FROM auth.users WHERE id IN (SELECT id FROM users)');
-            DB::unprepared('DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users; DROP FUNCTION IF EXISTS public.handle_new_user;');
+            DB::unprepared("
+                DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+                DROP FUNCTION IF EXISTS public.handle_new_user;
+
+                DO \$\$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'laravel' AND table_name = 'users') THEN
+                        DELETE FROM laravel.users;
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'auth' AND table_name = 'users') THEN
+                        DELETE FROM auth.users;
+                    END IF;
+                END \$\$;
+            ");
         }
 
-        Schema::dropIfExists($prefix.'sessions');
-        Schema::dropIfExists($prefix.'password_reset_tokens');
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists($prefix.'users');
     }
 };

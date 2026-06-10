@@ -7,30 +7,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('tags', function (Blueprint $table) {
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::create($prefix.'tags', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
         });
 
-        if (DB::getDriverName() === 'pgsql') {
-            DB::unprepared('
-                ALTER TABLE public.tags ENABLE ROW LEVEL SECURITY;
-                CREATE POLICY "Leitura pública tags" ON public.tags FOR SELECT USING (true);
-            ');
+        if ($driver === 'pgsql') {
+            DB::unprepared("
+                ALTER TABLE laravel.tags ENABLE ROW LEVEL SECURITY;
+                DO \$\$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Leitura pública tags' AND tablename = 'tags') THEN
+                        CREATE POLICY \"Leitura pública tags\" ON laravel.tags FOR SELECT USING (true);
+                    END IF;
+                END \$\$;
+            ");
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('tags');
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::dropIfExists($prefix.'tags');
     }
 };

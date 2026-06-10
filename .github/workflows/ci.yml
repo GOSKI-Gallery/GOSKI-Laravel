@@ -8,87 +8,64 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: secret
-          MYSQL_DATABASE: goski_test
-        ports: [3306:3306]
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:7hD4E21cH0638dQfZUOeWgNnKf45UmeptmQ9jqojVw4=
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+      QUEUE_CONNECTION: sync
+      SKIP_DB_CHECK: true
+      VITE_IGNORE_MANIFEST: true
+      SUPABASE_URL: https://test.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: test_service_role_key
+      SUPABASE_ANON_KEY: test_anon_key
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v5
         with:
-          php-version: '8.4'
-          extensions: mbstring, tokenizer, xml, curl, bcmath, pdo_mysql
-          coverage: xdebug
+          context: .
+          tags: goski-app:latest
+          build-args: APP_ENV=${{ env.APP_ENV }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.composer/cache
-          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Start services
+        run: docker compose -f docker-compose.yml up -d --no-build app worker
 
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Install dev dependencies
+        run: docker compose -f docker-compose.yml exec -T app composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Cache npm dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-
-      - name: Setup environment file
+      - name: Clear Laravel caches
         run: |
-          cp .env.example .env
-          sed -i "s|^SUPABASE_URL=.*|SUPABASE_URL=https://test.supabase.co|" .env
-          sed -i "s|^SUPABASE_SERVICE_ROLE_KEY=.*|SUPABASE_SERVICE_ROLE_KEY=test_service_role_key|" .env
-          sed -i "s|^SUPABASE_ANON_KEY=.*|SUPABASE_ANON_KEY=test_anon_key|" .env
-          php artisan key:generate
+          docker compose -f docker-compose.yml exec -T app php artisan view:clear
+          docker compose -f docker-compose.yml exec -T app php artisan config:clear
 
-      - name: Build frontend assets
+      - name: Ensure Vite manifest exists
         run: |
-          npm ci
-          npm run build
+          docker compose -f docker-compose.yml exec -T app sh -c "if [ ! -f public/build/manifest.json ]; then mkdir -p public/build && echo '{\"resources/css/app.css\":{\"file\":\"assets/app.css\",\"src\":\"resources/css/app.css\",\"isEntry\":true},\"resources/js/app.js\":{\"file\":\"assets/app.js\",\"src\":\"resources/js/app.js\",\"isEntry\":true}}' > public/build/manifest.json; fi"
 
       - name: Static analysis
         run: |
-          vendor/bin/phpstan analyse -c phpstan.neon --no-progress
-          vendor/bin/pint --test
-
-      - name: Run database migrations
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: goski_test
-          DB_USERNAME: root
-          DB_PASSWORD: secret
-        run: |
-          php artisan migrate
+          docker compose -f docker-compose.yml exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
+          docker compose -f docker-compose.yml exec -T app vendor/bin/pint --test
 
       - name: Unit & Feature tests with coverage
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: goski_test
-          DB_USERNAME: root
-          DB_PASSWORD: secret
         run: |
-          vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
+          docker compose -f docker-compose.yml exec -T app vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
 
       - name: Check minimum coverage
         run: |
-          php -r "
+          docker compose -f docker-compose.yml exec -T app php -r "
             \$xml = simplexml_load_file('coverage.xml');
             if (\$xml === false) { echo 'Failed to parse coverage.xml' . PHP_EOL; exit(1); }
             \$metrics = \$xml->project->metrics;

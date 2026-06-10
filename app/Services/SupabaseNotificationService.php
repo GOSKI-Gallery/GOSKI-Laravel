@@ -17,9 +17,10 @@ class SupabaseNotificationService extends SupabaseBaseService
     public function getNotifications()
     {
         $userId = Auth::id();
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
 
-        $follows = DB::table('follows')
-            ->join('users', 'follows.follower_id', '=', 'users.id')
+        $follows = DB::table($prefix.'follows')
+            ->join($prefix.'users', 'follows.follower_id', '=', 'users.id')
             ->where('follows.followed_id', $userId)
             ->select(
                 'follows.id as source_id',
@@ -30,9 +31,9 @@ class SupabaseNotificationService extends SupabaseBaseService
                 'follows.created_at'
             );
 
-        $likes = DB::table('likes')
-            ->join('posts', 'likes.post_id', '=', 'posts.id')
-            ->join('users', 'likes.user_id', '=', 'users.id')
+        $likes = DB::table($prefix.'likes')
+            ->join($prefix.'posts', 'likes.post_id', '=', 'posts.id')
+            ->join($prefix.'users', 'likes.user_id', '=', 'users.id')
             ->where('posts.user_id', $userId)
             ->where('likes.user_id', '!=', $userId)
             ->select(

@@ -9,9 +9,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::create($prefix.'posts', function (Blueprint $table) use ($prefix) {
             $table->id();
-            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained($prefix.'users')->onDelete('cascade');
             $table->text('description')->nullable();
             $table->string('image_url');
             $table->boolean('is_nsfw')->default(false);
@@ -19,41 +22,50 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        if (DB::getDriverName() === 'pgsql') {
+        if ($driver === 'pgsql') {
             DB::unprepared("
-                ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
-
                 DO \$\$
                 BEGIN
-                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Posts aprovados públicos' AND tablename = 'posts') THEN
-                        CREATE POLICY \"Posts aprovados públicos\" ON public.posts FOR SELECT USING (moderation_status = 'approved');
-                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'laravel' AND table_name = 'posts') THEN
+                        ALTER TABLE laravel.posts ENABLE ROW LEVEL SECURITY;
 
-                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono vê posts pendentes' AND tablename = 'posts') THEN
-                        CREATE POLICY \"Dono vê posts pendentes\" ON public.posts FOR SELECT USING (auth.uid() = user_id);
-                    END IF;
+                        IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Posts aprovados públicos' AND tablename = 'posts') THEN
+                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status = 'approved');
+                        END IF;
 
-                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Usuários criam posts' AND tablename = 'posts') THEN
-                        CREATE POLICY \"Usuários criam posts\" ON public.posts FOR INSERT WITH CHECK (auth.uid() = user_id);
-                    END IF;
+                        IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono vê posts pendentes' AND tablename = 'posts') THEN
+                            CREATE POLICY \"Dono vê posts pendentes\" ON laravel.posts FOR SELECT USING (auth.uid() = user_id);
+                        END IF;
 
-                    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono ou Admin deleta' AND tablename = 'posts') THEN
-                        CREATE POLICY \"Dono ou Admin deleta\" ON public.posts FOR DELETE USING (auth.uid() = user_id OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+                        IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Usuários criam posts' AND tablename = 'posts') THEN
+                            CREATE POLICY \"Usuários criam posts\" ON laravel.posts FOR INSERT WITH CHECK (auth.uid() = user_id);
+                        END IF;
+
+                        IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono ou Admin deleta' AND tablename = 'posts') THEN
+                            CREATE POLICY \"Dono ou Admin deleta\" ON laravel.posts FOR DELETE USING (auth.uid() = user_id OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+                        END IF;
                     END IF;
                 END \$\$;
+            ");
 
-                CREATE OR REPLACE FUNCTION public.handle_rejected_post()
-                RETURNS trigger AS \$\$
+            DB::unprepared("
+                DO \$do\$
                 BEGIN
-                    IF NEW.moderation_status = 'rejected' THEN DELETE FROM public.posts WHERE id = NEW.id; END IF;
-                    RETURN NEW;
-                END; \$\$ LANGUAGE plpgsql SECURITY DEFINER;
+                    CREATE OR REPLACE FUNCTION public.handle_rejected_post()
+                    RETURNS trigger AS \$\$
+                    BEGIN
+                        IF NEW.moderation_status = 'rejected' THEN DELETE FROM laravel.posts WHERE id = NEW.id; END IF;
+                        RETURN NEW;
+                    END; \$\$ LANGUAGE plpgsql SECURITY DEFINER;
 
-                DROP TRIGGER IF EXISTS on_post_moderated ON public.posts;
-                CREATE TRIGGER on_post_moderated AFTER UPDATE OF moderation_status ON public.posts FOR EACH ROW EXECUTE PROCEDURE public.handle_rejected_post();
+                    DROP TRIGGER IF EXISTS on_post_moderated ON laravel.posts;
+                    CREATE TRIGGER on_post_moderated AFTER UPDATE OF moderation_status ON laravel.posts FOR EACH ROW EXECUTE PROCEDURE public.handle_rejected_post();
+                END \$do\$;
+            ");
 
-                INSERT INTO storage.buckets (id, name, public) VALUES ('posts', 'posts', true) ON CONFLICT (id) DO NOTHING;
+            DB::unprepared("INSERT INTO storage.buckets (id, name, public) VALUES ('posts', 'posts', true) ON CONFLICT (id) DO NOTHING;");
 
+            DB::unprepared("
                 DO \$\$
                 BEGIN
                     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Posts público' AND tablename = 'objects') THEN
@@ -70,6 +82,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        $driver = DB::getDriverName();
+        $prefix = $driver === 'pgsql' ? 'laravel.' : '';
+
+        Schema::dropIfExists($prefix.'posts');
     }
 };

@@ -1,0 +1,17 @@
+services:
+  app:
+    volumes:
+      - .:/var/www/html
+      - app_storage:/var/www/html/storage
+
+  nginx:
+    volumes:
+      - .:/var/www/html
+
+  worker:
+    volumes:
+      - .:/var/www/html
+      - app_storage:/var/www/html/storage
+
+volumes:
+  app_storage:
