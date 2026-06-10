@@ -10,11 +10,15 @@ trait HasSchemaPrefix
     {
         $table = parent::getTable();
 
-        if (DB::getDriverName() === 'pgsql' && ! str_starts_with($table, 'laravel.')) {
-            return 'laravel.'.$table;
+        if (DB::getDriverName() !== 'pgsql') {
+            return $table;
         }
 
-        return $table;
+        if (str_contains($table, '.') || str_starts_with($table, 'laravel_reserved_')) {
+            return $table;
+        }
+
+        return 'laravel.'.$table;
     }
 
     public static function qualifyTable(string $table): string
