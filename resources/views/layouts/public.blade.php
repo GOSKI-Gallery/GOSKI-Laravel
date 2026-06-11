@@ -4,6 +4,7 @@
     @include('shared.head')
 
     <body class='min-h-screen bg-[var(--bg-body)]'>
+        <x-ui.flash-message />
         <x-header />
 
         @auth
