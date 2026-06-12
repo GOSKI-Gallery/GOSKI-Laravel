@@ -26,6 +26,8 @@ abstract class SupabaseBaseService
         return Http::withHeaders([
             'apikey' => $this->anonKey,
             'Authorization' => "Bearer {$token}",
+            'Accept-Profile' => 'laravel',
+            'Content-Profile' => 'laravel',
         ]);
     }
 }
