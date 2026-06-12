@@ -40,9 +40,8 @@ class AuthController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
-            // Redirecionar admin para o dashboard, usuários comuns para o feed
             if (isset($user->role) && $user->role === 'admin') {
-                return redirect()->intended('admin');
+                return redirect()->route('admin.dashboard');
             }
 
             return redirect()->intended('feed');
