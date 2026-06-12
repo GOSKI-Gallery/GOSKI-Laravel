@@ -3,7 +3,8 @@
 
     @include('shared.head')
 
-    <body class='min-h-screen bg-[var(--bg-body)]'>
+    <body class='min-h-screen flex flex-col bg-[var(--bg-body)]'>
+        <x-ui.flash-message />
         <x-header />
 
         @auth
@@ -12,7 +13,7 @@
             <x-notification-modal :notifications="[]" />
         @endauth
 
-        <div class="itens-center mx-auto flex flex-col justify-between px-4 py-4">
+        <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-4">
             @yield('content')
         </div>
 
