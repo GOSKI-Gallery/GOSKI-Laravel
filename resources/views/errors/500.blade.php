@@ -1,8 +1,8 @@
 @extends('layouts.public')
 
 @section('content')
-<div class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] px-4">
-    <svg class="w-24 h-24 text-zinc-300 dark:text-zinc-700" viewBox="0 0 64 64" fill="currentColor">
+<div class="flex flex-1 flex-col items-center justify-center px-4">
+    <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-700" viewBox="0 0 64 64" fill="currentColor">
         <circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="4" />
         <path d="M32 14v12l4 4-4 4v16" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
         <path d="M24 24l12 12M36 24L24 36" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
