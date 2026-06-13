@@ -58,7 +58,7 @@
             </div>
             <input type="text" name="username" id="username" placeholder="Nome de usuário"
                 value="{{ old('username', $user['username'] ?? '') }}"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
+                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
         </div>
         @error('username')
             <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
@@ -76,7 +76,7 @@
             </div>
             <input type="email" name="email" id="email" placeholder="E-mail"
                 value="{{ old('email', $user['email'] ?? '') }}"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
+                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
         </div>
         @error('email')
             <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
@@ -93,7 +93,7 @@
                 </svg>
             </div>
             <input type="password" name="password" id="password" placeholder="Nova Senha"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
+                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
         </div>
         @error('password')
             <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
@@ -110,7 +110,7 @@
                 </svg>
             </div>
             <input type="password" name="password_confirmation" placeholder="Confirme a nova senha"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
+                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
         </div>
     </div>
 @endif
@@ -118,7 +118,7 @@
 @if ($wrapInForm)
     @if ($showButton)
         <button type="submit"
-            class="mt-2 w-full cursor-pointer rounded-xl bg-zinc-900 py-3 font-bold text-white shadow-lg shadow-zinc-200 dark:shadow-none transition-all hover:bg-zinc-600 hover:shadow-zinc-100 active:scale-[0.98]">
+            class="mt-2 w-full cursor-pointer rounded-xl bg-zinc-900 dark:bg-zinc-950 py-3 font-bold text-white shadow-lg shadow-zinc-200 dark:shadow-none transition-all hover:bg-zinc-600 hover:shadow-zinc-100 active:scale-[0.98]">
             {{ $buttonText }}
         </button>
     @endif
