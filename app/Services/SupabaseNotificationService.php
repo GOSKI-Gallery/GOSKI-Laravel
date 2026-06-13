@@ -24,10 +24,11 @@ class SupabaseNotificationService extends SupabaseBaseService
             ->where('follows.followed_id', $userId)
             ->select(
                 'follows.id as source_id',
+                'users.id as user_id',
                 'users.username',
                 'users.profile_photo_url',
                 DB::raw("'follow' as type"),
-                DB::raw('CAST(NULL AS UNSIGNED) as post_id'),
+                DB::raw('CAST(NULL AS INTEGER) as post_id'),
                 'follows.created_at'
             );
 
@@ -38,6 +39,7 @@ class SupabaseNotificationService extends SupabaseBaseService
             ->where('likes.user_id', '!=', $userId)
             ->select(
                 'likes.id as source_id',
+                'users.id as user_id',
                 'users.username',
                 'users.profile_photo_url',
                 DB::raw("'like' as type"),

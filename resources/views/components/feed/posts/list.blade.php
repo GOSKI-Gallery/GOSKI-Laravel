@@ -39,7 +39,7 @@
                 @endif
             </div>
 
-            <div class="w-full aspect-square bg-zinc-50 dark:bg-zinc-800 overflow-hidden rounded-xl">
+            <div class="w-full aspect-square bg-zinc-900 dark:bg-zinc-800 overflow-hidden rounded-xl">
                 <img src="{{ $post['image_url'] ?? '' }}" alt="Conteúdo do post"
                     class="w-full h-full object-cover">
             </div>

@@ -11,11 +11,8 @@
                 </div>
                 <input type="email" name="email" placeholder="Seu e-mail"
                     value="{{ old('email') }}"
-                    class="w-full bg-[var(--bg-input)] border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-zinc-500/10 focus:border-zinc-500 transition-all placeholder:text-zinc-400 dark:text-zinc-200">
+                    class="w-full bg-[var(--bg-input)] dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-zinc-500/10 focus:border-zinc-500 transition-all placeholder:text-zinc-400 dark:text-zinc-200">
             </div>
-            @error('email')
-                <p class="text-red-500 text-[10px] font-bold uppercase ml-2 tracking-tight">{{ $message }}</p>
-            @enderror
         </div>
 
         <div class="flex flex-col gap-1.5">
@@ -26,12 +23,16 @@
                     </svg>
                 </div>
                 <input type="password" name="password" placeholder="Sua senha"
-                    class="w-full bg-[var(--bg-input)] border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-zinc-500/10 focus:border-zinc-500 transition-all placeholder:text-zinc-400 dark:text-zinc-200">
+                    class="w-full bg-[var(--bg-input)] dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:ring-4 focus:ring-zinc-500/10 focus:border-zinc-500 transition-all placeholder:text-zinc-400 dark:text-zinc-200">
             </div>
         </div>
 
+        @error('email')
+            <p class="text-red-500 text-[10px] font-bold uppercase ml-2 tracking-tight">{{ $message }}</p>
+        @enderror
+
         <button type="submit"
-            class="w-full bg-zinc-900 hover:bg-zinc-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-zinc-200 dark:shadow-none hover:shadow-zinc-100 transition-all active:scale-[0.98] cursor-pointer mt-2">
+            class="w-full bg-zinc-900 dark:bg-zinc-950 hover:bg-zinc-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-zinc-200 dark:shadow-none hover:shadow-zinc-100 transition-all active:scale-[0.98] cursor-pointer mt-2">
             Entrar
         </button>
     </form>

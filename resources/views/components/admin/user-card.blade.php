@@ -1,8 +1,8 @@
 @props(['user'])
 
-<div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md group">
+<div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md group">
     <a href="{{ route('admin.users.detail', $user->id) }}" class="block">
-        <div class="aspect-square bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        <div class="aspect-square bg-gray-50 dark:bg-zinc-900 overflow-hidden">
             <img src="{{ $user->profile_photo_url ?? '' }}"
                  alt="{{ $user->username }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

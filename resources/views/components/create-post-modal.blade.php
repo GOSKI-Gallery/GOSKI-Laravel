@@ -5,7 +5,7 @@
         class="w-full max-w-lg transform overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 bg-[var(--bg-card)] shadow-2xl transition-all">
 
         <div class="flex items-center justify-between border-b border-gray-50 dark:border-gray-700 bg-[var(--bg-surface)] px-6 py-4">
-            <h2 class="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Criar nova publicação</h2>
+            <h2 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Criar nova publicação</h2>
             <button id="close-modal-x" class="cursor-pointer p-1 text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -18,17 +18,17 @@
 
             <div class="mb-5 border-2 border-gray-200 dark:border-gray-700 rounded-xl">
                 <input name="description" id="description" rows="3"
-                    class="w-full resize-none rounded-xl border-gray-200 dark:border-gray-700 bg-[var(--bg-input)] px-4 py-3 text-sm outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-500 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10 dark:text-gray-200"
+                    class="w-full resize-none rounded-xl border-gray-200 dark:border-gray-700 bg-[var(--bg-input)] dark:bg-zinc-900 px-4 py-3 text-sm outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-500 focus:border-gray-500 focus:ring-4 focus:ring-gray-500/10 dark:text-gray-200"
                     placeholder="Descrição" required></input>
             </div>
 
             <div class="mb-6">
                 <div id="upload-area"
-                    class="group relative flex h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 transition-all hover:border-black/50 hover:bg-gray-100/30">
+                    class="group relative flex h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-zinc-900 transition-all hover:border-black/50 hover:bg-gray-100/30">
 
                     <div class="p-4 text-center transition-transform group-hover:scale-105" id="upload-placeholder">
                         <div
-                            class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-white dark:bg-gray-700 shadow-sm">
+                            class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm">
                             <svg class="h-7 w-7 text-gray-900 dark:text-white" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -49,11 +49,11 @@
 
             <div class="flex items-center justify-end gap-3 pt-2">
                 <button type="button" id="close-modal-btn"
-                    class="cursor-pointer px-6 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 transition-colors hover:text-gray-800 dark:hover:text-white">
+                    class="cursor-pointer px-6 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 transition-colors hover:text-zinc-900 dark:hover:text-white">
                     Cancelar
                 </button>
                 <button type="submit"
-                    class="cursor-pointer rounded-xl bg-gray-900 dark:bg-gray-700 px-10 py-2.5 text-sm font-bold text-white shadow-lg shadow-gray-100 dark:shadow-none transition-all hover:bg-black/30 active:scale-95">
+                    class="cursor-pointer rounded-xl bg-zinc-900 dark:bg-zinc-900 px-10 py-2.5 text-sm font-bold text-white shadow-lg shadow-gray-100 dark:shadow-none transition-all hover:bg-black/30 active:scale-95">
                     Compartilhar
                 </button>
             </div>

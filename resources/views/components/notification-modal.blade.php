@@ -1,9 +1,9 @@
 <div id="notification-modal" class="fixed inset-0 z-100 hidden items-center justify-center bg-[var(--bg-overlay)] backdrop-blur-sm transition-opacity">
-    <div class="relative w-full max-w-md bg-[var(--bg-card)] dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden mx-4" @click.stop>
+    <div class="relative w-full max-w-md bg-[var(--bg-card)] dark:bg-zinc-950 rounded-xl shadow-2xl overflow-hidden mx-4" @click.stop>
         
-        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
+        <div class="p-4 border-b border-gray-50 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-zinc-950">
             <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold text-gray-800 dark:text-white">Notificações</h2>
+                <h2 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 dark:text-white">Notificações</h2>
                 <button id="mark-as-read-btn" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline hidden">Marcar todas como lidas</button>
             </div>
             <button id="close-modal" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
@@ -37,7 +37,10 @@
                 notificationContent.innerHTML = '<div class="text-center text-gray-500 py-4">Carregando...</div>';
                 
                 fetch('{{ route("notifications.index") }}')
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erro na requisição');
+                        return response.json();
+                    })
                     .then(data => {
                         notificationContent.innerHTML = '';
                         
@@ -56,10 +59,10 @@
 
                         data.forEach(notification => {
                             const item = document.createElement('div');
-                            item.className = `notification-item p-4 border-b border-gray-100 flex items-start gap-3 relative group transition-colors ${notification.is_read ? 'bg-white' : 'bg-blue-50/50'}`;
+                            item.className = `notification-item p-4 border-b border-gray-100 dark:border-zinc-700 flex items-start gap-3 relative group transition-colors ${notification.is_read ? 'bg-white dark:bg-zinc-950' : 'bg-zinc-500 dark:bg-zinc-900'}`;
                             
                             const actionText = notification.type === 'like' ? 'curtiu sua publicação.' : 'começou a seguir você.';
-                            const avatar = notification.profile_photo_url || "{{ asset('images/icons/icon.png') }}";
+                            const avatar = notification.profile_photo_url || "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%239ca3af%22%3E%3Cpath d=%22M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z%22/%3E%3C/svg%3E";
                             
                             let dot = '';
                             if (!notification.is_read) {
@@ -79,7 +82,7 @@
                             actionSpan.textContent = ' ' + actionText;
 
                             const textP = document.createElement('p');
-                            textP.className = 'text-sm text-gray-800';
+                            textP.className = 'text-sm text-zinc-900 dark:text-zinc-100';
                             textP.appendChild(usernameLink);
                             textP.appendChild(actionSpan);
 
@@ -123,6 +126,9 @@
                                 });
                             });
                         });
+                    })
+                    .catch(() => {
+                        notificationContent.innerHTML = '<div class="text-center text-red-500 py-4">Erro ao carregar notificações.</div>';
                     });
             };
 
