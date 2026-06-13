@@ -53,7 +53,7 @@
                     Cancelar
                 </button>
                 <button type="submit"
-                    class="cursor-pointer rounded-xl bg-gray-900 dark:bg-gray-700 px-10 py-2.5 text-sm font-bold text-white shadow-lg shadow-gray-100 dark:shadow-none transition-all hover:bg-black/30 active:scale-95">
+                    class="cursor-pointer rounded-xl bg-zinc-900 dark:bg-gray-700 px-10 py-2.5 text-sm font-bold text-white shadow-lg shadow-gray-100 dark:shadow-none transition-all hover:bg-black/30 active:scale-95">
                     Compartilhar
                 </button>
             </div>
