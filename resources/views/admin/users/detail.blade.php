@@ -12,9 +12,9 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Foto e Info Principal -->
-        <div class="md:col-span-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
-            <div class="aspect-square bg-gray-50 dark:bg-gray-900">
-                <img src="{{ $user->profile_photo_url ?? asset('images/icons/icon.png') }}" 
+        <div class="md:col-span-2 bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
+            <div class="aspect-square bg-gray-50 dark:bg-zinc-900">
+                <img src="{{ $user->profile_photo_url ?? '' }}" 
                      alt="{{ $user->username }}"
                      class="w-full h-full object-cover">
             </div>
@@ -24,15 +24,15 @@
                 <p class="text-sm text-gray-400 dark:text-gray-500 font-bold mt-1">{{ $user->email }}</p>
 
                 <div class="grid grid-cols-3 gap-3 mt-6">
-                    <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                    <div class="bg-gray-50 dark:bg-zinc-900 p-4 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
                         <p class="text-xs text-gray-400 dark:text-gray-500 font-bold">Posts</p>
                         <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ $user->posts_count ?? 0 }}</p>
                     </div>
-                    <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                    <div class="bg-gray-50 dark:bg-zinc-900 p-4 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
                         <p class="text-xs text-gray-400 dark:text-gray-500 font-bold">Seguidores</p>
                         <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ $user->followers_count ?? 0 }}</p>
                     </div>
-                    <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                    <div class="bg-gray-50 dark:bg-zinc-900 p-4 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
                         <p class="text-xs text-gray-400 dark:text-gray-500 font-bold">Seguindo</p>
                         <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ $user->following_count ?? 0 }}</p>
                     </div>
@@ -42,7 +42,7 @@
 
         <!-- Ações e Info Adicional -->
         <div class="space-y-6">
-            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
+            <div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">Ações</p>
                 <form action="{{ route('admin.users.remove', $user->id) }}" method="GET" class="w-full">
                     <button class="w-full py-3 text-xs font-black uppercase tracking-tight text-red-600 bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-xl transition-colors">
@@ -51,7 +51,7 @@
                 </form>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
+            <div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Informações</p>
                 <div class="space-y-3 text-sm">
                     <div>

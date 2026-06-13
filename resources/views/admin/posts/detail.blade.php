@@ -12,8 +12,8 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Imagem e Conteúdo -->
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
-            <div class="aspect-square bg-gray-50 dark:bg-gray-900">
+        <div class="lg:col-span-2 bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
+            <div class="aspect-square bg-gray-50 dark:bg-zinc-950">
                 <img src="{{ $post->image_url }}" 
                      alt=""
                      class="w-full h-full object-cover">
@@ -23,9 +23,9 @@
                 <!-- Autor -->
                 <div class="flex items-center gap-3 pb-6 border-b border-gray-100 dark:border-gray-700">
                     <a href="{{ route('admin.users.detail', $post->users->id) }}">
-                        <img src="{{ $post->users->profile_photo_url ?? asset('images/icons/icon.png') }}" 
+                        <img src="{{ $post->users->profile_photo_url ?? '' }}" 
                              alt="{{ $post->users->username }}"
-                             class="w-12 h-12 rounded-lg object-cover border border-gray-100 dark:border-gray-700">
+                             class="w-12 h-12 rounded-full object-cover border border-gray-100 dark:border-gray-700">
                     </a>
                     <div>
                         <a href="{{ route('admin.users.detail', $post->users->id) }}" class="font-black text-sm uppercase tracking-tight text-gray-900 dark:text-white hover:underline">
@@ -45,7 +45,7 @@
         <!-- Informações e Ações -->
         <div class="space-y-6">
             <!-- Métricas -->
-            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
+            <div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">Métricas</p>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
@@ -58,13 +58,13 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs text-gray-500 dark:text-gray-400 font-bold">NSFW</p>
-                        <p class="text-xs font-bold">{{ $post->is_nsfw ? '⚠️ Sim' : '✓ Não' }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-bold">{{ $post->is_nsfw ? '⚠️ Sim' : '✓ Não' }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Ações -->
-            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
+            <div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm p-6">
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">Ações</p>
                 <div class="space-y-2">
                     @if ($post->moderation_status === 'POSSIBLE')
@@ -87,7 +87,7 @@
             </div>
 
             <!-- Post ID -->
-            <div class="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-4">
+            <div class="bg-gray-50 dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl p-4">
                 <p class="text-xs text-gray-400 dark:text-gray-500 font-bold">Post ID</p>
                 <p class="text-gray-900 dark:text-gray-300 font-mono text-xs mt-2 break-all">{{ $post->id }}</p>
             </div>

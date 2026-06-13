@@ -4,9 +4,9 @@
     $isNSFW = $post->is_nsfw || $post->moderation_status === 'POSSIBLE';
 @endphp
 
-<div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
-    <div class="flex gap-4 p-5 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700">
-        <img src="{{ $post->users->profile_photo_url ?? asset('images/icons/icon.png') }}" 
+<div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm h-full">
+    <div class="flex gap-4 p-5 bg-gray-50 dark:bg-zinc-900 border-b border-gray-100 dark:border-gray-700">
+        <img src="{{ $post->users->profile_photo_url ?? '' }}" 
              alt="{{ $post->users->username }}"
              class="w-12 h-12 rounded-full object-cover border border-gray-100 dark:border-gray-700"
              onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%239ca3af%22%3E%3Cpath d=%22M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z%22/%3E%3C/svg%3E'">
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="relative aspect-square bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <div class="relative aspect-square bg-gray-50 dark:bg-zinc-900 overflow-hidden">
         @if ($isNSFW)
             <div id="nsfw-overlay-{{ $post->id }}" class="absolute inset-0 bg-black/40 backdrop-blur-lg z-10 flex items-center justify-center">
                 <div class="text-center">
@@ -33,17 +33,17 @@
              class="w-full h-full object-cover {{ $isNSFW ? 'blur-3xl' : '' }}">
     </div>
 
-    <div class="p-5">
+    <div class="p-5 bg-gray-50 dark:bg-zinc-900 border-b border-gray-100 dark:border-gray-700">
         @if ($post->description)
             <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">{{ $post->description }}</p>
         @endif
 
         <div class="grid grid-cols-2 gap-3 text-center text-xs mb-4">
-            <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+            <div class="bg-gray-50 dark:bg-zinc-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
                 <p class="text-gray-400 dark:text-gray-500 font-bold">Curtidas</p>
                 <p class="text-gray-900 dark:text-white font-black mt-1">{{ $post->likes_count ?? 0 }}</p>
             </div>
-            <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+            <div class="bg-gray-50 dark:bg-zinc-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
                 <p class="text-gray-400 dark:text-gray-500 font-bold">Status</p>
                 <p class="text-gray-900 dark:text-white font-black mt-1 uppercase tracking-tight">{{ $post->moderation_status }}</p>
             </div>

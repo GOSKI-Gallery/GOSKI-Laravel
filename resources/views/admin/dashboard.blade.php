@@ -25,7 +25,7 @@
     </div>
 
     <!-- Fila de Moderação -->
-    <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
             <h2 class="font-black text-lg uppercase tracking-tight text-gray-900 dark:text-white">Fila de Moderação</h2>
         </div>
