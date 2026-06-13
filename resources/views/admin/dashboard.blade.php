@@ -35,7 +35,7 @@
                 <p class="text-sm text-gray-400 dark:text-gray-500 font-bold">✓ Nenhum post pendente</p>
             </div>
         @else
-            <div class="space-y-4 p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
                 @foreach($pendingPosts as $post)
                     <x-admin.moderation-card :post="$post" />
                 @endforeach
