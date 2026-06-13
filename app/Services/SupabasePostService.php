@@ -55,6 +55,7 @@ class SupabasePostService extends SupabaseBaseService
         return $this->client()->post("{$this->url}/rest/v1/likes", [
             'user_id' => $userId,
             'post_id' => $postId,
+            'created_at' => now()->toIso8601String(),
         ])->json();
     }
 

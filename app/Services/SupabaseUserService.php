@@ -18,6 +18,7 @@ class SupabaseUserService extends SupabaseBaseService
         return $this->client()->post("{$this->url}/rest/v1/follows", [
             'follower_id' => $followerId,
             'followed_id' => $followedId,
+            'created_at' => now()->toIso8601String(),
         ])->json();
     }
 
