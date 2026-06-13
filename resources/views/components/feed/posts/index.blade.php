@@ -8,7 +8,7 @@
     <div id="feed-sentinel" class="h-10"></div>
 @else
     <div class="flex flex-col items-center justify-center py-32 text-center px-6">
-        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center mb-6">
+        <div class="w-20 h-20 bg-gray-100 dark:bg-zinc-950 rounded-xl flex items-center justify-center mb-6">
             <svg class="w-10 h-10 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -17,7 +17,7 @@
         <h3 class="text-xl font-black text-gray-900 dark:text-gray-200 tracking-tight">Nenhum post cadastrado.<h3>
 
                 <button id="open-modal-btn-empty"
-                    class="mt-8 bg-gray-600 dark:bg-gray-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 dark:shadow-none active:scale-95 transition-all cursor-pointer">
+                    class="mt-8 bg-gray-600 dark:bg-zinc-900 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 dark:shadow-none active:scale-95 transition-all cursor-pointer">
                     Fazer minha primeira postagem
                 </button>
     </div>

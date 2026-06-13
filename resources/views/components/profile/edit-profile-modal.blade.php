@@ -1,12 +1,12 @@
 @props(['user'])
 
 <div id="edit-profile-modal"
-    class="fixed inset-0 z-100 hidden items-center justify-center bg-zinc-900/60 p-4 backdrop-blur-sm">
+    class="fixed inset-0 z-100 hidden items-center justify-center bg-[var(--bg-overlay)] p-4 backdrop-blur-sm">
 
     <div
-        class="w-full max-w-lg transform overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl transition-all">
+        class="w-full max-w-lg transform overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 bg-white shadow-2xl transition-all">
 
-        <div class="flex items-center justify-between border-b border-gray-50 bg-white dark:bg-zinc-950 px-6 py-4">
+        <div class="flex items-center justify-between bg-white dark:bg-zinc-950 px-6 py-4">
             <h2 class="text-xl font-bold tracking-tight text-gray-500 dark:text-white">Editar perfil</h2>
             <button id="close-edit-profile-modal-x" class="cursor-pointer p-1 text-gray-400 transition-colors hover:text-gray-600">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@
 
             <div class="flex items-center justify-end gap-3 pt-2">
                 <button type="button" id="close-edit-profile-modal-btn"
-                    class="cursor-pointer px-6 py-2.5 text-sm font-bold text-gray-500 transition-colors hover:text-gray-800">
+                    class="cursor-pointer px-6 py-2.5 text-sm font-bold text-gray-500 transition-colors hover:text-zinc-900">
                     Cancelar
                 </button>
                 <button type="submit"
