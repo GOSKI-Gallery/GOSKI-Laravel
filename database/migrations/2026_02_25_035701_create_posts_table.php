@@ -48,20 +48,20 @@ return new class extends Migration
                 END \$\$;
             ");
 
-            DB::unprepared("
-                DO \$do\$
+            DB::unprepared('
+                DO $do$
                 BEGIN
                     CREATE OR REPLACE FUNCTION public.handle_rejected_post()
-                    RETURNS trigger AS \$\$
+                    RETURNS trigger AS $$
                     BEGIN
                         IF NEW.is_nsfw THEN DELETE FROM laravel.posts WHERE id = NEW.id; END IF;
                         RETURN NEW;
-                    END; \$\$ LANGUAGE plpgsql SECURITY DEFINER;
+                    END; $$ LANGUAGE plpgsql SECURITY DEFINER;
 
                     DROP TRIGGER IF EXISTS on_post_moderated ON laravel.posts;
                     CREATE TRIGGER on_post_moderated AFTER UPDATE OF moderation_status ON laravel.posts FOR EACH ROW EXECUTE PROCEDURE public.handle_rejected_post();
-                END \$do\$;
-            ");
+                END $do$;
+            ');
 
             DB::unprepared("INSERT INTO storage.buckets (id, name, public) VALUES ('posts', 'posts', true) ON CONFLICT (id) DO NOTHING;");
 
