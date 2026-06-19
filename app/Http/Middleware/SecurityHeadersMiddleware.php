@@ -21,12 +21,14 @@ class SecurityHeadersMiddleware
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
+        $viteUrl = config('app.vite_dev_server_url');
+
         $csp = "default-src 'self'; "
-            ."script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
-            ."style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            ."img-src 'self' data: https:; "
+            ."script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net {$viteUrl}; "
+            ."style-src 'self' 'unsafe-inline' https://fonts.googleapis.com {$viteUrl}; "
+            ."img-src 'self' data: https: {$viteUrl}; "
             ."font-src 'self' https://fonts.gstatic.com; "
-            ."connect-src 'self'; "
+            ."connect-src 'self' {$viteUrl} ws://localhost:5173; "
             ."frame-ancestors 'none';";
 
         $response->headers->set('Content-Security-Policy', $csp);
