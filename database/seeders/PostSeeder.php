@@ -109,7 +109,7 @@ class PostSeeder extends Seeder
         $postId = DB::table((new Post)->getTable())->insertGetId([
             'user_id' => $user->id,
             'image_url' => $internalUrl,
-            'is_nsfw' => DB::raw('false'),
+            'is_nsfw' => DB::raw('true'),
             'moderation_status' => 'POSSIBLE',
             'description' => 'Post de teste para verificar o blur e a fila de moderação.',
             'created_at' => now(),
