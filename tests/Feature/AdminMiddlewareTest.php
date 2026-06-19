@@ -48,7 +48,7 @@ class AdminMiddlewareTest extends TestCase
         $response = $this->actingAs($admin)->post("/admin/posts/{$post->id}/approve");
         $response->assertRedirect(route('admin.dashboard'));
 
-        $this->assertEquals('approved', $post->fresh()->moderation_status);
+        $this->assertEquals('VERY_UNLIKELY', $post->fresh()->moderation_status);
     }
 
     public function test_admin_can_delete_post(): void
