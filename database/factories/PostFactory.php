@@ -16,7 +16,7 @@ class PostFactory extends Factory
             'user_id' => User::factory(),
             'image_url' => 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5',
             'description' => 'Processando imagem...',
-            'moderation_status' => 'pending',
+            'moderation_status' => null,
         ];
     }
 }

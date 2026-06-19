@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('image_url');
             $table->boolean('is_nsfw')->default(false);
-            $table->string('moderation_status')->default('pending');
+            $table->string('moderation_status')->nullable();
             $table->timestamps();
         });
 
@@ -30,7 +30,7 @@ return new class extends Migration
                         ALTER TABLE laravel.posts ENABLE ROW LEVEL SECURITY;
 
                         IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Posts aprovados públicos' AND tablename = 'posts') THEN
-                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status = 'approved');
+                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status IN ('VERY_UNLIKELY', 'UNLIKELY', 'UNKNOWN'));
                         END IF;
 
                         IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono vê posts pendentes' AND tablename = 'posts') THEN
@@ -48,20 +48,20 @@ return new class extends Migration
                 END \$\$;
             ");
 
-            DB::unprepared("
-                DO \$do\$
+            DB::unprepared('
+                DO $do$
                 BEGIN
                     CREATE OR REPLACE FUNCTION public.handle_rejected_post()
-                    RETURNS trigger AS \$\$
+                    RETURNS trigger AS $$
                     BEGIN
-                        IF NEW.moderation_status = 'rejected' THEN DELETE FROM laravel.posts WHERE id = NEW.id; END IF;
+                        IF NEW.is_nsfw THEN DELETE FROM laravel.posts WHERE id = NEW.id; END IF;
                         RETURN NEW;
-                    END; \$\$ LANGUAGE plpgsql SECURITY DEFINER;
+                    END; $$ LANGUAGE plpgsql SECURITY DEFINER;
 
                     DROP TRIGGER IF EXISTS on_post_moderated ON laravel.posts;
                     CREATE TRIGGER on_post_moderated AFTER UPDATE OF moderation_status ON laravel.posts FOR EACH ROW EXECUTE PROCEDURE public.handle_rejected_post();
-                END \$do\$;
-            ");
+                END $do$;
+            ');
 
             DB::unprepared("INSERT INTO storage.buckets (id, name, public) VALUES ('posts', 'posts', true) ON CONFLICT (id) DO NOTHING;");
 

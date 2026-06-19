@@ -25,7 +25,7 @@ class ModelFactoryTest extends TestCase
     {
         $post = Post::factory()->create();
         $this->assertDatabaseHas('posts', ['id' => $post->id]);
-        $this->assertEquals('pending', $post->moderation_status);
+        $this->assertNull($post->moderation_status);
         $this->assertNotNull($post->image_url);
     }
 

@@ -88,7 +88,7 @@ class AdminControllerTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.posts.approve', $post->id));
 
         $response->assertRedirect(route('admin.dashboard'));
-        $this->assertEquals('approved', $post->fresh()->moderation_status);
+        $this->assertEquals('VERY_UNLIKELY', $post->fresh()->moderation_status);
     }
 
     public function test_destroy_post_deletes_post(): void

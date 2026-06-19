@@ -26,7 +26,7 @@ class AdminController extends Controller
     public function approvePost($id)
     {
         $post = Post::findOrFail($id);
-        $post->moderation_status = 'approved';
+        $post->moderation_status = 'VERY_UNLIKELY';
         $post->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Post aprovado com sucesso.');
