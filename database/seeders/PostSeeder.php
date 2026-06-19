@@ -77,16 +77,16 @@ class PostSeeder extends Seeder
 
     private function createNsfwTestPost($user)
     {
-        $imageUrl = 'https://images.unsplash.com/photo-1518173946687-a36f968f7da6';
+        $imageUrl = 'https://picsum.photos/seed/nsfw-test/800/800';
 
-        $this->command->info('Criando post NSFW de teste...');
+        $this->command->info('Criando post de teste para moderação...');
 
         $internalUrl = $imageUrl;
 
         if (env('SUPABASE_URL')) {
             try {
                 $imageContent = Http::timeout(10)->get($imageUrl)->body();
-                $filename = 'post_nsfw_test_'.Str::random(8).'.jpg';
+                $filename = 'post_moderation_test_'.Str::random(8).'.jpg';
 
                 $uploadUrl = env('SUPABASE_URL')."/storage/v1/object/posts/{$filename}";
 
@@ -108,11 +108,11 @@ class PostSeeder extends Seeder
         $post = new Post;
         $post->user_id = $user->id;
         $post->image_url = $internalUrl;
-        $post->is_nsfw = 'true';
+        $post->is_nsfw = false;
         $post->moderation_status = 'POSSIBLE';
         $post->description = 'Post de teste para verificar o blur e a fila de moderação.';
         $post->save();
 
-        $this->command->info("Post NSFW test #{$post->id} criado com moderação pendente (URL: {$internalUrl})!");
+        $this->command->info("Post de moderação #{$post->id} criado com status POSSIBLE (URL: {$internalUrl})!");
     }
 }
