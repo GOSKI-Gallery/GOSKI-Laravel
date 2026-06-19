@@ -22,7 +22,7 @@ return new class extends Migration
                     CREATE OR REPLACE FUNCTION public.trigger_image_moderation()
                     RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS \$\$
                     BEGIN
-                        IF NEW.moderation_status = 'pending' THEN
+                        IF NEW.moderation_status IS NULL THEN
                             PERFORM pg_notify('post_moderation', json_build_object('post_id', NEW.id, 'image_url', NEW.image_url)::text);
                         END IF;
                         RETURN NEW;

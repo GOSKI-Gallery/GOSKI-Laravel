@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('image_url');
             $table->boolean('is_nsfw')->default(false);
-            $table->string('moderation_status')->default('pending');
+            $table->string('moderation_status')->nullable();
             $table->timestamps();
         });
 
@@ -30,7 +30,7 @@ return new class extends Migration
                         ALTER TABLE laravel.posts ENABLE ROW LEVEL SECURITY;
 
                         IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Posts aprovados públicos' AND tablename = 'posts') THEN
-                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status = 'approved');
+                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status IN ('VERY_UNLIKELY', 'UNLIKELY', 'UNKNOWN', 'approved'));
                         END IF;
 
                         IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono vê posts pendentes' AND tablename = 'posts') THEN
@@ -54,7 +54,7 @@ return new class extends Migration
                     CREATE OR REPLACE FUNCTION public.handle_rejected_post()
                     RETURNS trigger AS \$\$
                     BEGIN
-                        IF NEW.moderation_status = 'rejected' THEN DELETE FROM laravel.posts WHERE id = NEW.id; END IF;
+                        IF NEW.is_nsfw THEN DELETE FROM laravel.posts WHERE id = NEW.id; END IF;
                         RETURN NEW;
                     END; \$\$ LANGUAGE plpgsql SECURITY DEFINER;
 
