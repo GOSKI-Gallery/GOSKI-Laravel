@@ -30,7 +30,7 @@ return new class extends Migration
                         ALTER TABLE laravel.posts ENABLE ROW LEVEL SECURITY;
 
                         IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Posts aprovados públicos' AND tablename = 'posts') THEN
-                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status IN ('VERY_UNLIKELY', 'UNLIKELY', 'UNKNOWN', 'approved'));
+                            CREATE POLICY \"Posts aprovados públicos\" ON laravel.posts FOR SELECT USING (moderation_status IN ('VERY_UNLIKELY', 'UNLIKELY', 'UNKNOWN'));
                         END IF;
 
                         IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Dono vê posts pendentes' AND tablename = 'posts') THEN
