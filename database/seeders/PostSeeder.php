@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -105,14 +106,16 @@ class PostSeeder extends Seeder
             }
         }
 
-        $post = new Post;
-        $post->user_id = $user->id;
-        $post->image_url = $internalUrl;
-        $post->is_nsfw = false;
-        $post->moderation_status = 'POSSIBLE';
-        $post->description = 'Post de teste para verificar o blur e a fila de moderação.';
-        $post->save();
+        $postId = DB::table((new Post)->getTable())->insertGetId([
+            'user_id' => $user->id,
+            'image_url' => $internalUrl,
+            'is_nsfw' => DB::raw('false'),
+            'moderation_status' => 'POSSIBLE',
+            'description' => 'Post de teste para verificar o blur e a fila de moderação.',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        $this->command->info("Post de moderação #{$post->id} criado com status POSSIBLE (URL: {$internalUrl})!");
+        $this->command->info("Post de moderação #{$postId} criado com status POSSIBLE (URL: {$internalUrl})!");
     }
 }
