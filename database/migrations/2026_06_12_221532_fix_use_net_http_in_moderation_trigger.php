@@ -32,11 +32,12 @@ return new class extends Migration
                     IF NEW.moderation_status IS NULL THEN
                         PERFORM net.http_post(
                             url := '{$functionUrl}',
+                            body := jsonb_build_object('record', row_to_json(NEW)),
+                            params := '{}'::jsonb,
                             headers := jsonb_build_object(
                                 'Content-Type', 'application/json',
                                 'Authorization', 'Bearer {$serviceKey}'
                             ),
-                            body := jsonb_build_object('record', row_to_json(NEW))::text,
                             timeout_milliseconds := 30000
                         );
                     END IF;
