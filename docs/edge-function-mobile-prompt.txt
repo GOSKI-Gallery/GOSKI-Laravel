@@ -1,0 +1,101 @@
+## Prompt para IA do Mobile — Integração com Edge Function de Moderação
+
+### Arquitetura
+
+O fluxo de moderação de imagens funciona assim:
+
+```
+Mobile → upload imagem → Storage Supabase (bucket "posts")
+Mobile → INSERT em laravel.posts → TRIGGER no banco → Edge Function → Google VisionAI
+```
+
+### Regra CRÍTICA (onde está o erro)
+
+O trigger que ativa a edge function só dispara quando `moderation_status IS NULL`.
+
+**❌ ERRADO (o que está acontecendo):**
+```sql
+INSERT INTO laravel.posts (user_id, image_url, moderation_status, ...)
+VALUES ('...', '...', 'pendin', ...)
+-- moderation_status = 'pendin' → trigger NÃO dispara → edge function NUNCA é chamada
+```
+
+**✅ CORRETO:**
+```sql
+INSERT INTO laravel.posts (user_id, image_url, ...)
+VALUES ('...', '...', ...)
+-- moderation_status = NULL (padrão da coluna) → trigger DISPARA → edge function roda
+```
+
+### Passo a passo para o Mobile
+
+**1. Upload da imagem para o Storage**
+
+```
+POST {SUPABASE_URL}/storage/v1/object/posts/{filename}
+Headers:
+  Authorization: Bearer {user_jwt}
+  Content-Type: image/jpeg
+
+Body: (bytes da imagem)
+```
+
+URL pública gerada:
+```
+{SUPABASE_URL}/storage/v1/object/public/posts/{filename}
+```
+
+**2. Criar o post no banco — SEM moderation_status**
+
+```
+POST {SUPABASE_URL}/rest/v1/posts
+Headers:
+  apikey: {SUPABASE_ANON_KEY}
+  Authorization: Bearer {user_jwt}
+  Content-Profile: laravel
+  Accept-Profile: laravel
+
+Body:
+{
+  "user_id": "{auth.uid()}",
+  "image_url": "{public_url_do_upload}",
+  "description": "descrição opcional"
+  // ⚠️ NÃO enviar moderation_status nem is_nsfw
+}
+```
+
+> ❗ **Importante:** Os headers `Content-Profile: laravel` e `Accept-Profile: laravel` são OBRIGATÓRIOS para acessar as tabelas no schema `laravel`.
+
+### O que a Edge Function faz automaticamente
+
+1. Recebe o record do post recém-criado
+2. Envia a `image_url` para o Google VisionAI
+3. Analisa SafeSearch (adult, violence, racy, medical)
+4. Extrai labels/tags de conteúdo
+5. Atualiza o post com:
+   - `moderation_status`: `'VERY_UNLIKELY' | 'UNLIKELY' | 'POSSIBLE' | 'LIKELY' | 'VERY_LIKELY'`
+   - `is_nsfw`: `true` (se LIKELY ou VERY_LIKELY) | `false`
+6. Insere tags relacionadas na tabela `post_tag`
+
+### Como ler o resultado
+
+Após alguns segundos (a edge function é assíncrona), faça um SELECT no post:
+
+```
+GET {SUPABASE_URL}/rest/v1/posts?id=eq.{postId}
+Headers:
+  apikey: {SUPABASE_ANON_KEY}
+  Authorization: Bearer {user_jwt}
+  Accept-Profile: laravel
+```
+
+O post retornará com `moderation_status` e `is_nsfw` populados pela edge function.
+
+### Resumo dos erros comuns
+
+| Erro | Consequência | Correção |
+|------|-------------|----------|
+| `moderation_status = 'pendin'` | Trigger não dispara | Remover o campo ou enviar `null` |
+| Sem `Content-Profile: laravel` | Post cai no schema `public` em vez de `laravel` | Adicionar o header |
+| `image_url` inválida | VisionAI não consegue analisar | Usar URL pública do Storage |
+| Esquecer `Authorization` no upload | 401 Unauthorized | Passar JWT do usuário autenticado |
