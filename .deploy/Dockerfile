@@ -32,6 +32,7 @@ RUN apk add --no-cache \
 
 # Create symlinks so standard commands work
 RUN ln -sf /usr/bin/php83 /usr/bin/php && \
+    ln -sf /usr/bin/php83 /usr/local/bin/php && \
     ln -sf /usr/sbin/php-fpm83 /usr/sbin/php-fpm
 
 # Configure PHP-FPM to listen on TCP 9000 for Caddy, log to stderr
