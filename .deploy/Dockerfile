@@ -1,3 +1,10 @@
+FROM node:20-alpine AS frontend-builder
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
 FROM alpine:3.20
 
 # Install PHP 8.3 and extensions as pre-compiled Alpine packages (zero compilation)
@@ -73,6 +80,7 @@ RUN rm -rf /home/$NON_ROOT_USER/.composer
 
 # Copy app
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_GROUP . $LARAVEL_PATH/
+COPY --from=frontend-builder --chown=$NON_ROOT_USER:$NON_ROOT_GROUP /app/public/build $LARAVEL_PATH/public/build
 COPY ./.deploy/config/php/local.ini /etc/php83/conf.d/local.ini
 
 # Runtime ENVs — set via --build-arg or overridden at runtime with -e
