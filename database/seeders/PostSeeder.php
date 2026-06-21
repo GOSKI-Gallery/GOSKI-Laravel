@@ -23,13 +23,18 @@ class PostSeeder extends Seeder
         $images = [
             'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5',
             'https://images.unsplash.com/photo-1541963463532-d68292c34b19',
+            'https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0',
+            'https://images.unsplash.com/photo-1524758631624-e2822e304c36',
         ];
+
+        $this->command->info('Criando 4 posts para análise da VisionAI...');
 
         foreach ($images as $url) {
             $this->uploadAndCreatePost($users->random(), $url);
         }
 
-        $this->createNsfwTestPost($users->random());
+        $this->command->info('Criando 1 post com status POSSIBLE para revisão manual...');
+        $this->createPendingPost($users->random());
     }
 
     private function uploadAndCreatePost($user, $externalUrl)
@@ -56,38 +61,29 @@ class PostSeeder extends Seeder
 
             $internalUrl = env('SUPABASE_URL')."/storage/v1/object/public/posts/{$filename}";
 
-            $post = Post::factory()->create([
+            Post::factory()->create([
                 'user_id' => $user->id,
                 'image_url' => $internalUrl,
+                'description' => 'Post para análise da VisionAI via edge function.',
             ]);
 
-            if ($functionUrl = env('SUPABASE_FUNCTION_URL')) {
-                Http::withHeaders([
-                    'Authorization' => 'Bearer '.env('SUPABASE_ANON_KEY'),
-                ])->post($functionUrl, [
-                    'record' => $post,
-                ]);
-            }
-
-            $this->command->info("Post #{$post->id} criado e imagem enviada ao Storage!");
+            $this->command->info('Post criado com moderation_status=null — trigger da edge function será ativado.');
 
         } catch (\Exception $e) {
             $this->command->error('Erro no processo: '.$e->getMessage());
         }
     }
 
-    private function createNsfwTestPost($user)
+    private function createPendingPost($user)
     {
-        $imageUrl = 'https://picsum.photos/seed/nsfw-test/800/800';
-
-        $this->command->info('Criando post de teste para moderação...');
+        $imageUrl = 'https://picsum.photos/seed/nsfw-review/800/800';
 
         $internalUrl = $imageUrl;
 
         if (env('SUPABASE_URL')) {
             try {
                 $imageContent = Http::timeout(10)->get($imageUrl)->body();
-                $filename = 'post_moderation_test_'.Str::random(8).'.jpg';
+                $filename = 'pending_review_'.Str::random(8).'.jpg';
 
                 $uploadUrl = env('SUPABASE_URL')."/storage/v1/object/posts/{$filename}";
 
@@ -102,7 +98,7 @@ class PostSeeder extends Seeder
                     $internalUrl = env('SUPABASE_URL')."/storage/v1/object/public/posts/{$filename}";
                 }
             } catch (\Exception $e) {
-                $this->command->warn('Upload Supabase falhou, usando URL direta: '.$e->getMessage());
+                $this->command->warn('Upload falhou, usando URL direta: '.$e->getMessage());
             }
         }
 
@@ -111,11 +107,11 @@ class PostSeeder extends Seeder
             'image_url' => $internalUrl,
             'is_nsfw' => DB::raw('true'),
             'moderation_status' => 'POSSIBLE',
-            'description' => 'Post de teste para verificar o blur e a fila de moderação.',
+            'description' => 'Post pendente de revisão manual pelo administrador.',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $this->command->info("Post de moderação #{$postId} criado com status POSSIBLE (URL: {$internalUrl})!");
+        $this->command->info("Post #{$postId} criado com moderation_status=POSSIBLE e is_nsfw=true.");
     }
 }
