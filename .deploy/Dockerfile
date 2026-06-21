@@ -1,36 +1,60 @@
-ARG PHP_VERSION=${PHP_VERSION:-8.1}
-FROM php:${PHP_VERSION}-fpm-alpine AS php-system-setup
+FROM alpine:3.20
 
-# Install system dependencies and build deps (avoids compiling from source)
-RUN apk add --no-cache dcron busybox-suid libcap curl zip unzip git \
-    oniguruma-dev libxml2-dev curl-dev postgresql-dev sqlite-dev libzip-dev icu-dev \
-    libpng-dev libjpeg-turbo-dev freetype-dev \
-    autoconf g++ make linux-headers
+# Install PHP 8.3 and extensions as pre-compiled Alpine packages (zero compilation)
+RUN apk add --no-cache \
+    php83 \
+    php83-common \
+    php83-fpm \
+    php83-intl \
+    php83-bcmath \
+    php83-gd \
+    php83-pdo \
+    php83-pdo_mysql \
+    php83-pdo_pgsql \
+    php83-opcache \
+    php83-exif \
+    php83-pcntl \
+    php83-zip \
+    php83-pecl-redis \
+    php83-pecl-uuid \
+    php83-curl \
+    php83-phar \
+    php83-tokenizer \
+    php83-fileinfo \
+    php83-iconv \
+    php83-dom \
+    dcron \
+    busybox-suid \
+    libcap \
+    curl \
+    unzip \
+    git
 
-# Install PHP extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
-RUN install-php-extensions intl bcmath gd pdo_mysql pdo_pgsql opcache redis uuid exif pcntl zip && \
-    apk del autoconf g++ make linux-headers
+# Create symlinks so standard commands work
+RUN ln -sf /usr/bin/php83 /usr/bin/php && \
+    ln -sf /usr/sbin/php-fpm83 /usr/sbin/php-fpm
 
-# Install supervisord implementation
+# Configure PHP-FPM to listen on TCP 9000 for Caddy, log to stderr
+RUN sed -i 's/^listen = .*/listen = 127.0.0.1:9000/' /etc/php83/php-fpm.d/www.conf && \
+    sed -i 's/^;error_log = log\/php83\/error.log/error_log = \/proc\/self\/fd\/2/' /etc/php83/php-fpm.conf
+
+# Install supervisord
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/local/bin/supervisord
 
-# Install caddy
+# Install Caddy
 COPY --from=caddy:2.2.1 /usr/bin/caddy /usr/local/bin/caddy
 RUN setcap 'cap_net_bind_service=+ep' /usr/local/bin/caddy
 
 # Install composer
 COPY --from=composer/composer:2 /usr/bin/composer /usr/local/bin/composer
 
-FROM php-system-setup AS app-setup
-
 # Set working directory
 ENV LARAVEL_PATH=/srv/app
 WORKDIR $LARAVEL_PATH
 
-# Add non-root user: 'app'
-ARG NON_ROOT_GROUP=${NON_ROOT_GROUP:-app}
-ARG NON_ROOT_USER=${NON_ROOT_USER:-app}
+# Add non-root user
+ARG NON_ROOT_GROUP=app
+ARG NON_ROOT_USER=app
 RUN addgroup -S $NON_ROOT_GROUP && adduser -S $NON_ROOT_USER -G $NON_ROOT_GROUP
 RUN addgroup $NON_ROOT_USER wheel
 
@@ -39,7 +63,7 @@ COPY ./.deploy/config/crontab /etc/crontabs/$NON_ROOT_USER
 RUN chmod 777 /usr/sbin/crond
 RUN chown -R $NON_ROOT_USER:$NON_ROOT_GROUP /etc/crontabs/$NON_ROOT_USER && setcap cap_setgid=ep /usr/sbin/crond
 
-# Switch to non-root 'app' user & install app dependencies
+# Switch to non-root user & install app dependencies
 COPY composer.json composer.lock ./
 RUN chown -R $NON_ROOT_USER:$NON_ROOT_GROUP $LARAVEL_PATH
 USER $NON_ROOT_USER
@@ -48,7 +72,7 @@ RUN rm -rf /home/$NON_ROOT_USER/.composer
 
 # Copy app
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_GROUP . $LARAVEL_PATH/
-COPY ./.deploy/config/php/local.ini /usr/local/etc/php/conf.d/local.ini
+COPY ./.deploy/config/php/local.ini /etc/php83/conf.d/local.ini
 
 # Runtime ENVs — set via --build-arg or overridden at runtime with -e
 ARG APP_KEY
