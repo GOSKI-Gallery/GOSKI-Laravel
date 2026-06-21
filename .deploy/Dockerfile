@@ -25,7 +25,7 @@ COPY --from=composer/composer:2 /usr/bin/composer /usr/local/bin/composer
 ENV LARAVEL_PATH=/srv/app
 WORKDIR $LARAVEL_PATH
 
-RUN addgroup -S app && adduser -S app -G app && addgroup app wheel
+RUN addgroup -S app && adduser -S app -G app -s /bin/sh && addgroup app wheel
 
 COPY composer.json composer.lock ./
 RUN chown -R app:app $LARAVEL_PATH && \
