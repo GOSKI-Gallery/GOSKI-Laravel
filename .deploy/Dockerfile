@@ -1,3 +1,11 @@
+# Stage 1: Build frontend assets
+FROM node:20-alpine AS node-assets
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
 FROM alpine:3.20
 
 # Install PHP 8.3 and extensions as pre-compiled Alpine packages (zero compilation)
@@ -73,6 +81,8 @@ RUN rm -rf /home/$NON_ROOT_USER/.composer
 
 # Copy app
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_GROUP . $LARAVEL_PATH/
+# Copy built frontend assets from node-assets stage
+COPY --from=node-assets --chown=$NON_ROOT_USER:$NON_ROOT_GROUP /build/public/build $LARAVEL_PATH/public/build
 COPY ./.deploy/config/php/local.ini /etc/php83/conf.d/local.ini
 
 # Runtime ENVs — set via --build-arg or overridden at runtime with -e
