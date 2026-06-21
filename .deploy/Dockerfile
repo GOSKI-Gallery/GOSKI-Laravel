@@ -1,12 +1,16 @@
 ARG PHP_VERSION=${PHP_VERSION:-8.1}
 FROM php:${PHP_VERSION}-fpm-alpine AS php-system-setup
 
-# Install system dependencies
-RUN apk add --no-cache dcron busybox-suid libcap curl zip unzip git
+# Install system dependencies and build deps (avoids compiling from source)
+RUN apk add --no-cache dcron busybox-suid libcap curl zip unzip git \
+    oniguruma-dev libxml2-dev curl-dev postgresql-dev sqlite-dev libzip-dev icu-dev \
+    libpng-dev libjpeg-turbo-dev freetype-dev \
+    autoconf g++ make linux-headers
 
 # Install PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
-RUN install-php-extensions intl bcmath gd pdo_mysql pdo_pgsql opcache redis uuid exif pcntl zip
+RUN install-php-extensions intl bcmath gd pdo_mysql pdo_pgsql opcache redis uuid exif pcntl zip && \
+    apk del autoconf g++ make linux-headers
 
 # Install supervisord implementation
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/local/bin/supervisord
