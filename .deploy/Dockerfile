@@ -6,7 +6,7 @@ RUN apk add --no-cache \
     php83-pdo php83-pdo_pgsql php83-opcache \
     php83-pcntl php83-zip \
     php83-pecl-redis php83-pecl-uuid \
-    php83-curl php83-phar \
+    php83-curl php83-phar php83-openssl \
     php83-tokenizer php83-fileinfo php83-iconv php83-dom php83-exif \
     dcron busybox-suid libcap curl unzip git
 
