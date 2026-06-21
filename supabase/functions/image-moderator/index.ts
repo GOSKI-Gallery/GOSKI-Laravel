@@ -72,7 +72,8 @@ serve(async (req) => {
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { db: { schema: 'laravel' } }
     )
 
     if (labels.length > 0) {
