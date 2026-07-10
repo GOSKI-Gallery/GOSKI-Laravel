@@ -83,4 +83,13 @@ class SupabasePostService extends SupabaseBaseService
 
         return is_array($response) ? count($response) : 0;
     }
+
+    public function getCommentCount(string $postId): int
+    {
+        $response = $this->client()
+            ->get("{$this->url}/rest/v1/comments?post_id=eq.{$postId}")
+            ->json();
+
+        return is_array($response) ? count($response) : 0;
+    }
 }

@@ -166,6 +166,198 @@
         }
     });
 
+    function openCommentsDrawer(postId) {
+        const overlay = document.getElementById('comments-drawer-' + postId);
+        if (!overlay) return;
+        overlay.classList.remove('hidden');
+        const panel = overlay.querySelector('[data-comments-panel]');
+        requestAnimationFrame(() => {
+            panel.classList.remove('translate-x-full');
+        });
+        loadComments(postId);
+    }
+
+    function closeCommentsDrawer(postId) {
+        const overlay = document.getElementById('comments-drawer-' + postId);
+        if (!overlay) return;
+        const panel = overlay.querySelector('[data-comments-panel]');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => overlay.classList.add('hidden'), 200);
+    }
+
+    function loadComments(postId) {
+        const overlay = document.getElementById('comments-drawer-' + postId);
+        if (!overlay) return;
+        const list = overlay.querySelector('[data-comments-list]');
+        list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-8">Carregando...</p>';
+
+        fetch('/posts/' + postId + '/comments', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                list.innerHTML = data.comments.map(c => renderComment(postId, c)).join('');
+            } else {
+                list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-8">Erro ao carregar comentários.</p>';
+            }
+        })
+        .catch(() => {
+            list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-8">Erro ao carregar comentários.</p>';
+        });
+    }
+
+    function renderComment(postId, c) {
+        const avatar = c.users && c.users.profile_photo_url
+            ? '<img src="' + c.users.profile_photo_url + '" alt="" class="w-full h-full object-cover">'
+            : '<svg class="w-4 h-4 text-zinc-400" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/></svg>';
+        const username = c.users ? c.users.username : 'Usuário';
+        const profileUrl = '{{ route('profile.show', ':userId') }}'.replace(':userId', c.user_id);
+        const time = c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        const deleteBtn = (c.user_id === '{{ auth()->id() }}')
+            ? '<button type="button" class="text-zinc-400 hover:text-red-500 flex-shrink-0 cursor-pointer" data-delete-comment="' + c.id + '" data-post-id="' + postId + '">' +
+                '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>' +
+                '</svg></button>'
+            : '';
+        return '<div class="flex gap-3" data-comment-id="' + c.id + '">' +
+            '<div class="w-8 h-8 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-700 flex-shrink-0">' + avatar + '</div>' +
+            '<div class="flex-1 min-w-0">' +
+                '<p class="text-sm"><a href="' + profileUrl + '" class="font-bold text-zinc-900 dark:text-white hover:underline">' + username + '</a> ' +
+                '<span class="text-zinc-600 dark:text-zinc-400">' + escapeHtml(c.body) + '</span></p>' +
+                '<p class="text-xs text-zinc-400 mt-1">' + time + '</p>' +
+            '</div>' +
+            deleteBtn +
+        '</div>';
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
+
+    document.addEventListener('click', function(e) {
+        const openBtn = e.target.closest('[data-open-comments]');
+        if (openBtn) {
+            e.preventDefault();
+            openCommentsDrawer(openBtn.dataset.postId);
+            return;
+        }
+
+        const closeBtn = e.target.closest('[data-comments-close]');
+        if (closeBtn) {
+            const overlay = closeBtn.closest('[id^="comments-drawer-"]');
+            if (overlay) {
+                const postId = overlay.id.replace('comments-drawer-', '');
+                closeCommentsDrawer(postId);
+            }
+            return;
+        }
+
+        const overlayEl = e.target.closest('[data-comments-overlay]');
+        if (overlayEl) {
+            const overlay = overlayEl.closest('[id^="comments-drawer-"]');
+            if (overlay) {
+                const postId = overlay.id.replace('comments-drawer-', '');
+                closeCommentsDrawer(postId);
+            }
+            return;
+        }
+
+        const deleteBtn = e.target.closest('[data-delete-comment]');
+        if (deleteBtn) {
+            e.preventDefault();
+            const commentId = deleteBtn.dataset.deleteComment;
+            const postId = deleteBtn.dataset.postId;
+            if (!commentId) return;
+            if (deleteBtn.disabled) return;
+            deleteBtn.disabled = true;
+
+            fetch('/posts/comments/' + commentId, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({_token: csrf}),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const item = deleteBtn.closest('[data-comment-id]');
+                    if (item) item.remove();
+                    const list = deleteBtn.closest('[data-comments-list]');
+                    if (list && !list.querySelector('[data-comment-id]')) {
+                        list.innerHTML = '<p class="text-zinc-500 dark:text-zinc-400 text-sm text-center py-8">Nenhum comentário ainda. Seja o primeiro!</p>';
+                    }
+                    updateCommentCount(postId, -1);
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                deleteBtn.disabled = false;
+            });
+            return;
+        }
+    });
+
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form.hasAttribute('data-comment-form')) {
+            e.preventDefault();
+            const input = form.querySelector('[name="body"]');
+            const body = input.value.trim();
+            if (!body) return;
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn.disabled) return;
+            btn.disabled = true;
+
+            const overlay = form.closest('[id^="comments-drawer-"]');
+            const postId = overlay ? overlay.id.replace('comments-drawer-', '') : '';
+
+            fetch('/posts/' + postId + '/comments', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({_token: csrf, body: body}),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    input.value = '';
+                    loadComments(postId);
+                    updateCommentCount(postId, 0, data.comments_count);
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                btn.disabled = false;
+            });
+        }
+    });
+
+    function updateCommentCount(postId, delta, absolute) {
+        const btns = document.querySelectorAll('[data-open-comments][data-post-id="' + postId + '"]');
+        btns.forEach(btn => {
+            const countEl = btn.querySelector('.comment-count');
+            if (countEl) {
+                if (absolute !== undefined) {
+                    countEl.textContent = absolute;
+                } else {
+                    let c = parseInt(countEl.textContent) + delta;
+                    countEl.textContent = Math.max(c, 0);
+                }
+            }
+        });
+    }
+
     const sentinel = document.getElementById('feed-sentinel');
     if (sentinel) {
         let page = 1;
