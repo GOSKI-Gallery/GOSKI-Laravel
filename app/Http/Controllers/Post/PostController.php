@@ -34,6 +34,7 @@ class PostController extends Controller
         foreach ($paginator->items() as $post) {
             $post->setAttribute('is_liked_by_user', $supabaseUser->hasLikedPost($user->id, (string) $post->id));
             $post->setAttribute('likes_count', $this->supabase->getLikeCount((string) $post->id));
+            $post->setAttribute('comments_count', $this->supabase->getCommentCount((string) $post->id));
             $post->setAttribute('is_followed_by_user', $post->is_following ?? $supabaseUser->isFollowing($user->id, $post->users['id']));
         }
 

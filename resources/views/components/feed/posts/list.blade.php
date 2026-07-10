@@ -52,7 +52,7 @@
                         <span class="text-zinc-500 dark:text-zinc-400">{{ $post['description'] }}</span>
                     </p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1">
                     <form action="{{ route('post.like.toggle', $post['id']) }}" method="POST" class="m-0 p-0 like-form">
                         @csrf
                             <button type="submit"
@@ -65,9 +65,20 @@
                                 <span class="text-sm font-black {{ ($post['is_liked_by_user'] ?? false) ? 'text-red-600' : 'text-zinc-900 dark:text-zinc-300' }} transition-all like-count">{{ $post['likes_count'] ?? 0 }}</span>
                             </button>
                     </form>
+
+                    <button type="button"
+                        class="comment-btn flex items-center gap-2 pr-3 py-2 rounded-xl active:bg-zinc-100 dark:active:bg-zinc-800 transition-all cursor-pointer"
+                        data-post-id="{{ $post['id'] }}"
+                        data-open-comments>
+                        <svg class="w-6 h-6 text-zinc-900 dark:text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        <span class="text-sm font-black text-zinc-900 dark:text-zinc-300 comment-count">{{ $post['comments_count'] ?? 0 }}</span>
+                    </button>
                 </div>
             </div>
 
+            <x-feed.comments-drawer :postId="$post['id']"/>
         </article>
     @endif
 @endforeach

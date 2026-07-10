@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\NotificationsController;
@@ -49,6 +50,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/follow/{userId}', [FollowController::class, 'follow'])->name('user.follow');
     Route::post('/unfollow/{userId}', [FollowController::class, 'unfollow'])->name('user.unfollow');
     Route::post('/posts/{postId}/like', [LikeController::class, 'toggleLike'])->name('post.like.toggle');
+
+    Route::get('/posts/{postId}/comments', [CommentController::class, 'index'])->name('post.comments.index');
+    Route::post('/posts/{postId}/comments', [CommentController::class, 'store'])->name('post.comments.store');
+    Route::delete('/posts/comments/{commentId}', [CommentController::class, 'destroy'])->name('post.comments.destroy');
 
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('profile.show');

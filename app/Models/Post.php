@@ -37,6 +37,11 @@ class Post extends Model
         return $this->hasMany(Like::class);
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class, self::qualifyTable('post_tag'))
