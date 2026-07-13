@@ -70,8 +70,8 @@
                         class="comment-btn flex items-center gap-2 pr-3 py-2 rounded-xl active:bg-zinc-100 dark:active:bg-zinc-800 transition-all cursor-pointer"
                         data-post-id="{{ $post['id'] }}"
                         data-open-comments>
-                        <svg class="w-6 h-6 text-zinc-900 dark:text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        <svg class="w-6 h-6 text-zinc-900 dark:text-zinc-300" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/>
                         </svg>
                         <span class="text-sm font-black text-zinc-900 dark:text-zinc-300 comment-count">{{ $post['comments_count'] ?? 0 }}</span>
                     </button>
