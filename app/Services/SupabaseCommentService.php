@@ -21,17 +21,43 @@ class SupabaseCommentService
         $response = Http::withHeaders([
             'apikey' => $this->apiKey,
             'Authorization' => 'Bearer '.$this->apiKey,
+            'Accept-Profile' => 'laravel',
         ])->get("{$this->baseUrl}/comments", [
             'post_id' => 'eq.'.$postId,
             'order' => 'created_at.asc',
-            'select' => '*,users(id,username,profile_photo_url)',
         ]);
 
         if ($response->failed()) {
             return [];
         }
 
-        return $response->json() ?? [];
+        $comments = $response->json() ?? [];
+
+        $userIds = array_unique(array_column($comments, 'user_id'));
+
+        if (! empty($userIds)) {
+            $users = \App\Models\User::whereIn('id', $userIds)->get()->keyBy('id');
+
+            foreach ($comments as &$comment) {
+                $user = $users->get($comment['user_id']);
+
+                if ($user) {
+                    $comment['users'] = [
+                        'id' => $user->id,
+                        'username' => $user->username,
+                        'profile_photo_url' => $user->profile_photo_url,
+                    ];
+                }
+            }
+        }
+
+        foreach ($comments as &$comment) {
+            $comment['time_ago'] = isset($comment['created_at'])
+                ? \Carbon\Carbon::parse($comment['created_at'])->diffForHumans()
+                : '';
+        }
+
+        return $comments;
     }
 
     public function addComment(string $userId, string $postId, string $body): ?array

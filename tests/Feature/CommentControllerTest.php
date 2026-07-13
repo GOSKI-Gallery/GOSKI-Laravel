@@ -30,9 +30,15 @@ class CommentControllerTest extends TestCase
 
     public function test_index_returns_comments(): void
     {
+        $commentUser = User::factory()->create([
+            'id' => '550e8400-e29b-41d4-a716-446655440001',
+            'username' => 'commenter',
+            'profile_photo_url' => 'https://example.com/photo.jpg',
+        ]);
+
         Http::fake([
             "{$this->supabaseUrl}/rest/v1/comments*" => Http::response([
-                ['id' => 1, 'body' => 'Nice!', 'user_id' => 'user-1', 'post_id' => 'post-1'],
+                ['id' => 1, 'body' => 'Nice!', 'user_id' => $commentUser->id, 'post_id' => 'post-1', 'created_at' => '2026-07-13T10:00:00Z'],
             ], 200),
         ]);
 
@@ -45,6 +51,10 @@ class CommentControllerTest extends TestCase
         ]);
 
         $response->assertJsonCount(1, 'comments');
+
+        $response->assertJsonPath('comments.0.users.username', 'commenter');
+        $response->assertJsonPath('comments.0.users.profile_photo_url', 'https://example.com/photo.jpg');
+        $response->assertJsonStructure(['comments' => [['time_ago']]]);
     }
 
     public function test_store_requires_authentication(): void

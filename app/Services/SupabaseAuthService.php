@@ -67,7 +67,7 @@ class SupabaseAuthService extends SupabaseBaseService
         }
 
         if ($profile_photo_url) {
-            $fileName = 'profiles/'.$userId.'/'.Str::uuid().'.'.$profile_photo_url->extension();
+            $fileName = $userId.'/'.Str::uuid().'.'.$profile_photo_url->extension();
             $this->uploadImage('profiles', $fileName, $profile_photo_url);
             $dbUpdateData['profile_photo_url'] = $this->getPublicUrl('profiles', $fileName);
         }

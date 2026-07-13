@@ -2,12 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use App\Services\SupabaseCommentService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class SupabaseCommentServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     private SupabaseCommentService $service;
 
     private string $baseUrl;
@@ -26,10 +30,13 @@ class SupabaseCommentServiceTest extends TestCase
 
     public function test_get_comments_returns_array(): void
     {
+        $user1 = User::factory()->create(['username' => 'alice']);
+        $user2 = User::factory()->create(['username' => 'bob']);
+
         Http::fake([
             "{$this->baseUrl}/rest/v1/comments*" => Http::response([
-                ['id' => 1, 'body' => 'Great post!', 'user_id' => 'user-1', 'post_id' => 'post-1'],
-                ['id' => 2, 'body' => 'Thanks!', 'user_id' => 'user-2', 'post_id' => 'post-1'],
+                ['id' => 1, 'body' => 'Great post!', 'user_id' => $user1->id, 'post_id' => 'post-1', 'created_at' => now()->toIso8601String()],
+                ['id' => 2, 'body' => 'Thanks!', 'user_id' => $user2->id, 'post_id' => 'post-1', 'created_at' => now()->toIso8601String()],
             ], 200),
         ]);
 
@@ -37,6 +44,9 @@ class SupabaseCommentServiceTest extends TestCase
 
         $this->assertCount(2, $comments);
         $this->assertEquals('Great post!', $comments[0]['body']);
+        $this->assertEquals('alice', $comments[0]['users']['username']);
+        $this->assertEquals('bob', $comments[1]['users']['username']);
+        $this->assertArrayHasKey('time_ago', $comments[0]);
     }
 
     public function test_get_comments_returns_empty_array_when_null(): void
