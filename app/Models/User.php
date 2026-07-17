@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property string $username
  * @property string $role
+ * @property string|null $profile_photo_url
  */
 class User extends Authenticatable
 {
