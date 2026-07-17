@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class SupabaseCommentService
@@ -36,7 +38,7 @@ class SupabaseCommentService
         $userIds = array_unique(array_column($comments, 'user_id'));
 
         if (! empty($userIds)) {
-            $users = \App\Models\User::whereIn('id', $userIds)->get()->keyBy('id');
+            $users = User::whereIn('id', $userIds)->get()->keyBy('id');
 
             foreach ($comments as &$comment) {
                 $user = $users->get($comment['user_id']);
@@ -53,7 +55,7 @@ class SupabaseCommentService
 
         foreach ($comments as &$comment) {
             $comment['time_ago'] = isset($comment['created_at'])
-                ? \Carbon\Carbon::parse($comment['created_at'])->diffForHumans()
+                ? Carbon::parse($comment['created_at'])->diffForHumans()
                 : '';
         }
 
