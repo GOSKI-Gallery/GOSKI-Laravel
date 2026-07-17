@@ -166,54 +166,71 @@
         }
     });
 
-    function openCommentsDrawer(postId) {
-        const overlay = document.getElementById('comments-drawer-' + postId);
-        if (!overlay) return;
-        overlay.classList.remove('hidden');
-        const panel = overlay.querySelector('[data-comments-panel]');
-        requestAnimationFrame(() => {
-            panel.classList.remove('translate-x-full');
+    function toggleComments(postId) {
+        const section = document.getElementById('comments-section-' + postId);
+        if (!section) return;
+
+        const isOpen = section.style.maxHeight !== '0px';
+
+        document.querySelectorAll('.comments-section').forEach(el => {
+            if (el.id !== 'comments-section-' + postId && el.style.maxHeight !== '0px') {
+                el.style.maxHeight = '0px';
+            }
         });
-        loadComments(postId);
+
+        if (isOpen) {
+            section.style.maxHeight = '0px';
+            return;
+        }
+
+        section.style.maxHeight = section.scrollHeight + 'px';
+
+        loadCommentsInline(postId);
     }
 
-    function closeCommentsDrawer(postId) {
-        const overlay = document.getElementById('comments-drawer-' + postId);
-        if (!overlay) return;
-        const panel = overlay.querySelector('[data-comments-panel]');
-        panel.classList.add('translate-x-full');
-        setTimeout(() => overlay.classList.add('hidden'), 200);
-    }
-
-    function loadComments(postId) {
-        const overlay = document.getElementById('comments-drawer-' + postId);
-        if (!overlay) return;
-        const list = overlay.querySelector('[data-comments-list]');
-        list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-8">Carregando...</p>';
+    function loadCommentsInline(postId) {
+        const section = document.getElementById('comments-section-' + postId);
+        if (!section) return;
+        const list = section.querySelector('[data-comments-list]');
+        list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-4">Carregando...</p>';
 
         fetch('/posts/' + postId + '/comments', {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
         })
         .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                list.innerHTML = data.comments.map(c => renderComment(postId, c)).join('');
+            if (data && data.success && Array.isArray(data.comments)) {
+                if (data.comments.length === 0) {
+                    list.innerHTML = '<p class="text-zinc-500 dark:text-zinc-400 text-sm text-center py-4">Nenhum comentário ainda. Seja o primeiro!</p>';
+                } else {
+                    list.innerHTML = data.comments.map(c => renderComment(postId, c)).join('');
+                }
             } else {
-                list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-8">Erro ao carregar comentários.</p>';
+                list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-4">Erro ao carregar comentários.</p>';
+            }
+
+            if (section.style.maxHeight !== '0px') {
+                requestAnimationFrame(() => {
+                    section.style.maxHeight = section.scrollHeight + 'px';
+                });
             }
         })
         .catch(() => {
-            list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-8">Erro ao carregar comentários.</p>';
+            list.innerHTML = '<p class="text-zinc-400 text-sm text-center py-4">Erro ao carregar comentários.</p>';
+            if (section.style.maxHeight !== '0px') {
+                requestAnimationFrame(() => {
+                    section.style.maxHeight = section.scrollHeight + 'px';
+                });
+            }
         });
     }
 
     function renderComment(postId, c) {
-        const avatar = c.users && c.users.profile_photo_url
-            ? '<img src="' + c.users.profile_photo_url + '" alt="" class="w-full h-full object-cover">'
-            : '<svg class="w-4 h-4 text-zinc-400" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/></svg>';
+        const avatar = '<img src="' + (c.users ? c.users.profile_photo_url || '' : '') + '" alt="" class="w-full h-full object-cover" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+            '<svg class="w-full h-full text-zinc-400 hidden" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/></svg>';
         const username = c.users ? c.users.username : 'Usuário';
         const profileUrl = '{{ route('profile.show', ':userId') }}'.replace(':userId', c.user_id);
-        const time = c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        const time = c.time_ago || '';
         const deleteBtn = (c.user_id === '{{ auth()->id() }}')
             ? '<button type="button" class="text-zinc-400 hover:text-red-500 flex-shrink-0 cursor-pointer" data-delete-comment="' + c.id + '" data-post-id="' + postId + '">' +
                 '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
@@ -221,7 +238,7 @@
                 '</svg></button>'
             : '';
         return '<div class="flex gap-3" data-comment-id="' + c.id + '">' +
-            '<div class="w-8 h-8 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-700 flex-shrink-0">' + avatar + '</div>' +
+            '<div class="w-8 h-8 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-700 flex-shrink-0 flex items-center justify-center">' + avatar + '</div>' +
             '<div class="flex-1 min-w-0">' +
                 '<p class="text-sm"><a href="' + profileUrl + '" class="font-bold text-zinc-900 dark:text-white hover:underline">' + username + '</a> ' +
                 '<span class="text-zinc-600 dark:text-zinc-400">' + escapeHtml(c.body) + '</span></p>' +
@@ -241,27 +258,7 @@
         const openBtn = e.target.closest('[data-open-comments]');
         if (openBtn) {
             e.preventDefault();
-            openCommentsDrawer(openBtn.dataset.postId);
-            return;
-        }
-
-        const closeBtn = e.target.closest('[data-comments-close]');
-        if (closeBtn) {
-            const overlay = closeBtn.closest('[id^="comments-drawer-"]');
-            if (overlay) {
-                const postId = overlay.id.replace('comments-drawer-', '');
-                closeCommentsDrawer(postId);
-            }
-            return;
-        }
-
-        const overlayEl = e.target.closest('[data-comments-overlay]');
-        if (overlayEl) {
-            const overlay = overlayEl.closest('[id^="comments-drawer-"]');
-            if (overlay) {
-                const postId = overlay.id.replace('comments-drawer-', '');
-                closeCommentsDrawer(postId);
-            }
+            toggleComments(openBtn.dataset.postId);
             return;
         }
 
@@ -291,7 +288,8 @@
                     if (item) item.remove();
                     const list = deleteBtn.closest('[data-comments-list]');
                     if (list && !list.querySelector('[data-comment-id]')) {
-                        list.innerHTML = '<p class="text-zinc-500 dark:text-zinc-400 text-sm text-center py-8">Nenhum comentário ainda. Seja o primeiro!</p>';
+                        list.innerHTML = '<p class="text-zinc-500 dark:text-zinc-400 text-sm text-center py-4">Nenhum comentário ainda. Seja o primeiro!</p>';
+
                     }
                     updateCommentCount(postId, -1);
                 }
@@ -315,8 +313,8 @@
             if (btn.disabled) return;
             btn.disabled = true;
 
-            const overlay = form.closest('[id^="comments-drawer-"]');
-            const postId = overlay ? overlay.id.replace('comments-drawer-', '') : '';
+            const section = form.closest('[id^="comments-section-"]');
+            const postId = section ? section.id.replace('comments-section-', '') : '';
 
             fetch('/posts/' + postId + '/comments', {
                 method: 'POST',
@@ -332,7 +330,7 @@
             .then(data => {
                 if (data.success) {
                     input.value = '';
-                    loadComments(postId);
+                    loadCommentsInline(postId);
                     updateCommentCount(postId, 0, data.comments_count);
                 }
             })
