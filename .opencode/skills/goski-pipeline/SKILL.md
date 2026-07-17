@@ -48,12 +48,21 @@ For each sub-task from the plan, in order:
 ```
 - The orchestrator creates a branch, stages files, presents commits for approval, and creates a PR
 - Wait for user approval before commits are made
-- After PR is created, show the URL to the user
-### Step 5 — Verify (human)
+- After PR is merged, show the URL to the user
+### Step 5 — Verify CI Pipeline
+After PR is merged, check the CI pipeline results:
+```bash
+gh run list --branch main --limit 3 --json conclusion,headBranch,status,displayTitle
+```
+- Wait for all pipelines to complete (`status: completed`)
+- Verify all conclusions are `success`
+- If any pipeline fails, notify the user with details
+- If all pass, confirm to the user
+### Step 6 — Final notification
 Notify the user:
-- PR is ready at: `<URL>`
+- PR merged at: `<URL>`
 - Tests passed: `<count>`
-- Next step: user reviews the PR and merges
+- All pipelines: ✅ success
 ## Error handling
 | Scenario | Action |
 |----------|--------|
