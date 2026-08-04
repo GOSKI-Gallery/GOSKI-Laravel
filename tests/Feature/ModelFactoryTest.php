@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\PushToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -132,5 +133,22 @@ class ModelFactoryTest extends TestCase
         }
 
         $this->assertCount(3, $user->following);
+    }
+
+    public function test_push_token_can_be_created(): void
+    {
+        $user = User::factory()->create();
+        $token = PushToken::factory()->create(['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('push_tokens', ['id' => $token->id]);
+        $this->assertNotNull($token->token);
+        $this->assertStringContainsString('ExponentPushToken[', $token->token);
+    }
+
+    public function test_push_token_belongs_to_user(): void
+    {
+        $token = PushToken::factory()->create();
+
+        $this->assertInstanceOf(User::class, $token->user);
     }
 }

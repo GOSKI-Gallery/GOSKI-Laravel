@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Post;
+use App\Models\PushToken;
 use App\Models\Tag;
 use App\Models\User;
 use PHPUnit\Framework\TestCase;
@@ -55,5 +56,11 @@ class ModelTest extends TestCase
     {
         $tag = new Tag;
         $this->assertEquals(['name'], $tag->getFillable());
+    }
+
+    public function test_push_token_fillable_attributes(): void
+    {
+        $token = new PushToken;
+        $this->assertEquals(['user_id', 'token', 'platform'], $token->getFillable());
     }
 }
