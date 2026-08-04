@@ -45,6 +45,6 @@ class LocationService
             } catch (\Throwable) {
                 return;
             }
-        });
+        }) ?? (Cache::forget($cacheKey) ? null : null);
     }
 }
