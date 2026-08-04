@@ -115,12 +115,22 @@
             });
 
             const pinPopup = (p) => {
-                const username = (p.users && p.users.username) ? p.users.username : 'Usuário';
-                const profileUrl = '{{ route('profile.show', ':userId') }}'.replace(':userId', p.user_id);
-                const location = p.location_name ? p.location_name : '';
-                const distance = p.distance_km !== undefined ? ' · ' + p.distance_km + ' km' : '';
+                const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;',
+                }[ch]));
+
+                const username = escapeHtml((p.users && p.users.username) ? p.users.username : 'Usuário');
+                const profileUrl = '{{ route('profile.show', ':userId') }}'.replace(':userId', encodeURIComponent(String(p.user_id ?? '')));
+                const location = escapeHtml(p.location_name ? p.location_name : '');
+                const distance = p.distance_km !== undefined ? ' · ' + escapeHtml(p.distance_km) + ' km' : '';
+                const imageUrl = escapeHtml(p.image_url ?? '');
+
                 return '<div class="w-52">' +
-                    '<img src="' + p.image_url + '" class="w-full h-32 object-cover rounded-lg mb-2" onerror="this.style.display=\'none\'"/>' +
+                    '<img src="' + imageUrl + '" class="w-full h-32 object-cover rounded-lg mb-2" onerror="this.style.display=\'none\'"/>' +
                     '<a href="' + profileUrl + '" class="block font-bold text-zinc-900 dark:text-white text-sm hover:underline">' + username + '</a>' +
                     (location ? '<p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">' + location + distance + '</p>' : '') +
                     '</div>';
