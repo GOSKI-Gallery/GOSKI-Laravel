@@ -122,7 +122,7 @@ class SupabasePostService extends SupabaseBaseService
                 'users.username',
                 'users.profile_photo_url',
             )
-            ->orderBy('posts.created_at', 'desc')
+            ->orderByRaw('ABS(posts.latitude - ?) + ABS(posts.longitude - ?) ASC', [$latitude, $longitude])
             ->limit($limit)
             ->get();
 
