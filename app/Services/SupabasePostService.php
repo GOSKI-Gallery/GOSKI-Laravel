@@ -99,8 +99,10 @@ class SupabasePostService extends SupabaseBaseService
         $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
 
         $dLat = $radiusKm / 111.32;
-        $dLng = $radiusKm / (111.32 * cos(deg2rad($latitude)));
 
+        $latCos = cos(deg2rad($latitude));
+        $latCos = abs($latCos) < 1e-6 ? 1e-6 : $latCos;
+        $dLng = $radiusKm / (111.32 * $latCos);
         $rows = DB::table($prefix.'posts')
             ->join($prefix.'users', 'posts.user_id', '=', 'users.id')
             ->where('posts.id', '!=', $postId)
