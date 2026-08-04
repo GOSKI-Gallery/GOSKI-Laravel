@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\CreatePostRequest;
 use App\Models\Post;
+use App\Services\LocationService;
 use App\Services\RecommendationService;
 use App\Services\SupabasePostService;
 use App\Services\SupabaseUserService;
@@ -67,11 +68,21 @@ class PostController extends Controller
 
             $publicUrl = $this->supabase->getPublicUrl('posts', $fileName);
 
+            $latitude = isset($data['latitude']) ? (float) $data['latitude'] : null;
+            $longitude = isset($data['longitude']) ? (float) $data['longitude'] : null;
+
             $record = [
                 'user_id' => Auth::id(),
                 'description' => $data['description'],
                 'image_url' => $publicUrl,
                 'is_nsfw' => false,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'location_name' => app(LocationService::class)->resolveLocationName(
+                    $data['location_name'] ?? null,
+                    $latitude,
+                    $longitude
+                ),
             ];
 
             $this->supabase->insert('posts', $record);

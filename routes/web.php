@@ -7,6 +7,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Post\PostController;
+use App\Http\Controllers\Post\PostLocationController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/feed', [PostController::class, 'index'])->name('feed');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+
+    Route::get('/posts/{postId}/location', [PostLocationController::class, 'show'])->name('post.location.show');
 
     Route::post('/follow/{userId}', [FollowController::class, 'follow'])->name('user.follow');
     Route::post('/unfollow/{userId}', [FollowController::class, 'unfollow'])->name('user.unfollow');

@@ -18,6 +18,9 @@ class Post extends Model
     protected $fillable = [
         'description',
         'image_url',
+        'latitude',
+        'longitude',
+        'location_name',
         'is_nsfw',
         'moderation_status',
         'user_id',
@@ -25,6 +28,8 @@ class Post extends Model
 
     protected $casts = [
         'is_nsfw' => 'boolean',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     public function users(): BelongsTo
