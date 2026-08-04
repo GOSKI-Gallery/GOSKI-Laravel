@@ -20,7 +20,7 @@
                         <p class="text-zinc-900 dark:text-white font-bold text-lg">
                             {{ $post['users']['username'] }}
                         </p>
-                        @if (!empty($post['latitude']) && !empty($post['longitude']))
+                        @if (($post['latitude'] ?? null) !== null && ($post['longitude'] ?? null) !== null)
                             <button type="button"
                                 class="mt-0.5 flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-semibold cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-300"
                                 data-location-post-id="{{ $post['id'] }}"
