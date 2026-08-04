@@ -17,9 +17,14 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained($prefix.'users')->onDelete('cascade');
             $table->text('description')->nullable();
             $table->string('image_url');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('location_name', 255)->nullable();
             $table->boolean('is_nsfw')->default(false);
             $table->string('moderation_status')->nullable();
             $table->timestamps();
+
+            $table->index(['latitude', 'longitude']);
         });
 
         if ($driver === 'pgsql') {
