@@ -47,6 +47,20 @@
                 </div>
             </div>
 
+            <div class="mb-6">
+                <button type="button" id="add-location-btn"
+                    class="flex cursor-pointer items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm font-bold text-zinc-700 dark:text-zinc-300 transition-all hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+                    </svg>
+                    <span id="add-location-label">Adicionar localização</span>
+                </button>
+                <p id="location-status" class="mt-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500"></p>
+                <input type="hidden" name="latitude" id="location-latitude">
+                <input type="hidden" name="longitude" id="location-longitude">
+                <input type="hidden" name="location_name" id="location-name">
+            </div>
+
             <div class="flex items-center justify-end gap-3 pt-2">
                 <button type="button" id="close-modal-btn"
                     class="cursor-pointer px-6 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 transition-colors hover:text-zinc-900 dark:hover:text-white">
@@ -77,6 +91,70 @@
             const preview = document.getElementById('image-preview');
             const placeholder = document.getElementById('upload-placeholder');
             const description = document.getElementById('description');
+            const addLocationBtn = document.getElementById('add-location-btn');
+            const locationStatus = document.getElementById('location-status');
+            const locLat = document.getElementById('location-latitude');
+            const locLng = document.getElementById('location-longitude');
+            const locName = document.getElementById('location-name');
+            const addLocationLabel = document.getElementById('add-location-label');
+
+            const resetLocation = () => {
+                if (locLat) locLat.value = '';
+                if (locLng) locLng.value = '';
+                if (locName) locName.value = '';
+                if (locationStatus) {
+                    locationStatus.textContent = '';
+                    locationStatus.classList.remove('text-green-600', 'text-red-500', 'text-blue-600');
+                }
+                if (addLocationLabel) addLocationLabel.textContent = 'Adicionar localização';
+            };
+
+            if (addLocationBtn) {
+                addLocationBtn.addEventListener('click', () => {
+                    if (locLat && locLat.value) {
+                        resetLocation();
+                        return;
+                    }
+
+                    if (!navigator.geolocation) {
+                        locationStatus.textContent = 'Geolocalização indisponível.';
+                        locationStatus.classList.add('text-red-500');
+                        return;
+                    }
+
+                    locationStatus.textContent = 'Obtendo localização...';
+                    locationStatus.classList.remove('text-green-600', 'text-red-500');
+                    locationStatus.classList.add('text-blue-600');
+
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const lat = pos.coords.latitude.toFixed(7);
+                        const lng = pos.coords.longitude.toFixed(7);
+                        locLat.value = lat;
+                        locLng.value = lng;
+                        locationStatus.textContent = 'Resolvendo endereço...';
+
+                        try {
+                            const resp = await fetch(
+                                'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&lat=' + lat + '&lon=' + lng,
+                                { headers: { 'Accept': 'application/json' } }
+                            );
+                            const data = await resp.json();
+                            locName.value = data.display_name ? data.display_name.substring(0, 255) : '';
+                        } catch {
+                            locName.value = '';
+                        }
+
+                        locationStatus.textContent = locName.value || 'Localização adicionada.';
+                        locationStatus.classList.remove('text-blue-600');
+                        locationStatus.classList.add('text-green-600');
+                        addLocationLabel.textContent = 'Remover localização';
+                    }, () => {
+                        locationStatus.textContent = 'Não foi possível obter a localização.';
+                        locationStatus.classList.remove('text-blue-600');
+                        locationStatus.classList.add('text-red-500');
+                    });
+                });
+            }
 
             if (openBtn) {
                 openBtn.addEventListener('click', (e) => {
@@ -113,6 +191,7 @@
                     if (placeholder) placeholder.classList.remove('hidden');
                     if (input) input.value = '';
                     if (description) description.value = '';
+                    resetLocation();
                 }, 300);
             };
 

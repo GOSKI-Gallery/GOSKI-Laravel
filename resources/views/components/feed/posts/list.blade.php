@@ -20,6 +20,17 @@
                         <p class="text-zinc-900 dark:text-white font-bold text-lg">
                             {{ $post['users']['username'] }}
                         </p>
+                        @if (!empty($post['latitude']) && !empty($post['longitude']))
+                            <button type="button"
+                                class="mt-0.5 flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-semibold cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-300"
+                                data-location-post-id="{{ $post['id'] }}"
+                                data-open-location>
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+                                </svg>
+                                <span>{{ $post['location_name'] ?: 'Ver no mapa' }}</span>
+                            </button>
+                        @endif
                         <p class="text-zinc-400 dark:text-zinc-500 text-xs">
                             {{ \Carbon\Carbon::parse($post['created_at'])->diffForHumans() }}
                         </p>
