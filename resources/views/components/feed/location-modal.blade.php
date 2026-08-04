@@ -106,13 +106,23 @@
                 iconAnchor: [20, 40],
             });
 
-            const cardIcon = (src) => window.L.divIcon({
-                className: '',
-                html: '<div class="w-14 h-14 rounded-lg overflow-hidden border-2 border-white dark:border-zinc-900 shadow-xl bg-zinc-200 dark:bg-zinc-800">' +
-                    '<img src="' + src + '" class="w-full h-full object-cover" onerror="this.style.display=\'none\'"/></div>',
-                iconSize: [56, 56],
-                iconAnchor: [28, 56],
-            });
+            const cardIcon = (src) => {
+                const safeSrc = String(src ?? '').replace(/[&<>"']/g, (ch) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;',
+                }[ch]));
+
+                return window.L.divIcon({
+                    className: '',
+                    html: '<div class="w-14 h-14 rounded-lg overflow-hidden border-2 border-white dark:border-zinc-900 shadow-xl bg-zinc-200 dark:bg-zinc-800">' +
+                        '<img src="' + safeSrc + '" class="w-full h-full object-cover" onerror="this.style.display=\'none\'"/></div>',
+                    iconSize: [56, 56],
+                    iconAnchor: [28, 56],
+                });
+            };
 
             const pinPopup = (p) => {
                 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
