@@ -18,7 +18,7 @@ O **GOSKI-Laravel** é uma plataforma web para gerenciamento e exposição e mod
 
 ### Funcionalidades adicionais
 - [x] **Tema Escuro** 
-- [ ] **Sistema de comentarios** 
+- [x] **Sistema de comentarios** 
 - [ ] **Sistema de localização**
 - [ ] **Sistema de compartilhamento**
 - [ ] **Sistema de denúncia**
