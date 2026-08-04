@@ -21,6 +21,21 @@ class RequestRulesTest extends TestCase
         $this->assertArrayHasKey('image_url', $rules);
         $this->assertStringContainsString('required', $rules['image_url']);
         $this->assertStringContainsString('image', $rules['image_url']);
+
+        $this->assertArrayHasKey('latitude', $rules);
+        $this->assertStringContainsString('nullable', $rules['latitude']);
+        $this->assertStringContainsString('numeric', $rules['latitude']);
+        $this->assertStringContainsString('between:-90,90', $rules['latitude']);
+
+        $this->assertArrayHasKey('longitude', $rules);
+        $this->assertStringContainsString('nullable', $rules['longitude']);
+        $this->assertStringContainsString('numeric', $rules['longitude']);
+        $this->assertStringContainsString('between:-180,180', $rules['longitude']);
+
+        $this->assertArrayHasKey('location_name', $rules);
+        $this->assertStringContainsString('nullable', $rules['location_name']);
+        $this->assertStringContainsString('string', $rules['location_name']);
+        $this->assertStringContainsString('max:255', $rules['location_name']);
     }
 
     public function test_create_post_request_is_authorized(): void

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class SupabasePostService extends SupabaseBaseService
@@ -91,5 +92,74 @@ class SupabasePostService extends SupabaseBaseService
             ->json();
 
         return is_array($response) ? count($response) : 0;
+    }
+
+    public function getNearbyPosts(string $postId, float $latitude, float $longitude, int $radiusKm = 25, int $limit = 50): array
+    {
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
+
+        $dLat = $radiusKm / 111.32;
+
+        $latCos = cos(deg2rad($latitude));
+        $latCos = abs($latCos) < 1e-6 ? 1e-6 : $latCos;
+        $dLng = $radiusKm / (111.32 * $latCos);
+        $rows = DB::table($prefix.'posts')
+            ->join($prefix.'users', 'posts.user_id', '=', 'users.id')
+            ->where('posts.id', '!=', $postId)
+            ->whereNotNull('posts.latitude')
+            ->whereNotNull('posts.longitude')
+            ->whereBetween('posts.latitude', [$latitude - $dLat, $latitude + $dLat])
+            ->whereBetween('posts.longitude', [$longitude - $dLng, $longitude + $dLng])
+            ->select(
+                'posts.id',
+                'posts.user_id',
+                'posts.image_url',
+                'posts.description',
+                'posts.latitude',
+                'posts.longitude',
+                'posts.location_name',
+                'posts.created_at',
+                'users.username',
+                'users.profile_photo_url',
+            )
+            ->orderByRaw('ABS(posts.latitude - ?) + ABS(posts.longitude - ?) ASC', [$latitude, $longitude])
+            ->limit($limit)
+            ->get();
+
+        return collect($rows)
+            ->map(function ($row) use ($latitude, $longitude) {
+                return [
+                    'id' => (int) $row->id,
+                    'user_id' => $row->user_id,
+                    'image_url' => $row->image_url,
+                    'description' => $row->description,
+                    'latitude' => (float) $row->latitude,
+                    'longitude' => (float) $row->longitude,
+                    'location_name' => $row->location_name,
+                    'created_at' => $row->created_at,
+                    'distance_km' => round($this->haversineKm($latitude, $longitude, (float) $row->latitude, (float) $row->longitude), 2),
+                    'users' => [
+                        'id' => $row->user_id,
+                        'username' => $row->username,
+                        'profile_photo_url' => $row->profile_photo_url,
+                    ],
+                ];
+            })
+            ->sortBy('distance_km')
+            ->values()
+            ->all();
+    }
+
+    private function haversineKm(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earthRadiusKm = 6371;
+
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+
+        $a = sin($dLat / 2) ** 2
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLng / 2) ** 2;
+
+        return $earthRadiusKm * 2 * atan2(sqrt($a), sqrt(1 - $a));
     }
 }

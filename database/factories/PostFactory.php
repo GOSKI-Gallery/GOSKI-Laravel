@@ -17,6 +17,18 @@ class PostFactory extends Factory
             'image_url' => 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5',
             'description' => 'Processando imagem...',
             'moderation_status' => null,
+            'latitude' => null,
+            'longitude' => null,
+            'location_name' => null,
         ];
+    }
+
+    public function withLocation(): static
+    {
+        return $this->state(fn () => [
+            'latitude' => -14.887,
+            'longitude' => -47.807,
+            'location_name' => 'Chapada dos Veadeiros',
+        ]);
     }
 }

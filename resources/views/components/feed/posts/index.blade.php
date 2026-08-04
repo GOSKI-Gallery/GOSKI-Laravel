@@ -4,6 +4,8 @@
     <x-feed.posts.list :posts="$posts" />
 </div>
 
+<x-feed.location-modal />
+
 @if ($posts && count($posts) > 0)
     <div id="feed-sentinel" class="h-10"></div>
 @else
