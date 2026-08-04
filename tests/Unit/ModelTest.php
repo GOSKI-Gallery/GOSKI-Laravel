@@ -13,7 +13,7 @@ class ModelTest extends TestCase
     {
         $post = new Post;
         $this->assertEquals([
-            'description', 'image_url', 'is_nsfw', 'moderation_status', 'user_id',
+            'description', 'image_url', 'latitude', 'longitude', 'location_name', 'is_nsfw', 'moderation_status', 'user_id',
         ], $post->getFillable());
     }
 
