@@ -22,7 +22,7 @@ class PostLocationControllerTest extends TestCase
 
     public function test_location_requires_authentication(): void
     {
-        $post = Post::factory()->withLocation()->create(['user_id' => $this->user]);
+        $post = Post::factory()->withLocation()->create(['user_id' => $this->user->id]);
 
         $response = $this->getJson(route('post.location.show', $post->id));
 
