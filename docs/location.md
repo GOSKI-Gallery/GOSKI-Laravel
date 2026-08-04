@@ -53,7 +53,7 @@ All under `auth` middleware:
 ### Tests
 
 - `tests/Feature/PostLocationControllerTest.php` — endpoint returns post + nearby, 404 without location, auth required
-- `tests/Feature/SupabasePostServiceTest.php` — `getNearbyPosts` returns nearby posts sorted by distance
+- `tests/Feature/PostNearbyServiceTest.php` — `getNearbyPosts` returns nearby posts sorted by distance
 - `tests/Feature/LocationServiceTest.php` — Nominatim fallback with `Http::fake()`
 - `tests/Feature/PostControllerTest.php` — store persists location and validates invalid lat/lng
 - `tests/Unit/RequestRulesTest.php` — new validation rules
