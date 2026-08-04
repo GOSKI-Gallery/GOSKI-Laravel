@@ -60,7 +60,7 @@ jobs:
 
       - name: Static analysis
         run: |
-          docker compose -f docker-compose.yml exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress
+          docker compose -f docker-compose.yml exec -T app vendor/bin/phpstan analyse -c phpstan.neon --no-progress --memory-limit=1G
           docker compose -f docker-compose.yml exec -T app vendor/bin/pint --test
 
       - name: Unit & Feature tests with coverage
