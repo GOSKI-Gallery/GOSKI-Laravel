@@ -98,4 +98,61 @@ class PostLocationControllerTest extends TestCase
         $response->assertStatus(404);
         $response->assertJson(['success' => false]);
     }
+
+    public function test_returns_static_map_grid_with_width_and_height(): void
+    {
+        $post = Post::factory()->withLocation()->create(['user_id' => $this->user]);
+
+        $response = $this->actingAs($this->user)->getJson(
+            route('post.location.show', $post->id).'?width=512&height=512'
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'success',
+            'map' => [
+                'zoom',
+                'width',
+                'height',
+                'attribution',
+                'center_x',
+                'center_y',
+                'tiles' => [['x', 'y', 'left', 'top', 'url']],
+                'pins',
+            ],
+        ]);
+
+        $map = $response->json('map');
+        $this->assertSame(512, $map['width']);
+        $this->assertSame(512, $map['height']);
+        $this->assertSame('© OpenStreetMap contributors © CARTO', $map['attribution']);
+        $this->assertNotEmpty($map['tiles']);
+
+        foreach ($map['tiles'] as $tile) {
+            $this->assertMatchesRegularExpression(
+                '#^https://[a-d]\.basemaps\.cartocdn\.com/rastertiles/voyager/'.$map['zoom'].'/#',
+                $tile['url']
+            );
+        }
+    }
+
+    public function test_map_ignores_invalid_or_out_of_range_dimensions(): void
+    {
+        $post = Post::factory()->withLocation()->create(['user_id' => $this->user]);
+
+        $response = $this->actingAs($this->user)->getJson(
+            route('post.location.show', $post->id).'?width=abc&height=-5'
+        );
+
+        $response->assertStatus(200);
+        $this->assertNull($response->json('map'));
+
+        $response = $this->actingAs($this->user)->getJson(
+            route('post.location.show', $post->id).'?width=99999&height=99999'
+        );
+
+        $map = $response->json('map');
+        $this->assertSame(1200, $map['width']);
+        $this->assertSame(1200, $map['height']);
+    }
 }

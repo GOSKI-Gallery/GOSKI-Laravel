@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
+use App\Services\StaticMapService;
 use App\Services\SupabasePostService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PostLocationController extends Controller
@@ -15,7 +17,7 @@ class PostLocationController extends Controller
         $this->supabase = $supabase;
     }
 
-    public function show(string $postId)
+    public function show(string $postId, Request $request)
     {
         $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
 
@@ -49,6 +51,32 @@ class PostLocationController extends Controller
             (float) $post->longitude
         );
 
+        $latitude = (float) $post->latitude;
+        $longitude = (float) $post->longitude;
+
+        $map = null;
+        if (is_numeric($request->query('width')) && is_numeric($request->query('height'))) {
+            $width = max(100, min(1200, (int) $request->query('width')));
+            $height = max(100, min(1200, (int) $request->query('height')));
+
+            $mapService = app(StaticMapService::class);
+
+            $map = $mapService->tileGrid($latitude, $longitude, $width, $height);
+
+            $map['pins'] = array_map(
+                fn (array $nearbyPost) => array_merge($nearbyPost, $mapService->pixelOffset(
+                    (float) $nearbyPost['latitude'],
+                    (float) $nearbyPost['longitude'],
+                    $latitude,
+                    $longitude,
+                    $width,
+                    $height,
+                    $map['zoom']
+                )),
+                $nearby
+            );
+        }
+
         return response()->json([
             'success' => true,
             'post' => [
@@ -56,8 +84,8 @@ class PostLocationController extends Controller
                 'user_id' => $post->user_id,
                 'image_url' => $post->image_url,
                 'description' => $post->description,
-                'latitude' => (float) $post->latitude,
-                'longitude' => (float) $post->longitude,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
                 'location_name' => $post->location_name,
                 'created_at' => $post->created_at,
                 'users' => [
@@ -67,6 +95,7 @@ class PostLocationController extends Controller
                 ],
             ],
             'nearby' => $nearby,
+            'map' => $map,
         ]);
     }
 }

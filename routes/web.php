@@ -8,6 +8,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Post\PostLocationController;
+use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,4 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read', [NotificationsController::class, 'markAsRead'])->name('notifications.read');
     Route::delete('/notifications/{id}', [NotificationsController::class, 'delete'])->name('notifications.delete');
+
+    Route::get('/push-tokens', [PushTokenController::class, 'index'])->name('push.tokens.index');
+    Route::delete('/push-tokens/{token}', [PushTokenController::class, 'destroy'])->name('push.tokens.destroy');
 });

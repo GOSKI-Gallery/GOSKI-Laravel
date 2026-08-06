@@ -14,7 +14,19 @@
             </button>
         </div>
 
-        <div id="location-map" class="h-96 w-full"></div>
+        <div class="bg-[var(--bg-surface)] p-4">
+            <div id="location-map" class="relative w-full aspect-square overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
+                <p id="location-map-state" class="text-sm text-zinc-400 dark:text-zinc-500 text-center py-20">Carregando mapa...</p>
+            </div>
+
+            <div id="location-map-footer"
+                class="mt-3 flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                <svg class="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+                </svg>
+                <span id="location-map-name"></span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -28,123 +40,108 @@
             if (!modal) return;
 
             const mapEl = document.getElementById('location-map');
+            const stateEl = document.getElementById('location-map-state');
+            const nameEl = document.getElementById('location-map-name');
             const closeBtn = document.getElementById('location-modal-close');
-            let map = null;
+
+            const PIN_PATH = 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z';
 
             const closeModal = () => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
                 document.body.style.overflow = 'auto';
-
-                if (map) {
-                    map.remove();
-                    map = null;
-                }
                 mapEl.innerHTML = '';
+                stateEl.style.display = 'block';
+                stateEl.textContent = 'Carregando mapa...';
+                nameEl.textContent = '';
+            };
+
+            const setState = (message) => {
+                mapEl.innerHTML = '';
+                stateEl.style.display = 'block';
+                stateEl.textContent = message;
             };
 
             const openLocation = (postId) => {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
                 document.body.style.overflow = 'hidden';
-                mapEl.innerHTML = '<p class="text-zinc-400 dark:text-zinc-500 text-sm text-center py-20">Carregando mapa...</p>';
 
-                fetch('/posts/' + postId + '/location', {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (!data.success || !data.post) {
-                        mapEl.innerHTML = '<p class="text-zinc-400 dark:text-zinc-500 text-sm text-center py-20">Erro ao carregar localização.</p>';
+                setState('Carregando mapa...');
+
+                requestAnimationFrame(() => {
+                    const rect = mapEl.getBoundingClientRect();
+                    const width = Math.round(rect.width);
+                    const height = Math.round(rect.height);
+                    if (!width || !height) {
+                        setState('Erro ao carregar localização.');
                         return;
                     }
-                    renderMap(data);
-                })
-                .catch(() => {
-                    mapEl.innerHTML = '<p class="text-zinc-400 dark:text-zinc-500 text-sm text-center py-20">Erro ao carregar localização.</p>';
+
+                    fetch('/posts/' + postId + '/location?width=' + width + '&height=' + height, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.success || !data.post || !data.map) {
+                            setState('Erro ao carregar localização.');
+                            return;
+                        }
+                        renderMap(data, width, height);
+                    })
+                    .catch(() => {
+                        setState('Erro ao carregar localização.');
+                    });
                 });
             };
 
-            const renderMap = (data) => {
+            const renderMap = (data, width, height) => {
                 const post = data.post;
-                const nearby = data.nearby || [];
+                const map = data.map;
+                const pins = map.pins || [];
+                const centerLeft = width / 2;
+                const centerTop = height / 2;
 
-                if (map) {
-                    map.remove();
-                }
                 mapEl.innerHTML = '';
+                stateEl.style.display = 'none';
 
-                if (!window.L) {
-                    mapEl.innerHTML = '<p class="text-zinc-400 dark:text-zinc-500 text-sm text-center py-20">Mapa indisponível.</p>';
-                    return;
-                }
+                const tilesHtml = map.tiles.map(t =>
+                    '<img src="' + t.url + '" alt="" loading="lazy" class="absolute w-64 h-64 max-w-none" style="left:' + t.left + 'px;top:' + t.top + 'px" onerror="this.style.display=\'none\'">'
+                ).join('');
 
-                map = window.L.map(mapEl).setView([post.latitude, post.longitude], 12);
+                const pinsHtml = pins.map(p => {
+                    const safeSrc = String(p.image_url ?? '').replace(/[&<>"']/g, (ch) => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;',
+                    }[ch]));
+                    return '<div class="absolute w-14 h-14 rounded-lg overflow-hidden border-2 border-white dark:border-zinc-900 shadow-xl bg-zinc-200 dark:bg-zinc-800 pointer-events-none" style="left:' + (p.left - 28) + 'px;top:' + (p.top - 56) + 'px">' +
+                        '<img src="' + safeSrc + '" alt="" class="w-full h-full object-cover" onerror="this.style.display=\'none\'"/></div>';
+                }).join('');
 
-                window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                    maxZoom: 19,
-                }).addTo(map);
-
-                window.L.marker([post.latitude, post.longitude], { icon: mainIcon() })
-                    .addTo(map)
-                    .bindPopup(pinPopup(post));
-
-                nearby.forEach(p => {
-                    window.L.marker([p.latitude, p.longitude], { icon: cardIcon(p.image_url) })
-                        .addTo(map)
-                        .bindPopup(pinPopup(p));
-                });
-            };
-
-            const mainIcon = () => window.L.divIcon({
-                className: '',
-                html: '<div class="w-10 h-10 rounded-full border-4 border-blue-600 dark:border-blue-400 bg-white dark:bg-zinc-900 flex items-center justify-center shadow-lg">' +
-                    '<svg class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="currentColor">' +
-                    '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>',
-                iconSize: [40, 40],
-                iconAnchor: [20, 40],
-            });
-
-            const cardIcon = (src) => {
-                const safeSrc = String(src ?? '').replace(/[&<>"']/g, (ch) => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;',
-                }[ch]));
-
-                return window.L.divIcon({
-                    className: '',
-                    html: '<div class="w-14 h-14 rounded-lg overflow-hidden border-2 border-white dark:border-zinc-900 shadow-xl bg-zinc-200 dark:bg-zinc-800">' +
-                        '<img src="' + safeSrc + '" class="w-full h-full object-cover" onerror="this.style.display=\'none\'"/></div>',
-                    iconSize: [56, 56],
-                    iconAnchor: [28, 56],
-                });
-            };
-
-            const pinPopup = (p) => {
-                const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;',
-                }[ch]));
-
-                const username = escapeHtml((p.users && p.users.username) ? p.users.username : 'Usuário');
-                const profileUrl = '{{ route('profile.show', ':userId') }}'.replace(':userId', encodeURIComponent(String(p.user_id ?? '')));
-                const location = escapeHtml(p.location_name ? p.location_name : '');
-                const distance = p.distance_km !== undefined ? ' · ' + escapeHtml(p.distance_km) + ' km' : '';
-                const imageUrl = escapeHtml(p.image_url ?? '');
-
-                return '<div class="w-52">' +
-                    '<img src="' + imageUrl + '" class="w-full h-32 object-cover rounded-lg mb-2" onerror="this.style.display=\'none\'"/>' +
-                    '<a href="' + profileUrl + '" class="block font-bold text-zinc-900 dark:text-white text-sm hover:underline">' + username + '</a>' +
-                    (location ? '<p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">' + location + distance + '</p>' : '') +
+                mapEl.innerHTML =
+                    tilesHtml +
+                    '<div class="absolute pointer-events-none" style="left:' + (centerLeft - 20) + 'px;top:' + (centerTop - 40) + 'px">' +
+                        '<div class="w-10 h-10 rounded-full border-4 border-blue-600 dark:border-blue-400 bg-white dark:bg-zinc-900 flex items-center justify-center shadow-lg">' +
+                            '<svg class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="currentColor">' +
+                                '<path d="' + PIN_PATH + '"/></svg></div></div>' +
+                    pinsHtml +
+                    '<div class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-white/80 dark:bg-zinc-950/70 text-[10px] leading-tight text-zinc-700 dark:text-zinc-300 pointer-events-none">' +
+                        escapeHtml(map.attribution) +
                     '</div>';
+
+                nameEl.textContent = post.location_name || 'Localização exata';
             };
+
+            const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            }[ch]));
 
             if (closeBtn) {
                 closeBtn.addEventListener('click', closeModal);

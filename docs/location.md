@@ -32,7 +32,7 @@ Posts can optionally carry a geographic location. Location is **opt-in**: both t
 ### Controllers
 
 - **`app/Http/Controllers/Post/PostController.php`** — `store()` now persists `latitude`/`longitude`/`location_name`; falls back to server reverse geocode when only coordinates are sent
-- **`app/Http/Controllers/Post/PostLocationController.php`** (new) — `show(string $postId)` returns JSON `{ success, post, nearby }` for the map modal; 404 when post has no location
+- **`app/Http/Controllers/Post/PostLocationController.php`** (new) — `show(string $postId)` returns JSON `{ success, post, nearby, map }` for the map modal; `map` (tile grid + pin offsets) is computed by `StaticMapService` when `width`/`height` query params are provided; 404 when post has no location
 
 ### Routes
 
@@ -45,14 +45,15 @@ All under `auth` middleware:
 ### Frontend
 
 - **`resources/views/components/feed/posts/list.blade.php`** — blue location text (pin icon + `location_name`, fallback "Ver no mapa") rendered below the username; click opens the map modal
-- **`resources/views/components/feed/location-modal.blade.php`** (new) — Leaflet + OpenStreetMap modal; the clicked post renders a blue main pin, nearby posts render as small image cards (`L.divIcon`); pin popup shows the post image, author, and distance
+- **`resources/views/components/feed/location-modal.blade.php`** — **static CARTO Voyager map** (no Leaflet/map library). The clicked post renders a central blue pin; nearby posts render as small image cards. Tiles are composed as absolutely-positioned 256×256 `<img>` from `map.tiles`; attribution `© OpenStreetMap contributors © CARTO` is always shown in the map's bottom-left corner; the footer shows `location_name` (fallback "Localização exata").
+- **`app/Services/StaticMapService.php`** — pure Web Mercator tile math (`worldX`, `worldY`, `tileUrl`, `tileGrid`, `pixelOffset`), the single source of truth shared with mobile. Subdomain `a–d` chosen deterministically via `abs(x + y) % 4`. Fixed zoom configured in `config/staticmap.php`.
 - **`resources/views/components/feed/posts/index.blade.php`** — includes the location modal
 - **`resources/views/components/create-post-modal.blade.php`** — opt-in "Adicionar localização" toggle using `navigator.geolocation` + Nominatim reverse geocode
-- **Assets**: `leaflet` npm dependency; `resources/css/app.css` imports `leaflet/dist/leaflet.css`; `resources/js/app.js` exposes `window.L`
 
 ### Tests
 
-- `tests/Feature/PostLocationControllerTest.php` — endpoint returns post + nearby, 404 without location, auth required
+- `tests/Feature/PostLocationControllerTest.php` — endpoint returns post + nearby + static map grid, 404 without location, auth required
+- `tests/Unit/StaticMapServiceTest.php` — Web Mercator math, tile URL/subdomain determinism (incl. negative coords), grid coverage, zoom from config
 - `tests/Feature/PostNearbyServiceTest.php` — `getNearbyPosts` returns nearby posts sorted by distance
 - `tests/Feature/LocationServiceTest.php` — Nominatim fallback with `Http::fake()`
 - `tests/Feature/PostControllerTest.php` — store persists location and validates invalid lat/lng
