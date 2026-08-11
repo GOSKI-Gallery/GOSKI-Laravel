@@ -128,10 +128,28 @@ jobs:
           cp .env.example .env
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m', 'APP_KEY=base64:' . base64_encode(random_bytes(32)), file_get_contents('.env')));"
 
+      - name: Cache ChromeDriver
+        id: cache-chromedriver
+        uses: actions/cache@v3
+        with:
+          path: vendor/laravel/dusk/bin
+          key: chromedriver-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+
       - name: Install ChromeDriver
+        if: steps.cache-chromedriver.outputs.cache-hit != 'true'
         run: |
           CHROME_MAJOR=$(google-chrome --version | awk '{print $NF}' | cut -d. -f1)
-          php artisan dusk:chrome-driver "$CHROME_MAJOR"
+          for i in 1 2 3; do
+            echo "Attempt $i: Installing ChromeDriver for Chrome $CHROME_MAJOR..."
+            if php artisan dusk:chrome-driver "$CHROME_MAJOR" 2>&1; then
+              echo "ChromeDriver installed successfully"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "All attempts failed"
+          exit 1
 
       - name: Setup Dusk environment
         run: |
