@@ -47,8 +47,13 @@ fi
 if [ "$APP_ENV" = "production" ]; then
     echo "→ Cache de produção..."
     php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
+    if ! php artisan route:cache 2>&1; then
+        echo "✗ Route cache falhou (o container sobe mesmo assim; revise laravel.log)"
+        php artisan route:clear 2>/dev/null || true
+    fi
+    if ! php artisan view:cache 2>&1; then
+        echo "✗ View cache falhou (o container sobe mesmo assim; revise laravel.log)"
+    fi
 fi
 
 echo "✓ App pronto"
