@@ -9,7 +9,7 @@ Posts can optionally carry a geographic location. Location is **opt-in**: both t
 ### Database
 
 - **Table**: `posts` (in `laravel` schema on PostgreSQL, plain on others)
-- **Migration**: `database/migrations/2026_08_04_000001_add_location_to_posts_table.php`
+- **Migration**: columns foldados em `database/migrations/2026_02_25_035701_create_posts_table.php`
 - Added columns: `latitude` decimal(10,7) nullable, `longitude` decimal(10,7) nullable, `location_name` varchar(255) nullable
 - Composite index on `(latitude, longitude)` for range (bounding box) queries
 - Existing RLS policies remain valid — INSERT already checks `auth.uid() = user_id`
