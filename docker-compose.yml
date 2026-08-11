@@ -9,6 +9,7 @@ services:
       - app_build:/var/www/html/public/build
     environment:
       APP_ENV: ${APP_ENV:-production}
+      APP_NAME: ${APP_NAME:-GOSKI}
       APP_KEY: ${APP_KEY:-}
       APP_URL: ${APP_URL:-http://localhost}
       DB_CONNECTION: ${DB_CONNECTION:-pgsql}
@@ -48,6 +49,7 @@ services:
       - app_build:/var/www/html/public/build
     environment:
       APP_ENV: ${APP_ENV:-production}
+      APP_NAME: ${APP_NAME:-GOSKI}
       APP_KEY: ${APP_KEY:-}
       APP_URL: ${APP_URL:-http://localhost}
       DB_CONNECTION: ${DB_CONNECTION:-pgsql}
