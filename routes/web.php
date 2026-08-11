@@ -22,7 +22,7 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register', function () {
         return view('register');
-    })->name('register');
+    })->name('register.form');
     Route::post('/register', [UserController::class, 'register'])->middleware('throttle:2,1')->name('register');
 });
 
