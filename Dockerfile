@@ -58,7 +58,9 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build
+RUN npm run build \
+    && mkdir -p /opt/goski-build \
+    && cp -a public/build/. /opt/goski-build/
 
 RUN if [ "$APP_ENV" = "production" ]; then \
         composer install --no-dev --no-interaction; \

@@ -3,6 +3,18 @@ set -e
 
 mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs bootstrap/cache
 
+# Permite que o php-fpm (www-data) grave logs e caches criados pelo entrypoint (root)
+if [ "$(id -u)" = "0" ]; then
+    chown -R www-data:www-data storage bootstrap/cache
+fi
+
+# Popula o volume de assets com o build dos ativos da imagem (se vazio / primeira subida)
+if [ -d /opt/goski-build ] && [ ! -f public/build/manifest.json ]; then
+    echo "→ Seed de assets de produção..."
+    mkdir -p public/build
+    cp -a /opt/goski-build/. public/build/
+fi
+
 if [ "${SKIP_DB_CHECK:-false}" != "true" ]; then
     echo "→ Aguardando banco de dados ficar pronto..."
     max_tries=30
@@ -27,7 +39,9 @@ if [ "${SKIP_DB_CHECK:-false}" != "true" ]; then
     fi
 
     echo "→ Rodando migrations..."
-    php artisan migrate --force
+    if ! php artisan migrate --force 2>&1; then
+        echo "✗ Migrations falharam (o container sobe mesmo assim; revise laravel.log)"
+    fi
 fi
 
 if [ "$APP_ENV" = "production" ]; then
