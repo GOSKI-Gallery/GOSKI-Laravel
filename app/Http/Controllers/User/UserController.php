@@ -77,6 +77,9 @@ class UserController extends Controller
             return back()->withErrors(['supabase' => $response['error']['message']]);
         }
 
-        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+        $user = Auth::user();
+        $user->refresh();
+
+        return redirect()->route('profile')->with('success', 'Perfil atualizado com sucesso!');
     }
 }
