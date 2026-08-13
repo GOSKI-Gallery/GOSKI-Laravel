@@ -3,7 +3,7 @@
     <button class="flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2 py-1 rounded-full transition cursor-pointer">
         <div class="w-8 h-8 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
             @php
-                $avatarUrl = Auth::user()->profile_picture ?? Auth::user()->profile_photo_url ?? '';
+                $avatarUrl = Auth::user()->profile_photo_url ?? '';
             @endphp
             <img class="w-full h-full object-cover {{ $avatarUrl ? '' : 'hidden' }}"
                 src="{{ $avatarUrl }}" alt="ProfilePicture"
@@ -31,7 +31,7 @@
                 <a href="/profile"
                     class="flex items-center justify-between focus:bg-zinc-100 dark:focus:bg-zinc-800 px-5 py-3 focus:outline-hidden text-zinc-700 dark:text-zinc-300 focus:text-zinc-900 dark:focus:text-white">
                     <span class="text-sm font-bold text-black dark:text-white">Meu perfil</span>
-                    <svg class="w-5 h-5 text-zinc-99 dark:text-zinc-99" viewBox="0 0 24 24" fill="none">
+                    <svg class="w-5 h-5 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
                     </svg>
                 </a>
