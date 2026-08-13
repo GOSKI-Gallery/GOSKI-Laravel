@@ -27,6 +27,10 @@
                class="px-4 py-2 text-xs font-bold uppercase tracking-tight {{ str_starts_with($currentRoute, 'admin.posts') ? 'text-zinc-900 bg-zinc-100 dark:text-white dark:bg-zinc-800' : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800' }} rounded-xl transition-all">
                 Posts
             </a>
+            <a href="{{ route('feed') }}" target="_blank" rel="noopener"
+               class="ml-1 px-4 py-2 text-xs font-black uppercase tracking-tight rounded-xl transition-all text-white bg-gradient-to-r from-[#FF0000] via-[#AF054D] to-[#1B0EDB] hover:opacity-90 active:scale-[0.98]">
+                Ver Feed
+            </a>
         </nav>
 
         <div class="flex items-center gap-2">
