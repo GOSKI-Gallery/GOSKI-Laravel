@@ -75,7 +75,3 @@
 
     <x-profile.user-posts :userPosts="$userPosts" />
 </div>
-
-@if ($isOwnProfile)
-    <x-profile.edit-profile-modal :user="$profileUser" />
-@endif
