@@ -39,7 +39,7 @@
                 <p class="mt-1 text-[11px] uppercase tracking-tighter text-zinc-400 dark:text-zinc-500">PNG, JPG ou GIF até 10MB</p>
             </div>
 
-            <input type="file" name="image_url" id="image_url_edit"
+            <input type="file" name="profile_photo_url" id="image_url_edit"
                 class="absolute inset-0 z-20 cursor-pointer opacity-0" accept="image/*">
 
             <img id="image-preview-edit" src="{{ $user['profile_photo_url'] ?? '' }}"

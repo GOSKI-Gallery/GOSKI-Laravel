@@ -56,12 +56,6 @@
             const openBtn = document.getElementById('open-edit-profile-modal-btn');
             const closeBtn = document.getElementById('close-edit-profile-modal-btn');
             const closeX = document.getElementById('close-edit-profile-modal-x');
-            const avatarInput = document.getElementById('avatar');
-            const preview = document.getElementById('image-preview');
-            const placeholder = document.getElementById('upload-placeholder');
-            const usernameInput = document.getElementById('username');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
 
             if (openBtn) {
                 openBtn.addEventListener('click', (e) => {
@@ -69,25 +63,6 @@
                     modal.classList.remove('hidden');
                     modal.classList.add('flex');
                     document.body.style.overflow = 'hidden';
-                });
-            }
-
-            if (avatarInput) {
-                avatarInput.addEventListener('change', () => {
-                    const file = avatarInput.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            if(preview) {
-                                preview.src = e.target.result;
-                                preview.classList.remove('hidden');
-                            }
-                            if(placeholder) {
-                                placeholder.classList.add('hidden');
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                    }
                 });
             }
 

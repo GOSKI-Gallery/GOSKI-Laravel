@@ -169,7 +169,7 @@ class UserControllerTest extends TestCase
         ]);
 
         $response->assertRedirect(route('profile'));
-        $response->assertSessionHas('success', 'Profile updated successfully!');
+        $response->assertSessionHas('success', 'Perfil atualizado com sucesso!');
     }
 
     public function test_update_profile_with_error()
