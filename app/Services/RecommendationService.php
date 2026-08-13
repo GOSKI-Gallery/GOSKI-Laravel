@@ -24,7 +24,7 @@ class RecommendationService
         $driver = DB::getDriverName();
         $prefix = $driver === 'pgsql' ? 'laravel.' : '';
         $epochExpr = match ($driver) {
-            'sqlite' => "strftime('%%s', posts.created_at)",
+            'sqlite' => "strftime('%s', posts.created_at)",
             default => 'EXTRACT(EPOCH FROM posts.created_at)',
         };
 
