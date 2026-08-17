@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Services\SupabaseAuthService;
 use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -31,7 +32,6 @@ class UserController extends Controller
 
     public function profile()
     {
-        $supabase = new SupabaseUserService;
         $userId = Auth::id();
         $userPosts = Post::where('user_id', $userId)->latest()->take(9)->get();
 
@@ -39,8 +39,8 @@ class UserController extends Controller
             'profileUser' => Auth::user(),
             'isOwnProfile' => true,
             'userPosts' => $userPosts,
-            'followersCount' => $supabase->getFollowCount($userId, 'followers'),
-            'followingCount' => $supabase->getFollowCount($userId, 'following'),
+            'followersCount' => $this->followCount($userId, 'followers'),
+            'followingCount' => $this->followCount($userId, 'following'),
         ]);
     }
 
@@ -60,10 +60,28 @@ class UserController extends Controller
             'profileUser' => $profileUser,
             'isOwnProfile' => $isOwnProfile,
             'userPosts' => $userPosts,
-            'followersCount' => $supabase->getFollowCount($userId, 'followers'),
-            'followingCount' => $supabase->getFollowCount($userId, 'following'),
-            'isFollowed' => $isOwnProfile ? true : $supabase->isFollowing(Auth::id(), $userId),
+            'followersCount' => $this->followCount($userId, 'followers'),
+            'followingCount' => $this->followCount($userId, 'following'),
+            'isFollowed' => $isOwnProfile ? true : $this->isFollowing(Auth::id(), $userId),
         ]);
+    }
+
+    private function followCount(string $userId, string $type = 'followers'): int
+    {
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
+        $column = $type === 'followers' ? 'followed_id' : 'follower_id';
+
+        return DB::table($prefix.'follows')->where($column, $userId)->count();
+    }
+
+    private function isFollowing(string $followerId, string $followedId): bool
+    {
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
+
+        return DB::table($prefix.'follows')
+            ->where('follower_id', $followerId)
+            ->where('followed_id', $followedId)
+            ->exists();
     }
 
     public function update(EditUserRequest $request, SupabaseAuthService $supabaseAuth)

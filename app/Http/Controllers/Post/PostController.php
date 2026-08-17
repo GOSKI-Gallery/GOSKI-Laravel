@@ -8,8 +8,8 @@ use App\Models\Post;
 use App\Services\LocationService;
 use App\Services\RecommendationService;
 use App\Services\SupabasePostService;
-use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -28,19 +28,32 @@ class PostController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $supabaseUser = new SupabaseUserService;
 
         $paginator = $this->recommendation->getRankedFeed($user);
 
-        foreach ($paginator->items() as $post) {
-            $post->setAttribute('is_liked_by_user', $supabaseUser->hasLikedPost($user->id, (string) $post->id));
-            $post->setAttribute('likes_count', $this->supabase->getLikeCount((string) $post->id));
-            $post->setAttribute('comments_count', $this->supabase->getCommentCount((string) $post->id));
-            $post->setAttribute('is_followed_by_user', $post->is_following ?? $supabaseUser->isFollowing($user->id, $post->users['id']));
+        $posts = $paginator->items();
+
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
+        $postIds = collect($posts)->pluck('id')->all();
+
+        $likedPostIds = DB::table($prefix.'likes')
+            ->where('user_id', $user->id)
+            ->whereIn('post_id', $postIds)
+            ->pluck('post_id')
+            ->all();
+
+        $followedUserIds = DB::table($prefix.'follows')
+            ->where('follower_id', $user->id)
+            ->pluck('followed_id')
+            ->all();
+
+        foreach ($posts as $post) {
+            $post->setAttribute('is_liked_by_user', in_array($post->id, $likedPostIds));
+            $post->setAttribute('is_followed_by_user', ($post->is_following ?? false) || in_array($post->users['id'] ?? null, $followedUserIds));
         }
 
         if (request()->ajax()) {
-            return view('components.feed.posts.list', ['posts' => $paginator->items()]);
+            return view('components.feed.posts.list', ['posts' => $posts]);
         }
 
         $userPosts = Post::where('user_id', $user->id)->latest()->take(9)->get();
@@ -48,11 +61,11 @@ class PostController extends Controller
         $suggestedUsers = $this->recommendation->getSuggestedUsers($user);
 
         return view('feed', [
-            'posts' => $paginator->items(),
+            'posts' => $posts,
             'userPosts' => $userPosts,
             'suggestedUsers' => $suggestedUsers,
-            'followersCount' => $supabaseUser->getFollowCount($user->id, 'followers'),
-            'followingCount' => $supabaseUser->getFollowCount($user->id, 'following'),
+            'followersCount' => DB::table($prefix.'follows')->where('followed_id', $user->id)->count(),
+            'followingCount' => DB::table($prefix.'follows')->where('follower_id', $user->id)->count(),
         ]);
     }
 
