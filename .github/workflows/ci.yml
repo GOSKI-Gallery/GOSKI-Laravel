@@ -44,7 +44,9 @@ jobs:
           load: true
 
       - name: Start services
-        run: docker compose -f docker-compose.yml up -d --no-build app worker
+        run: |
+          docker compose -f docker-compose.yml up -d --no-build app
+          docker compose -f docker-compose.yml up -d --no-build worker
 
       - name: Install dev dependencies
         run: docker compose -f docker-compose.yml exec -T app composer install --no-interaction --prefer-dist --no-progress
