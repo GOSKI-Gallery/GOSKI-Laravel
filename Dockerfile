@@ -35,9 +35,9 @@ RUN docker-php-ext-install \
     zip \
     intl
 
-RUN apk add --no-cache --virtual .build-deps autoconf g++ make \
-    && pecl install redis pcov \
-    && docker-php-ext-enable pcov \
+RUN apk add --no-cache --virtual .build-deps autoconf g++ make linux-headers \
+    && pecl install redis xdebug \
+    && docker-php-ext-enable xdebug \
     && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini \
     && apk del .build-deps
 

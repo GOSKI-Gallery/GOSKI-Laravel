@@ -344,14 +344,31 @@
                     input.value = '';
                     loadCommentsInline(postId);
                     updateCommentCount(postId, 0, data.comments_count);
+                } else {
+                    showCommentError(section, data.message || 'Erro ao enviar comentário.');
+                    input.focus();
                 }
             })
-            .catch(() => {})
+            .catch(() => {
+                showCommentError(section, 'Erro ao enviar comentário.');
+                input.focus();
+            })
             .finally(() => {
                 btn.disabled = input.value.trim() === '';
             });
         }
     });
+
+    function showCommentError(section, message) {
+        if (!section) return;
+        const list = section.querySelector('[data-comments-list]');
+        if (list) {
+            list.innerHTML = '<p class="text-red-500 text-sm text-center py-4">' + escapeHtml(message) + '</p>';
+        }
+        requestAnimationFrame(() => {
+            section.style.maxHeight = section.scrollHeight + 'px';
+        });
+    }
 
     function updateCommentCount(postId, delta, absolute) {
         const btns = document.querySelectorAll('[data-open-comments][data-post-id="' + postId + '"]');
