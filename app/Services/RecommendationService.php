@@ -43,6 +43,7 @@ class RecommendationService
                 "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + (SELECT COUNT(*) FROM {$prefix}post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) * 600) DESC")
             ->with('users')
             ->withCount('likes')
+            ->withCount('comments')
             ->paginate($perPage);
     }
 
