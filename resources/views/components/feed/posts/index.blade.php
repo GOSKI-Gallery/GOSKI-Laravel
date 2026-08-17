@@ -304,6 +304,16 @@
         }
     });
 
+    document.addEventListener('input', function(e) {
+        if (e.target.matches('[data-comment-form] [name="body"]')) {
+            const form = e.target.closest('[data-comment-form]');
+            const btn = form ? form.querySelector('button[type="submit"]') : null;
+            if (btn) {
+                btn.disabled = e.target.value.trim() === '';
+            }
+        }
+    });
+
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form.hasAttribute('data-comment-form')) {
@@ -338,7 +348,7 @@
             })
             .catch(() => {})
             .finally(() => {
-                btn.disabled = false;
+                btn.disabled = input.value.trim() === '';
             });
         }
     });
