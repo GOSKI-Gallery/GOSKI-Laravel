@@ -65,7 +65,7 @@ jobs:
 
       - name: Unit & Feature tests with coverage
         run: |
-          docker compose -f docker-compose.yml exec -T app vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
+          docker compose -f docker-compose.yml exec -T -e XDEBUG_MODE=coverage app vendor/bin/phpunit --testsuite=Unit,Feature --coverage-clover=coverage.xml
 
       - name: Check minimum coverage
         run: |
