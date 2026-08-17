@@ -53,7 +53,15 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 COPY composer.json composer.lock package.json package-lock.json ./
 
-RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts
+RUN for i in 1 2 3 4 5; do \
+        if composer install --no-interaction --prefer-dist --no-progress --no-scripts; then \
+            exit 0; \
+        fi; \
+        echo "composer install failed (attempt ${i}/5), retrying in $((i * 10))s..."; \
+        sleep $((i * 10)); \
+    done; \
+    echo "composer install failed after 5 attempts"; \
+    exit 1
 
 RUN npm ci
 
@@ -64,7 +72,15 @@ RUN npm run build \
     && cp -a public/build/. /opt/goski-build/
 
 RUN if [ "$APP_ENV" = "production" ]; then \
-        composer install --no-dev --no-interaction; \
+        for i in 1 2 3 4 5; do \
+            if composer install --no-dev --no-interaction; then \
+                exit 0; \
+            fi; \
+            echo "composer install --no-dev failed (attempt ${i}/5), retrying in $((i * 10))s..."; \
+            sleep $((i * 10)); \
+        done; \
+        echo "composer install --no-dev failed after 5 attempts"; \
+        exit 1; \
     fi
 
 RUN chown -R www-data:www-data storage bootstrap/cache
