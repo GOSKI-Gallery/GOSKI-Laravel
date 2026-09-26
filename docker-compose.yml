@@ -27,6 +27,8 @@ services:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      STATIC_MAP_ZOOM: ${STATIC_MAP_ZOOM:-17}
+      CARTO_API_KEY: ${CARTO_API_KEY:-}
 
   nginx:
     image: nginx:alpine
@@ -67,6 +69,8 @@ services:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      STATIC_MAP_ZOOM: ${STATIC_MAP_ZOOM:-17}
+      CARTO_API_KEY: ${CARTO_API_KEY:-}
     command: php artisan queue:listen --tries=1 --timeout=0
 
 volumes:
