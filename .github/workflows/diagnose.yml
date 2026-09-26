@@ -1,0 +1,42 @@
+name: Diagnose
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Read-only diagnosis on VPS via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            DEPLOY_PATH="${{ vars.DEPLOY_PATH }}"
+            if [ -z "$DEPLOY_PATH" ]; then DEPLOY_PATH="/var/www/html/GOSKI-Laravel"; fi
+            cd "$DEPLOY_PATH"
+            echo "=== git ==="
+            git rev-parse --short HEAD
+            git status -sb | head -5
+            echo "=== compose ps ==="
+            docker compose -f docker-compose.yml ps
+            echo "=== listening sockets (8000/443/80) ==="
+            (ss -ltn 2>/dev/null | grep -E ':8000|:443|:80' || echo "nada em 8000/443/80")
+            echo "=== curl direto no nginx do compose ==="
+            (curl -m 10 -s -o /dev/null -w "compose :8000/up -> HTTP %{http_code} em %{time_total}s\n" "http://127.0.0.1:${HTTP_PORT:-8000}/up" || echo "compose :8000/up -> SEM RESPOSTA")
+            echo "=== logs app (tail 60) ==="
+            docker compose -f docker-compose.yml logs --tail=60 --no-log-prefix app 2>&1 | tail -60
+            echo "=== logs nginx (tail 30) ==="
+            docker compose -f docker-compose.yml logs --tail=30 --no-log-prefix nginx 2>&1 | tail -30
+            echo "=== logs worker (tail 10) ==="
+            docker compose -f docker-compose.yml logs --tail=10 --no-log-prefix worker 2>&1 | tail -10
+            echo "=== host nginx ==="
+            (command -v nginx >/dev/null && (sudo -n nginx -t 2>&1 || nginx -t 2>&1 || echo "nginx -t sem permissao") || echo "nginx nao instalado no host")
+            (grep -r "proxy_pass" /etc/nginx/sites-enabled/ 2>/dev/null || sudo -n grep -r "proxy_pass" /etc/nginx/sites-enabled/ 2>/dev/null || echo "sem acesso a sites-enabled")
