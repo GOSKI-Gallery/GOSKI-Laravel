@@ -27,6 +27,22 @@ jobs:
             cd "$DEPLOY_PATH"
             git pull origin main
             docker compose -f docker-compose.yml build
+            # app primeiro para evitar race no volume app_build; nginx depende de app saudável
             docker compose -f docker-compose.yml up -d app
-            docker compose -f docker-compose.yml up -d worker
+            docker compose -f docker-compose.yml up -d --remove-orphans nginx worker
+            echo "→ Aguardando serviços..."
+            sleep 10
+            docker compose -f docker-compose.yml ps
+            for i in $(seq 1 12); do
+              if docker compose -f docker-compose.yml exec -T nginx wget --no-verbose --tries=1 --spider http://127.0.0.1/up 2>/dev/null; then
+                echo "✓ App respondendo em /up"
+                break
+              fi
+              if [ "$i" -eq 12 ]; then
+                echo "✗ App não respondeu em /up após 60s — logs:"
+                docker compose -f docker-compose.yml logs --tail=100 app nginx
+                exit 1
+              fi
+              sleep 5
+            done
             docker system prune -f
