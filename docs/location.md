@@ -46,7 +46,7 @@ All under `auth` middleware:
 
 - **`resources/views/components/feed/posts/list.blade.php`** — blue location text (pin icon + `location_name`, fallback "Ver no mapa") rendered below the username; click opens the map modal
 - **`resources/views/components/feed/location-modal.blade.php`** — **static CARTO Voyager map** (no Leaflet/map library). The clicked post renders a central blue pin; nearby posts render as small image cards. Tiles are composed as absolutely-positioned 256×256 `<img>` from `map.tiles`; attribution `© OpenStreetMap contributors © CARTO` is always shown in the map's bottom-left corner; the footer shows `location_name` (fallback "Localização exata").
-- **`app/Services/StaticMapService.php`** — pure Web Mercator tile math (`worldX`, `worldY`, `tileUrl`, `tileGrid`, `pixelOffset`), the single source of truth shared with mobile. Subdomain `a–d` chosen deterministically via `abs(x + y) % 4`. Fixed zoom configured in `config/staticmap.php`.
+- **`app/Services/StaticMapService.php`** — pure Web Mercator tile math (`worldX`, `worldY`, `tileUrl`, `tileGrid`, `pixelOffset`), the single source of truth shared with mobile. Subdomain `a–d` chosen deterministically via `abs(x + y) % 4`. Fixed zoom configured in `config/staticmap.php`. `tileUrl()` appends `?key=` from `config('staticmap.api_key')` (`CARTO_API_KEY` env, free key at `carto.com/basemaps/apikey`); without a key CARTO renders an "API KEY REQUIRED" watermark. Mobile must apply the same template + key.
 - **`resources/views/components/feed/posts/index.blade.php`** — includes the location modal
 - **`resources/views/components/create-post-modal.blade.php`** — opt-in "Adicionar localização" toggle using `navigator.geolocation` + Nominatim reverse geocode
 

@@ -38,6 +38,8 @@ class StaticMapServiceTest extends TestCase
 
     public function test_tile_url_uses_deterministic_subdomain(): void
     {
+        config(['staticmap.api_key' => '']);
+
         $url = $this->service->tileUrl(17, 1, 2);
 
         $this->assertStringStartsWith('https://d.basemaps.cartocdn.com/rastertiles/voyager/17/1/2.png', $url);
@@ -46,6 +48,8 @@ class StaticMapServiceTest extends TestCase
 
     public function test_tile_url_handles_negative_coordinates(): void
     {
+        config(['staticmap.api_key' => '']);
+
         $url = $this->service->tileUrl(17, -1, 2);
 
         $this->assertStringStartsWith('https://b.basemaps.cartocdn.com/rastertiles/voyager/17/-1/2.png', $url);
@@ -53,12 +57,33 @@ class StaticMapServiceTest extends TestCase
 
     public function test_tile_url_subdomain_is_always_in_range(): void
     {
+        config(['staticmap.api_key' => '']);
+
         foreach ([-3, -2, -1, 0, 1, 2, 3] as $x) {
             foreach ([-3, -2, -1, 0, 1, 2, 3] as $y) {
                 $url = $this->service->tileUrl(15, $x, $y);
                 $this->assertMatchesRegularExpression('#^https://[a-d]\.basemaps\.cartocdn\.com/#', $url);
             }
         }
+    }
+
+    public function test_tile_url_appends_carto_api_key_when_configured(): void
+    {
+        config(['staticmap.api_key' => 'test-key-123']);
+
+        $url = $this->service->tileUrl(17, 1, 2);
+
+        $this->assertSame('https://d.basemaps.cartocdn.com/rastertiles/voyager/17/1/2.png?key=test-key-123', $url);
+    }
+
+    public function test_tile_url_omits_key_when_not_configured(): void
+    {
+        config(['staticmap.api_key' => '']);
+
+        $url = $this->service->tileUrl(17, 1, 2);
+
+        $this->assertSame('https://d.basemaps.cartocdn.com/rastertiles/voyager/17/1/2.png', $url);
+        $this->assertStringNotContainsString('key=', $url);
     }
 
     public function test_tile_grid_covers_the_viewport(): void

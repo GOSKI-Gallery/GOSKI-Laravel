@@ -42,11 +42,20 @@ class StaticMapService
 
         $subdomain = $subdomains[abs($x + $y) % count($subdomains)];
 
-        return str_replace(
+        $url = str_replace(
             ['{subdomain}', '{z}', '{x}', '{y}'],
             [(string) $subdomain, (string) $zoom, (string) $x, (string) $y],
             $baseUrl
         );
+
+        $apiKey = (string) config('staticmap.api_key', '');
+
+        if ($apiKey !== '') {
+            $separator = str_contains($url, '?') ? '&' : '?';
+            $url .= $separator.'key='.$apiKey;
+        }
+
+        return $url;
     }
 
     /**
