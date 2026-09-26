@@ -101,6 +101,7 @@ class PostLocationControllerTest extends TestCase
 
     public function test_returns_static_map_grid_with_width_and_height(): void
     {
+        config(['staticmap.api_key' => '']);
         $post = Post::factory()->withLocation()->create(['user_id' => $this->user]);
 
         $response = $this->actingAs($this->user)->getJson(
@@ -133,6 +134,22 @@ class PostLocationControllerTest extends TestCase
                 '#^https://[a-d]\.basemaps\.cartocdn\.com/rastertiles/voyager/'.$map['zoom'].'/#',
                 $tile['url']
             );
+        }
+    }
+
+    public function test_static_map_grid_appends_carto_api_key_when_configured(): void
+    {
+        config(['staticmap.api_key' => 'test-key-123']);
+        $post = Post::factory()->withLocation()->create(['user_id' => $this->user]);
+
+        $response = $this->actingAs($this->user)->getJson(
+            route('post.location.show', $post->id).'?width=512&height=512'
+        );
+
+        $response->assertStatus(200);
+
+        foreach ($response->json('map.tiles') as $tile) {
+            $this->assertStringContainsString('?key=test-key-123', $tile['url']);
         }
     }
 
