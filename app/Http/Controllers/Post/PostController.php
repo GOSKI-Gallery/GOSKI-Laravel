@@ -83,6 +83,7 @@ class PostController extends Controller
 
             $latitude = isset($data['latitude']) ? (float) $data['latitude'] : null;
             $longitude = isset($data['longitude']) ? (float) $data['longitude'] : null;
+            $now = now()->toIso8601String();
 
             $record = [
                 'user_id' => Auth::id(),
@@ -96,6 +97,8 @@ class PostController extends Controller
                     $latitude,
                     $longitude
                 ),
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
 
             $this->supabase->insert('posts', $record);

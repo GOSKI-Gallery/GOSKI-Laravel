@@ -139,6 +139,25 @@ class PostControllerTest extends TestCase
         });
     }
 
+    public function test_store_includes_timestamps_in_supabase_request(): void
+    {
+        $file = UploadedFile::fake()->create('test.jpg', 0, 'image/jpeg');
+
+        $response = $this->actingAs($this->user)->post(route('posts.store'), [
+            'description' => 'Post with timestamps',
+            'image_url' => $file,
+        ]);
+
+        $response->assertRedirect(route('feed'));
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/rest/v1/posts')
+                && $request->method() === 'POST'
+                && ! empty($request['created_at'])
+                && ! empty($request['updated_at']);
+        });
+    }
+
     public function test_store_validates_invalid_latitude(): void
     {
         $file = UploadedFile::fake()->create('test.jpg', 0, 'image/jpeg');
