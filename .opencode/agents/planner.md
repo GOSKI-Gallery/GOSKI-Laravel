@@ -1,7 +1,6 @@
 ---
 description: Analyzes requirements and creates atomic task breakdowns with implementation order
 mode: subagent
-model: github/deepseek-v4
 temperature: 0.1
 permission:
   read: allow
