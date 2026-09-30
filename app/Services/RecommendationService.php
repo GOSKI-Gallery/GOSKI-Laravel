@@ -51,56 +51,59 @@ class RecommendationService
     public function getSuggestedUsers(User $user, int $limit = 5): Collection
     {
         $authId = $user->id;
-        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
 
-        $alreadyFollowing = DB::table($prefix.'follows')
-            ->where('follower_id', $authId)
-            ->pluck('followed_id')
-            ->toArray();
+        return Cache::remember("suggested_users:{$authId}", now()->addSeconds(300), function () use ($authId, $limit) {
+            $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
 
-        $likedAuthorIds = Like::where('likes.user_id', $authId)
-            ->join($prefix.'posts', 'posts.id', '=', 'likes.post_id')
-            ->where('posts.user_id', '!=', $authId)
-            ->distinct()
-            ->pluck('posts.user_id')
-            ->filter()
-            ->values();
+            $alreadyFollowing = DB::table($prefix.'follows')
+                ->where('follower_id', $authId)
+                ->pluck('followed_id')
+                ->toArray();
 
-        $followingIds = DB::table($prefix.'follows')
-            ->where('follower_id', $authId)
-            ->pluck('followed_id');
+            $likedAuthorIds = Like::where('likes.user_id', $authId)
+                ->join($prefix.'posts', 'posts.id', '=', 'likes.post_id')
+                ->where('posts.user_id', '!=', $authId)
+                ->distinct()
+                ->pluck('posts.user_id')
+                ->filter()
+                ->values();
 
-        $mutualIds = DB::table($prefix.'follows')
-            ->whereIn('follower_id', $followingIds)
-            ->where('followed_id', '!=', $authId)
-            ->selectRaw('followed_id, COUNT(*) as cnt')
-            ->groupBy('followed_id')
-            ->pluck('cnt', 'followed_id');
+            $followingIds = DB::table($prefix.'follows')
+                ->where('follower_id', $authId)
+                ->pluck('followed_id');
 
-        $scores = [];
-        foreach ($likedAuthorIds as $id) {
-            $scores[$id] = ($scores[$id] ?? 0) + 2;
-        }
-        foreach ($mutualIds as $id => $cnt) {
-            $scores[$id] = ($scores[$id] ?? 0) + 1 + $cnt;
-        }
-        foreach ($alreadyFollowing as $id) {
-            unset($scores[$id]);
-        }
+            $mutualIds = DB::table($prefix.'follows')
+                ->whereIn('follower_id', $followingIds)
+                ->where('followed_id', '!=', $authId)
+                ->selectRaw('followed_id, COUNT(*) as cnt')
+                ->groupBy('followed_id')
+                ->pluck('cnt', 'followed_id');
 
-        arsort($scores);
-        $topIds = array_slice(array_keys($scores), 0, $limit);
+            $scores = [];
+            foreach ($likedAuthorIds as $id) {
+                $scores[$id] = ($scores[$id] ?? 0) + 2;
+            }
+            foreach ($mutualIds as $id => $cnt) {
+                $scores[$id] = ($scores[$id] ?? 0) + 1 + $cnt;
+            }
+            foreach ($alreadyFollowing as $id) {
+                unset($scores[$id]);
+            }
 
-        if (empty($topIds)) {
-            return collect();
-        }
+            arsort($scores);
+            $topIds = array_slice(array_keys($scores), 0, $limit);
 
-        $users = User::whereIn('id', $topIds)->get()->keyBy('id');
+            if (empty($topIds)) {
+                return collect();
+            }
 
-        return collect($topIds)
-            ->map(fn ($id) => $users[$id] ?? null)
-            ->filter()
-            ->values();
+            $users = User::whereIn('id', $topIds)->get()->keyBy('id');
+
+            return collect($topIds)
+                ->map(fn ($id) => $users[$id] ?? null)
+                ->filter()
+                ->values();
+        });
     }
 
     /** @return Collection<int, mixed> */
@@ -120,5 +123,11 @@ class RecommendationService
     {
         $id = $user instanceof User ? $user->id : $user;
         Cache::forget("user:{$id}:liked_tag_ids");
+    }
+
+    public function clearSuggestionCache(User|string $user): void
+    {
+        $id = $user instanceof User ? $user->id : $user;
+        Cache::forget("suggested_users:{$id}");
     }
 }

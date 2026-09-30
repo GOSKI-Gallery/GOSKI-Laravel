@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -112,36 +114,56 @@ class UserControllerTest extends TestCase
 
     public function test_show_user_profile()
     {
-        Http::fake([
-            "{$this->supabaseUrl}/rest/v1/users?id=eq.displayed-user*" => Http::response(
-                [['id' => 'displayed-user', 'username' => 'displayed']],
-                200
-            ),
-            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
-            "{$this->supabaseUrl}/*" => Http::response([], 200),
+        Http::fake();
+
+        $viewer = User::factory()->create();
+        $displayed = User::factory()->create();
+        Post::factory()->count(3)->create(['user_id' => $displayed->id]);
+        Post::factory()->create();
+        DB::table('follows')->insert([
+            'follower_id' => $viewer->id,
+            'followed_id' => $displayed->id,
+            'created_at' => now(),
         ]);
 
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->get('/profile/displayed-user');
+        $response = $this->actingAs($viewer)->get("/profile/{$displayed->id}");
 
         $response->assertStatus(200);
         $response->assertViewIs('profile');
+        $this->assertEquals($displayed->id, $response->viewData('profileUser')->id);
+        $response->assertViewHas('isOwnProfile', false);
+        $this->assertCount(3, $response->viewData('userPosts'));
+        $response->assertViewHas('followersCount', 1);
+        $response->assertViewHas('followingCount', 0);
+        $response->assertViewHas('isFollowed', true);
+        Http::assertNothingSent();
+    }
+
+    public function test_show_limits_posts_to_nine_latest()
+    {
+        Http::fake();
+
+        $viewer = User::factory()->create();
+        $displayed = User::factory()->create();
+        Post::factory()->count(12)->create(['user_id' => $displayed->id]);
+
+        $response = $this->actingAs($viewer)->get("/profile/{$displayed->id}");
+
+        $response->assertStatus(200);
+        $this->assertCount(9, $response->viewData('userPosts'));
+        Http::assertNothingSent();
     }
 
     public function test_show_nonexistent_user_returns_404()
     {
-        Http::fake([
-            "{$this->supabaseUrl}/rest/v1/users?id=eq.nonexistent*" => Http::response([], 200),
-            "{$this->supabaseUrl}/rest/v1/follows*" => Http::response([], 200),
-            "{$this->supabaseUrl}/*" => Http::response([], 200),
-        ]);
+        Http::fake();
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/profile/nonexistent');
+        $response = $this->actingAs($user)->get('/profile/'.(string) Str::uuid());
 
         $response->assertStatus(404);
+        Http::assertNothingSent();
     }
 
     public function test_update_requires_authentication()
