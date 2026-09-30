@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SupabaseCommentService extends SupabaseBaseService
 {
@@ -74,19 +75,39 @@ class SupabaseCommentService extends SupabaseBaseService
         return ! $response->failed();
     }
 
+    /**
+     * Count comments via direct DB read (0 HTTP round-trips). Reads are
+     * the direct-DB pattern per AGENTS.md §6; used by CommentController::store
+     * so the request costs a single HTTP (the insert POST).
+     */
+    public function getCommentCountLocal(string $postId): int
+    {
+        $prefix = DB::getDriverName() === 'pgsql' ? 'laravel.' : '';
+
+        return DB::table($prefix.'comments')->where('post_id', $postId)->count();
+    }
+
     public function getCommentCount(string $postId): int
     {
-        $response = $this->client()->get("{$this->url}/rest/v1/comments", [
-            'post_id' => 'eq.'.$postId,
-            'select' => 'id',
-        ]);
+        try {
+            $response = $this->client()
+                ->withHeaders(['Prefer' => 'count=exact'])
+                ->get("{$this->url}/rest/v1/comments", [
+                    'post_id' => 'eq.'.$postId,
+                    'select' => 'id',
+                ]);
 
-        if ($response->failed()) {
+            if ($response->failed()) {
+                return 0;
+            }
+
+            if (preg_match('#/(\d+)\s*$#', $response->header('Content-Range'), $matches)) {
+                return (int) $matches[1];
+            }
+
+            return 0;
+        } catch (\Throwable) {
             return 0;
         }
-
-        $data = $response->json();
-
-        return is_array($data) ? count($data) : 0;
     }
 }

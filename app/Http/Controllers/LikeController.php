@@ -18,15 +18,10 @@ class LikeController extends Controller
 
         $supabase = new SupabasePostService;
 
-        if ($supabase->hasLikedPost((string) $userId, $postId)) {
-            $supabase->unlikePost((string) $userId, $postId);
-            $liked = false;
-        } else {
-            $supabase->likePost((string) $userId, $postId);
-            $liked = true;
-        }
+        $liked = $supabase->toggleLike((string) $userId, $postId);
 
         app(RecommendationService::class)->clearTagCache((string) $userId);
+        app(RecommendationService::class)->clearSuggestionCache((string) $userId);
 
         $likesCount = $supabase->getLikeCount($postId);
 

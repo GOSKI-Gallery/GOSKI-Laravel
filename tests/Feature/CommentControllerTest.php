@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -84,6 +86,60 @@ class CommentControllerTest extends TestCase
         ]);
 
         $response->assertJsonPath('comment.body', 'Great post!');
+    }
+
+    public function test_store_returns_db_backed_comments_count_with_single_http_call(): void
+    {
+        $owner = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $owner->id]);
+
+        // Http::fake() não persiste no sqlite: o count via DB reflete as
+        // linhas pré-existentes. Em produção o POST REST commita antes da
+        // leitura direta, então o count inclui o comentário novo.
+        DB::table('comments')->insert([
+            ['user_id' => $owner->id, 'post_id' => $post->id, 'body' => 'First!', 'created_at' => now(), 'updated_at' => now()],
+            ['user_id' => $owner->id, 'post_id' => $post->id, 'body' => 'Second!', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        Http::fake([
+            "{$this->supabaseUrl}/rest/v1/comments*" => Http::response([
+                ['id' => 99, 'user_id' => $owner->id, 'post_id' => (string) $post->id, 'body' => 'Great post!'],
+            ], 201),
+        ]);
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->postJson("/posts/{$post->id}/comments", ['body' => 'Great post!']);
+
+        $expected = DB::table('comments')->where('post_id', $post->id)->count();
+        $this->assertSame(2, $expected);
+
+        $response->assertJson([
+            'success' => true,
+            'comments_count' => $expected,
+        ]);
+        $response->assertJsonPath('comment.body', 'Great post!');
+
+        Http::assertSentCount(1);
+    }
+
+    public function test_store_returns_500_without_count_when_insert_fails(): void
+    {
+        Http::fake([
+            "{$this->supabaseUrl}/rest/v1/comments*" => Http::response([], 500),
+        ]);
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->postJson('/posts/1/comments', ['body' => 'Great post!']);
+
+        $response->assertStatus(500);
+        $response->assertJson(['success' => false]);
+        $response->assertJsonMissingPath('comments_count');
+
+        Http::assertSentCount(1);
     }
 
     public function test_store_validates_body(): void

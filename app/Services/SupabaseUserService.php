@@ -40,12 +40,24 @@ class SupabaseUserService extends SupabaseBaseService
 
     public function getFollowCount(string $userId, string $type = 'followers'): int
     {
-        $column = $type === 'followers' ? 'followed_id' : 'follower_id';
-        $response = $this->client()
-            ->get("{$this->url}/rest/v1/follows?{$column}=eq.{$userId}")
-            ->json();
+        try {
+            $column = $type === 'followers' ? 'followed_id' : 'follower_id';
+            $response = $this->client()
+                ->withHeaders(['Prefer' => 'count=exact'])
+                ->get("{$this->url}/rest/v1/follows?{$column}=eq.{$userId}&select=id");
 
-        return is_array($response) ? count($response) : 0;
+            if ($response->failed()) {
+                return 0;
+            }
+
+            if (preg_match('#/(\d+)\s*$#', $response->header('Content-Range'), $matches)) {
+                return (int) $matches[1];
+            }
+
+            return 0;
+        } catch (\Throwable) {
+            return 0;
+        }
     }
 
     public function hasLikedPost(string $userId, string $postId): bool

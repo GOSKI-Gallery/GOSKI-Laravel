@@ -40,7 +40,7 @@ class CommentController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to create comment.'], 500);
         }
 
-        $commentCount = $supabase->getCommentCount($postId);
+        $commentCount = $supabase->getCommentCountLocal($postId);
 
         if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
