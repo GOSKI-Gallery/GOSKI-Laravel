@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Post;
 use App\Models\User;
 use App\Services\SupabaseCommentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -135,14 +137,17 @@ class SupabaseCommentServiceTest extends TestCase
     public function test_get_comment_count_returns_count(): void
     {
         Http::fake([
-            "{$this->baseUrl}/rest/v1/comments*" => Http::response([
-                ['id' => 1], ['id' => 2], ['id' => 3],
-            ], 200),
+            "{$this->baseUrl}/rest/v1/comments*" => Http::response([], 200, ['Content-Range' => '0-0/3']),
         ]);
 
         $count = $this->service->getCommentCount('post-1');
 
         $this->assertEquals(3, $count);
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/rest/v1/comments')
+                && $request->hasHeader('Prefer', 'count=exact');
+        });
     }
 
     public function test_get_comment_count_returns_zero(): void
@@ -165,5 +170,23 @@ class SupabaseCommentServiceTest extends TestCase
         $count = $this->service->getCommentCount('post-1');
 
         $this->assertEquals(0, $count);
+    }
+
+    public function test_get_comment_count_local_reads_from_database_without_http(): void
+    {
+        $owner = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $owner->id]);
+        $otherPost = Post::factory()->create(['user_id' => $owner->id]);
+
+        DB::table('comments')->insert([
+            ['user_id' => $owner->id, 'post_id' => $post->id, 'body' => 'One', 'created_at' => now(), 'updated_at' => now()],
+            ['user_id' => $owner->id, 'post_id' => $post->id, 'body' => 'Two', 'created_at' => now(), 'updated_at' => now()],
+            ['user_id' => $owner->id, 'post_id' => $otherPost->id, 'body' => 'Other', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $count = $this->service->getCommentCountLocal((string) $post->id);
+
+        $this->assertSame(2, $count);
+        Http::assertNothingSent();
     }
 }

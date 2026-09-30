@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\EditUserRequest;
 use App\Http\Requests\User\RegisterUserRequest;
 use App\Models\Post;
+use App\Models\User;
 use App\Services\SupabaseAuthService;
-use App\Services\SupabaseUserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -46,8 +46,7 @@ class UserController extends Controller
 
     public function show(string $userId)
     {
-        $supabase = new SupabaseUserService;
-        $profileUser = $supabase->getUserById($userId);
+        $profileUser = User::find($userId);
 
         if (! $profileUser) {
             abort(404);

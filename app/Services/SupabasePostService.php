@@ -67,6 +67,29 @@ class SupabasePostService extends SupabaseBaseService
             ->json();
     }
 
+    /**
+     * Toggle a like with a single speculative DELETE instead of a
+     * read-before-write. With `Prefer: return=representation` PostgREST
+     * returns the deleted rows, so a non-empty response means the post was
+     * liked (unlike path: 1 call). An empty response means it was not liked,
+     * so a POST follows (like path: 2 calls).
+     */
+    public function toggleLike(string $userId, string $postId): bool
+    {
+        $deleted = $this->client()
+            ->withHeaders(['Prefer' => 'return=representation'])
+            ->delete("{$this->url}/rest/v1/likes?user_id=eq.{$userId}&post_id=eq.{$postId}")
+            ->json();
+
+        if (is_array($deleted) && count($deleted) > 0) {
+            return false;
+        }
+
+        $this->likePost($userId, $postId);
+
+        return true;
+    }
+
     public function hasLikedPost(string $userId, string $postId): bool
     {
         $response = $this->client()
@@ -78,20 +101,44 @@ class SupabasePostService extends SupabaseBaseService
 
     public function getLikeCount(string $postId): int
     {
-        $response = $this->client()
-            ->get("{$this->url}/rest/v1/likes?post_id=eq.{$postId}")
-            ->json();
+        try {
+            $response = $this->client()
+                ->withHeaders(['Prefer' => 'count=exact'])
+                ->get("{$this->url}/rest/v1/likes?post_id=eq.{$postId}&select=id");
 
-        return is_array($response) ? count($response) : 0;
+            if ($response->failed()) {
+                return 0;
+            }
+
+            if (preg_match('#/(\d+)\s*$#', $response->header('Content-Range'), $matches)) {
+                return (int) $matches[1];
+            }
+
+            return 0;
+        } catch (\Throwable) {
+            return 0;
+        }
     }
 
     public function getCommentCount(string $postId): int
     {
-        $response = $this->client()
-            ->get("{$this->url}/rest/v1/comments?post_id=eq.{$postId}")
-            ->json();
+        try {
+            $response = $this->client()
+                ->withHeaders(['Prefer' => 'count=exact'])
+                ->get("{$this->url}/rest/v1/comments?post_id=eq.{$postId}&select=id");
 
-        return is_array($response) ? count($response) : 0;
+            if ($response->failed()) {
+                return 0;
+            }
+
+            if (preg_match('#/(\d+)\s*$#', $response->header('Content-Range'), $matches)) {
+                return (int) $matches[1];
+            }
+
+            return 0;
+        } catch (\Throwable) {
+            return 0;
+        }
     }
 
     public function getNearbyPosts(string $postId, float $latitude, float $longitude, int $radiusKm = 25, int $limit = 50): array

@@ -104,14 +104,17 @@ class SupabaseUserServiceTest extends TestCase
     public function test_get_follow_count_returns_count(): void
     {
         Http::fake([
-            "{$this->baseUrl}/rest/v1/follows*" => Http::response([
-                ['id' => 1], ['id' => 2], ['id' => 3],
-            ], 200),
+            "{$this->baseUrl}/rest/v1/follows*" => Http::response([], 200, ['Content-Range' => '0-0/3']),
         ]);
 
         $count = $this->service->getFollowCount('user-1', 'followers');
 
         $this->assertEquals(3, $count);
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/rest/v1/follows')
+                && $request->hasHeader('Prefer', 'count=exact');
+        });
     }
 
     public function test_get_follow_count_returns_zero(): void

@@ -131,17 +131,67 @@ class SupabasePostServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
+    public function test_toggle_like_returns_false_without_post_when_delete_removes_row(): void
+    {
+        Http::fake([
+            "{$this->baseUrl}/rest/v1/likes*" => function ($request) {
+                if ($request->method() === 'DELETE') {
+                    return Http::response([['id' => 1, 'user_id' => 'user-1', 'post_id' => 'post-1']], 200);
+                }
+
+                return Http::response([], 200);
+            },
+        ]);
+
+        $result = $this->service->toggleLike('user-1', 'post-1');
+
+        $this->assertFalse($result);
+        Http::assertSent(function ($request) {
+            return $request->method() === 'DELETE'
+                && $request->hasHeader('Prefer', 'return=representation');
+        });
+        Http::assertNotSent(function ($request) {
+            return $request->method() === 'POST';
+        });
+    }
+
+    public function test_toggle_like_posts_like_when_delete_removes_nothing(): void
+    {
+        Http::fake([
+            "{$this->baseUrl}/rest/v1/likes*" => function ($request) {
+                if ($request->method() === 'DELETE') {
+                    return Http::response([], 200);
+                }
+
+                return Http::response([['id' => 9]], 201);
+            },
+        ]);
+
+        $result = $this->service->toggleLike('user-1', 'post-1');
+
+        $this->assertTrue($result);
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/rest/v1/likes')
+                && $request->method() === 'POST'
+                && $request['user_id'] === 'user-1'
+                && $request['post_id'] === 'post-1';
+        });
+    }
+
     public function test_get_like_count_returns_count(): void
     {
         Http::fake([
-            "{$this->baseUrl}/rest/v1/likes*" => Http::response([
-                ['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4],
-            ], 200),
+            "{$this->baseUrl}/rest/v1/likes*" => Http::response([], 200, ['Content-Range' => '0-0/4']),
         ]);
 
         $count = $this->service->getLikeCount('post-1');
 
         $this->assertEquals(4, $count);
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/rest/v1/likes')
+                && $request->hasHeader('Prefer', 'count=exact');
+        });
     }
 
     public function test_get_like_count_returns_zero(): void

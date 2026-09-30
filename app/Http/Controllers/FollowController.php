@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SupabasePostService;
+use App\Services\RecommendationService;
 use App\Services\SupabaseUserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class FollowController extends Controller
 {
@@ -21,10 +22,11 @@ class FollowController extends Controller
             return back()->with('error', 'Você não pode seguir a si mesmo.');
         }
 
-        $supabase = new SupabasePostService;
         $supabaseUser = new SupabaseUserService;
 
         $supabaseUser->followUser($followerId, $followedId);
+
+        $this->clearFollowCaches($followerId, $followedId);
 
         if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json(['success' => true, 'message' => 'Followed successfully!', 'following' => true]);
@@ -37,15 +39,25 @@ class FollowController extends Controller
     {
         $followerId = Auth::id();
 
-        $supabase = new SupabasePostService;
         $supabaseUser = new SupabaseUserService;
 
         $supabaseUser->unfollowUser($followerId, $followedId);
+
+        $this->clearFollowCaches($followerId, $followedId);
 
         if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json(['success' => true, 'message' => 'Unfollowed successfully!', 'following' => false]);
         }
 
         return back()->with('success', 'Unfollowed successfully!');
+    }
+
+    private function clearFollowCaches(string $followerId, string $followedId): void
+    {
+        foreach ([$followerId, $followedId] as $id) {
+            Cache::forget("follow_counts:{$id}:followers");
+            Cache::forget("follow_counts:{$id}:following");
+            app(RecommendationService::class)->clearSuggestionCache($id);
+        }
     }
 }

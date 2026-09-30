@@ -9,6 +9,7 @@ use App\Services\LocationService;
 use App\Services\RecommendationService;
 use App\Services\SupabasePostService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -56,7 +57,11 @@ class PostController extends Controller
             return view('components.feed.posts.list', ['posts' => $posts]);
         }
 
-        $userPosts = Post::where('user_id', $user->id)->latest()->take(9)->get();
+        $userPosts = Cache::remember(
+            "feed:user_posts:{$user->id}",
+            now()->addSeconds(120),
+            fn () => Post::where('user_id', $user->id)->latest()->take(9)->get()
+        );
 
         $suggestedUsers = $this->recommendation->getSuggestedUsers($user);
 
@@ -64,8 +69,16 @@ class PostController extends Controller
             'posts' => $posts,
             'userPosts' => $userPosts,
             'suggestedUsers' => $suggestedUsers,
-            'followersCount' => DB::table($prefix.'follows')->where('followed_id', $user->id)->count(),
-            'followingCount' => DB::table($prefix.'follows')->where('follower_id', $user->id)->count(),
+            'followersCount' => Cache::remember(
+                "follow_counts:{$user->id}:followers",
+                now()->addSeconds(120),
+                fn () => DB::table($prefix.'follows')->where('followed_id', $user->id)->count()
+            ),
+            'followingCount' => Cache::remember(
+                "follow_counts:{$user->id}:following",
+                now()->addSeconds(120),
+                fn () => DB::table($prefix.'follows')->where('follower_id', $user->id)->count()
+            ),
         ]);
     }
 
@@ -102,6 +115,8 @@ class PostController extends Controller
             ];
 
             $this->supabase->insert('posts', $record);
+
+            Cache::forget('feed:user_posts:'.Auth::id());
 
             return redirect()->route('feed')->with('success', 'Post criado com sucesso!');
         } catch (\Exception $e) {
