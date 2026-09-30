@@ -1,7 +1,6 @@
 ---
 description: Reviews code quality, runs tests, checks conventions, and reports issues
 mode: subagent
-model: opencode/big-pickle
 temperature: 0.1
 permission:
   read: allow
