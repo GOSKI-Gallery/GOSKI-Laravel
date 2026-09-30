@@ -36,6 +36,10 @@ services:
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       STATIC_MAP_ZOOM: ${STATIC_MAP_ZOOM:-17}
       CARTO_API_KEY: ${CARTO_API_KEY:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_CLIENT: ${REDIS_CLIENT:-phpredis}
 
   nginx:
     image: nginx:alpine
@@ -93,7 +97,24 @@ services:
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       STATIC_MAP_ZOOM: ${STATIC_MAP_ZOOM:-17}
       CARTO_API_KEY: ${CARTO_API_KEY:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_CLIENT: ${REDIS_CLIENT:-phpredis}
     command: php artisan queue:listen --tries=1 --timeout=0
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --save 60 1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - redis_data:/data
 
 volumes:
   app_build:
+  redis_data:
