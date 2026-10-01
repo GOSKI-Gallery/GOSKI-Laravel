@@ -6,6 +6,9 @@
             <div class="w-12 h-12 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                 <img src='{{ Auth::user()->profile_photo_url ?? '' }}' alt='Profile Picture'
                     class='w-full h-full object-cover'
+                    loading="lazy"
+                    width="48"
+                    height="48"
                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                 <svg class="w-5 h-5 text-zinc-400 dark:text-zinc-500 hidden" viewBox="0 0 24 24" fill="none">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>

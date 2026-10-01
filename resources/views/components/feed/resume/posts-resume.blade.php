@@ -5,7 +5,10 @@
         <div class="aspect-square group relative overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
             <img src="{{ $post['image_url'] ?? '' }}" 
                  alt="Post image"
-                 class='w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:opacity-75'>
+                 class='w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:opacity-75'
+                 loading="lazy"
+                 width="400"
+                 height="400">
             
             <div class="absolute inset-0 bg-zinc-900/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         </div>

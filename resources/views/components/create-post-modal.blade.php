@@ -43,7 +43,10 @@
                     <input type="file" name="image_url" id="image_url"
                         class="absolute inset-0 z-20 cursor-pointer opacity-0" required accept="image/*">
 
-                    <img id="image-preview" class="absolute inset-0 z-10 hidden h-full w-full object-cover" />
+                    <img id="image-preview" class="absolute inset-0 z-10 hidden h-full w-full object-cover"
+                     loading="lazy"
+                     width="800"
+                     height="800" />
                 </div>
             </div>
 

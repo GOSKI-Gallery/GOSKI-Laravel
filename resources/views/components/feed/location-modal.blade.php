@@ -111,14 +111,14 @@
 
                 const pinsHtml = pins.map(p => {
                     const safeSrc = String(p.image_url ?? '').replace(/[&<>"']/g, (ch) => ({
-                        '&': '&amp;',
-                        '<': '&lt;',
-                        '>': '&gt;',
-                        '"': '&quot;',
-                        "'": '&#39;',
+                        '&': '&',
+                        '<': '<',
+                        '>': '>',
+                        '"': '"',
+                        "'": ''',
                     }[ch]));
                     return '<div class="absolute w-14 h-14 rounded-lg overflow-hidden border-2 border-white dark:border-zinc-900 shadow-xl bg-zinc-200 dark:bg-zinc-800 pointer-events-none" style="left:' + (p.left - 28) + 'px;top:' + (p.top - 56) + 'px">' +
-                        '<img src="' + safeSrc + '" alt="" class="w-full h-full object-cover" onerror="this.style.display=\'none\'"/></div>';
+                        '<img src="' + safeSrc + '" alt="" class="w-full h-full object-cover" loading="lazy" width="56" height="56" onerror="this.style.display=\'none\'"/></div>';
                 }).join('');
 
                 mapEl.innerHTML =
@@ -136,11 +136,11 @@
             };
 
             const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;',
+                '&': '&',
+                '<': '<',
+                '>': '>',
+                '"': '"',
+                "'": ''',
             }[ch]));
 
             if (closeBtn) {
