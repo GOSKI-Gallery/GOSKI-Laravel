@@ -5,21 +5,17 @@ namespace App\Services;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class RecommendationService
 {
-    /** @return LengthAwarePaginator<int, Post> */
-    public function getRankedFeed(User $user, int $perPage = 20): LengthAwarePaginator
+    /** @return Paginator<int, Post> */
+    public function getRankedFeed(User $user, int $perPage = 20, int $page = 1): Paginator
     {
         $tagIds = $this->getUserLikedTagIds($user);
-
-        $tagSubquery = $tagIds->isEmpty()
-            ? 'NULL'
-            : $tagIds->implode(',');
 
         $driver = DB::getDriverName();
         $prefix = $driver === 'pgsql' ? 'laravel.' : '';
@@ -28,23 +24,34 @@ class RecommendationService
             default => 'EXTRACT(EPOCH FROM posts.created_at)',
         };
 
-        return Post::select('posts.*')
-            ->addSelect(DB::raw(
-                'CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END AS is_following'
-            ))
-            ->addSelect(DB::raw(
-                "(SELECT COUNT(*) FROM {$prefix}post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) AS matching_tags_count"
-            ))
+        // CTE to compute matching_tags_count per post (single scan, not per-row)
+        // Use whereIn directly which handles bindings automatically
+        $tagCte = DB::table($prefix.'post_tag as pt')
+            ->select('pt.post_id', DB::raw('COUNT(*) as matching_tags_count'))
+            ->when(! $tagIds->isEmpty(), function ($query) use ($tagIds) {
+                $query->whereIn('pt.tag_id', $tagIds);
+            })
+            ->groupBy('pt.post_id');
+
+        // Main query with CTE joined
+        $query = Post::select('posts.*')
+            ->addSelect(DB::raw('COALESCE(tag_counts.matching_tags_count, 0) as matching_tags_count'))
+            ->addSelect(DB::raw('CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END as is_following'))
             ->leftJoin($prefix.'follows as f', function ($join) use ($user) {
                 $join->on('f.followed_id', 'posts.user_id')
                     ->where('f.follower_id', $user->id);
             })
+            ->leftJoinSub($tagCte, 'tag_counts', function ($join) {
+                $join->on('tag_counts.post_id', '=', 'posts.id');
+            })
             ->orderByRaw(
-                "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + (SELECT COUNT(*) FROM {$prefix}post_tag pt WHERE pt.post_id = posts.id AND pt.tag_id IN ({$tagSubquery})) * 600) DESC")
+                "({$epochExpr} + CASE WHEN f.id IS NOT NULL THEN 3600 ELSE 0 END + COALESCE(tag_counts.matching_tags_count, 0) * 600) DESC"
+            )
             ->with('users')
             ->withCount('likes')
-            ->withCount('comments')
-            ->paginate($perPage);
+            ->withCount('comments');
+
+        return $query->simplePaginate($perPage, ['*'], 'page', $page);
     }
 
     /** @return Collection<int, User> */
