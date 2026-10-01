@@ -16,7 +16,10 @@
             <div class="aspect-square bg-gray-50 dark:bg-zinc-900">
                 <img src="{{ $user->profile_photo_url ?? '' }}" 
                      alt="{{ $user->username }}"
-                     class="w-full h-full object-cover">
+                     class="w-full h-full object-cover"
+                     loading="lazy"
+                     width="800"
+                     height="800">
             </div>
 
             <div class="p-6">

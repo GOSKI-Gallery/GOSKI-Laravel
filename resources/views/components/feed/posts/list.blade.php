@@ -11,6 +11,9 @@
                         <img src="{{ $post['users']['profile_photo_url'] ?? '' }}"
                             alt="Profile"
                             class="w-full h-full object-cover"
+                            loading="lazy"
+                            width="40"
+                            height="40"
                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                         <svg class="w-5 h-5 text-zinc-400 dark:text-zinc-500 hidden" viewBox="0 0 24 24" fill="none">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
@@ -52,7 +55,10 @@
 
             <div class="w-full aspect-square bg-zinc-900 dark:bg-zinc-800 overflow-hidden rounded-xl">
                 <img src="{{ $post['image_url'] ?? '' }}" alt="Conteúdo do post"
-                    class="w-full h-full object-cover">
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                    width="800"
+                    height="800">
             </div>
 
             <div class="flex items-center justify-between mt-3 px-2">

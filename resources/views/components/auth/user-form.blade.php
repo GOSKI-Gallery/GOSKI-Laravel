@@ -43,7 +43,10 @@
                 class="absolute inset-0 z-20 cursor-pointer opacity-0" accept="image/*">
 
             <img id="image-preview-edit" src="{{ $user['profile_photo_url'] ?? '' }}"
-                class="{{ isset($user['profile_photo_url']) ? '' : 'hidden' }} absolute inset-0 z-10 h-full w-full object-cover" />
+                class="{{ isset($user['profile_photo_url']) ? '' : 'hidden' }} absolute inset-0 z-10 h-full w-full object-cover"
+                loading="lazy"
+                width="160"
+                height="160" />
         </div>
     </div>
 @endif
