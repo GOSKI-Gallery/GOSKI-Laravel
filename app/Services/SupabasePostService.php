@@ -209,4 +209,13 @@ class SupabasePostService extends SupabaseBaseService
 
         return $earthRadiusKm * 2 * atan2(sqrt($a), sqrt(1 - $a));
     }
+
+    /**
+     * Round coordinate to 7 decimal places (~1cm precision) for parity with mobile.
+     * Mobile uses: Math.round(value * 1e7) / 1e7 (lib/location.ts::locationToPrecision)
+     */
+    public static function roundCoord(float $value): float
+    {
+        return round($value, 7);
+    }
 }

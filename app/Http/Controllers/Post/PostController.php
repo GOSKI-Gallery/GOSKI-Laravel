@@ -94,8 +94,8 @@ class PostController extends Controller
 
             $publicUrl = $this->supabase->getPublicUrl('posts', $fileName);
 
-            $latitude = isset($data['latitude']) ? (float) $data['latitude'] : null;
-            $longitude = isset($data['longitude']) ? (float) $data['longitude'] : null;
+            $latitude = isset($data['latitude']) ? SupabasePostService::roundCoord((float) $data['latitude']) : null;
+            $longitude = isset($data['longitude']) ? SupabasePostService::roundCoord((float) $data['longitude']) : null;
             $now = now()->toIso8601String();
 
             $record = [
