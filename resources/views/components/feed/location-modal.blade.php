@@ -155,6 +155,7 @@
                 const btn = e.target.closest('[data-open-location]');
                 if (btn) {
                     e.preventDefault();
+                    e.stopPropagation();
                     openLocation(btn.dataset.locationPostId);
                 }
             });
