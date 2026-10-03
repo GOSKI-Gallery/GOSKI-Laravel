@@ -6,39 +6,41 @@
             class="w-full mb-8 bg-white dark:bg-zinc-950 rounded-2xl p-4 shadow-sm">
 
             <div class="flex items-center justify-between px-5 mb-3">
-                <a href="{{ route('profile.show', $post['users']['id']) }}" class="flex items-center">
-                    <div class="w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <img src="{{ $post['users']['profile_photo_url'] ?? '' }}"
-                            alt="Profile"
-                            class="w-full h-full object-cover"
-                            loading="lazy"
-                            width="40"
-                            height="40"
-                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                        <svg class="w-5 h-5 text-zinc-400 dark:text-zinc-500 hidden" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-zinc-900 dark:text-white font-bold text-lg">
-                            {{ $post['users']['username'] }}
-                        </p>
-                        @if (($post['latitude'] ?? null) !== null && ($post['longitude'] ?? null) !== null)
-                            <button type="button"
-                                class="mt-0.5 flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-semibold cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-300"
-                                data-location-post-id="{{ $post['id'] }}"
-                                data-open-location>
-                                <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
-                                </svg>
-                                <span>{{ $post['location_name'] ?: 'Ver no mapa' }}</span>
-                            </button>
-                        @endif
-                        <p class="text-zinc-400 dark:text-zinc-500 text-xs">
-                            {{ \Carbon\Carbon::parse($post['created_at'])->diffForHumans() }}
-                        </p>
-                    </div>
-                </a>
+                <div class="flex items-center">
+                    <a href="{{ route('profile.show', $post['users']['id']) }}" class="flex items-center">
+                        <div class="w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            <img src="{{ $post['users']['profile_photo_url'] ?? '' }}"
+                                alt="Profile"
+                                class="w-full h-full object-cover"
+                                loading="lazy"
+                                width="40"
+                                height="40"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <svg class="w-5 h-5 text-zinc-400 dark:text-zinc-500 hidden" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-zinc-900 dark:text-white font-bold text-lg">
+                                {{ $post['users']['username'] }}
+                            </p>
+                        </div>
+                    </a>
+                    @if (($post['latitude'] ?? null) !== null && ($post['longitude'] ?? null) !== null)
+                        <button type="button"
+                            class="ml-3 mt-0.5 flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-semibold cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-300"
+                            data-location-post-id="{{ $post['id'] }}"
+                            data-open-location>
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+                            </svg>
+                            <span>{{ $post['location_name'] ?: 'Ver no mapa' }}</span>
+                        </button>
+                    @endif
+                    <p class="ml-3 text-zinc-400 dark:text-zinc-500 text-xs">
+                        {{ \Carbon\Carbon::parse($post['created_at'])->diffForHumans() }}
+                    </p>
+                </div>
 
                 @if (auth()->check() && auth()->id() !== $post['users']['id'])
                     <form action="{{ route('user.follow', $post['users']['id']) }}" method="POST" class="follow-form" data-follow-form>
