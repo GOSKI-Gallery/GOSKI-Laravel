@@ -1,5 +1,5 @@
 FROM composer:latest AS composer
-FROM php:8.4-fpm-alpine
+FROM php:8.4.27-fpm-alpine
 
 ARG APP_ENV=production
 ENV APP_ENV=${APP_ENV} \
