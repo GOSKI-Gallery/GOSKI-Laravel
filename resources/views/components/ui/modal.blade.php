@@ -41,33 +41,33 @@
 
 @push('scripts')
 <script>
-    if (!window.modalLoaded_{{ $ id }}) {
-        window.modalLoaded_{{ $ id }} = true;
+    if (!window.modalLoaded_{{ $id }}) {
+        window.modalLoaded_{{ $id }} = true;
 
-        const modal_{{ $ id }} = document.getElementById('{{ $ id }}');
-        const closeBtn_{{ $ id }} = document.getElementById('close-{{ $ id }}');
+        const modal_{{ $id }} = document.getElementById('{{ $id }}');
+        const closeBtn_{{ $id }} = document.getElementById('close-{{ $id }}');
 
-        window.openModal_{{ $ id }} = () => {
-            modal_{{ $ id }}.classList.remove('hidden');
-            modal_{{ $ id }}.classList.add('flex');
+        window.openModal_{{ $id }} = () => {
+            modal_{{ $id }}.classList.remove('hidden');
+            modal_{{ $id }}.classList.add('flex');
             document.body.style.overflow = 'hidden';
         };
 
-        const closeModal_{{ $ id }} = () => {
-            modal_{{ $ id }}.classList.add('hidden');
-            modal_{{ $ id }}.classList.remove('flex');
+        const closeModal_{{ $id }} = () => {
+            modal_{{ $id }}.classList.add('hidden');
+            modal_{{ $id }}.classList.remove('flex');
             document.body.style.overflow = 'auto';
         };
 
-        {{ $showCloseButton ? "closeBtn_{{ $ id }}.addEventListener('click', closeModal_{{ $ id }});" : '' }}
+        {{ $showCloseButton ? "closeBtn_{{ $id }}.addEventListener('click', closeModal_{{ $id }});" : '' }}
         {{ $closable ? "
-        modal_{{ $ id }}.addEventListener('click', (e) => {
-            if (e.target === modal_{{ $ id }}) closeModal_{{ $ id }}();
+        modal_{{ $id }}.addEventListener('click', (e) => {
+            if (e.target === modal_{{ $id }}) closeModal_{{ $id }}();
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modal_{{ $ id }}.classList.contains('hidden')) {
-                closeModal_{{ $ id }}();
+            if (e.key === 'Escape' && !modal_{{ $id }}.classList.contains('hidden')) {
+                closeModal_{{ $id }}();
             }
         });" : '' }}
     }

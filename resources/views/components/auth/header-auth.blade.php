@@ -16,7 +16,7 @@
                 href="/register"
                 variant="outline"
                 size="sm">
-                Crie sua conta
+                Entrar
             </x-ui.button>
         @elseif(request()->is('register'))
             <x-ui.button
