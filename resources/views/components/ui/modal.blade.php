@@ -60,16 +60,19 @@
         };
 
         {{ $showCloseButton ? "closeBtn_{{ $id }}.addEventListener('click', closeModal_{{ $id }});" : '' }}
-        {{ $closable ? "
-        modal_{{ $id }}.addEventListener('click', (e) => {
-            if (e.target === modal_{{ $id }}) closeModal_{{ $id }}();
-        });
+        @if ($closable)
+        <script>
+            modal_{{ $id }}.addEventListener('click', function(e) {
+                if (e.target === modal_{{ $id }}) closeModal_{{ $id }}();
+            });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modal_{{ $id }}.classList.contains('hidden')) {
-                closeModal_{{ $id }}();
-            }
-        });" : '' }}
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modal_{{ $id }}.classList.contains('hidden')) {
+                    closeModal_{{ $id }}();
+                }
+            });
+        </script>
+        @endif
     }
 </script>
 @endpush
