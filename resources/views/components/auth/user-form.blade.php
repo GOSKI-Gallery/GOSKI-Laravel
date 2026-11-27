@@ -52,88 +52,70 @@
 @endif
 
 @if ($showUsername)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <svg class="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 dark:group-focus-within:text-zinc-300 transition-colors" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
-                </svg>
-            </div>
-            <input type="text" name="username" id="username" placeholder="Nome de usuário"
-                value="{{ old('username', $user['username'] ?? '') }}"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
-        </div>
-        @error('username')
-            <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
-        @enderror
-    </div>
+    <x-ui.input
+        type="text"
+        name="username"
+        id="username"
+        placeholder="Nome de usuário"
+        value="{{ old('username', $user['username'] ?? '') }}"
+        icon="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        error="@error('username') {{ $message }} @enderror"
+        required />
 @endif
 
 @if ($showEmail)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <svg class="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 dark:group-focus-within:text-zinc-300 transition-colors" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
-                </svg>
-            </div>
-            <input type="email" name="email" id="email" placeholder="E-mail"
-                value="{{ old('email', $user['email'] ?? '') }}"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
-        </div>
-        @error('email')
-            <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
-        @enderror
-    </div>
+    <x-ui.input
+        type="email"
+        name="email"
+        id="email"
+        placeholder="E-mail"
+        value="{{ old('email', $user['email'] ?? '') }}"
+        icon="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
+        error="@error('email') {{ $message }} @enderror"
+        required />
 @endif
 
 @if ($showPassword)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <svg class="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 dark:group-focus-within:text-zinc-300 transition-colors" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" fill="currentColor"/>
-                </svg>
-            </div>
-            <input type="password" name="password" id="password" placeholder="Nova Senha"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
-        </div>
-        @error('password')
-            <p class="ml-2 text-[10px] font-bold uppercase tracking-tight text-red-500">{{ $message }}</p>
-        @enderror
-    </div>
+    <x-ui.input
+        type="password"
+        name="password"
+        id="password"
+        placeholder="Nova Senha"
+        icon="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9 2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"
+        error="@error('password') {{ $message }} @enderror" />
 @endif
 
 @if ($showPasswordConfirmation)
-    <div class="flex flex-col gap-1.5 mb-2">
-        <div class="group relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <svg class="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 dark:group-focus-within:text-zinc-300 transition-colors" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" fill="currentColor"/>
-                </svg>
-            </div>
-            <input type="password" name="password_confirmation" placeholder="Confirme a nova senha"
-                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-zinc-500 focus:ring-4 focus:ring-zinc-500/10 dark:text-zinc-200">
-        </div>
-    </div>
+    <x-ui.input
+        type="password"
+        name="password_confirmation"
+        placeholder="Confirme a nova senha"
+        icon="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9 2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"
+        error="@error('password_confirmation') {{ $message }} @enderror" />
 @endif
 
 @if ($wrapInForm)
     @if ($showButton)
-        <button type="submit"
-            class="mt-2 w-full cursor-pointer rounded-xl bg-zinc-900 dark:bg-zinc-950 py-3 font-bold text-white shadow-lg shadow-zinc-200 dark:shadow-none transition-all hover:bg-zinc-600 hover:shadow-zinc-100 active:scale-[0.98]">
+        <x-ui.button
+            type="submit"
+            variant="primary"
+            size="md"
+            class="mt-2 w-full shadow-lg shadow-zinc-200 dark:shadow-none hover:shadow-zinc-100">
             {{ $buttonText }}
-        </button>
+        </x-ui.button>
     @endif
     </form>
     </div>
 @endif
 
 @if (!$wrapInForm && $showButton)
-    <button type="submit"
-        class="mt-2 w-full cursor-pointer rounded-xl bg-zinc-900 py-3 font-bold text-white shadow-lg shadow-zinc-200 dark:shadow-none transition-all hover:bg-zinc-600 hover:shadow-zinc-100 active:scale-[0.98]">
+    <x-ui.button
+        type="submit"
+        variant="primary"
+        size="md"
+        class="mt-2 w-full shadow-lg shadow-zinc-200 dark:shadow-none hover:shadow-zinc-100">
         {{ $buttonText }}
-    </button>
+    </x-ui.button>
 @endif
 
 <script>
