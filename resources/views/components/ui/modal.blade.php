@@ -59,7 +59,11 @@
             document.body.style.overflow = 'auto';
         };
 
-        {{ $showCloseButton ? "closeBtn_{{ $id }}.addEventListener('click', closeModal_{{ $id }});" : '' }}
+        @if ($showCloseButton)
+        <script>
+            closeBtn_{{ $id }}.addEventListener('click', closeModal_{{ $id }});
+        </script>
+        @endif
         @if ($closable)
         <script>
             modal_{{ $id }}.addEventListener('click', function(e) {
