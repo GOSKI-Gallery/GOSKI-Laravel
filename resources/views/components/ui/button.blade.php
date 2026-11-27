@@ -30,13 +30,19 @@ $variantClasses = $variants[$variant] ?? $variants['primary'];
 $sizeClasses = $sizes[$size] ?? $sizes['md'];
 
 $tag = $href ? 'a' : 'button';
-$attrs = $href ? "href=\"{{ $href }}\"" : "type=\"{{ $type }}\"";
+
+$hrefAttr = $href ? 'href="' . e($href) . '"' : '';
+$typeAttr = !$href ? 'type="' . e($type) . '"' : '';
+
 $disabledAttr = $disabled ? 'disabled' : '';
+$loadingAttr = $loading ? 'disabled' : '';
 ?>
 
-<{{ $tag }} {{ $attrs }}
+<{{ $tag }}
+    {{ $hrefAttr }}
+    {{ $typeAttr }}
     {{ $disabledAttr }}
-    {{ $loading ? 'disabled' : '' }}
+    {{ $loadingAttr }}
     class="{{ $base }} {{ $variantClasses }} {{ $sizeClasses }} {{ $class }}">
     @if ($loading)
         <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
