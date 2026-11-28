@@ -16,7 +16,7 @@
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
         </div>
-        <h3 class="text-xl font-black text-gray-900 dark:text-gray-200 tracking-tight">Nenhum post cadastrado.<h3>
+        <h3 class="text-xl font-black text-gray-900 dark:text-gray-200 tracking-tight">Nenhum post cadastrado.</h3>
 
                 <button id="open-modal-btn-empty"
                     class="mt-8 bg-gray-600 dark:bg-zinc-900 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-gray-100 dark:shadow-none active:scale-95 transition-all cursor-pointer">

@@ -1,8 +1,8 @@
 @props(['user'])
 
-<div class="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md group">
+<div class="bg-[var(--bg-card)] dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md group">
     <a href="{{ route('admin.users.detail', $user->id) }}" class="block">
-        <div class="aspect-square bg-gray-50 dark:bg-zinc-900 overflow-hidden">
+        <div class="aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
             <img src="{{ $user->profile_photo_url ?? '' }}"
                  alt="{{ $user->username }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -15,23 +15,23 @@
 
     <div class="p-5">
         <a href="{{ route('admin.users.detail', $user->id) }}" class="block">
-            <h3 class="font-black text-gray-900 dark:text-white text-sm uppercase tracking-tight hover:underline">
+            <h3 class="font-black text-zinc-900 dark:text-white text-sm uppercase tracking-tight hover:underline">
                 {{ $user->username }}
             </h3>
         </a>
 
         <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
             <div>
-                <p class="text-gray-400 dark:text-gray-500 font-bold">Seguidores</p>
-                <p class="text-gray-900 dark:text-white font-black mt-1">{{ $user->followers_count ?? 0 }}</p>
+                <p class="text-zinc-400 dark:text-zinc-500 font-bold">Seguidores</p>
+                <p class="text-zinc-900 dark:text-white font-black mt-1">{{ $user->followers_count ?? 0 }}</p>
             </div>
             <div>
-                <p class="text-gray-400 dark:text-gray-500 font-bold">Seguindo</p>
-                <p class="text-gray-900 dark:text-white font-black mt-1">{{ $user->following_count ?? 0 }}</p>
+                <p class="text-zinc-400 dark:text-zinc-500 font-bold">Seguindo</p>
+                <p class="text-zinc-900 dark:text-white font-black mt-1">{{ $user->following_count ?? 0 }}</p>
             </div>
             <div>
-                <p class="text-gray-400 dark:text-gray-500 font-bold">Posts</p>
-                <p class="text-gray-900 dark:text-white font-black mt-1">{{ $user->posts_count ?? 0 }}</p>
+                <p class="text-zinc-400 dark:text-zinc-500 font-bold">Posts</p>
+                <p class="text-zinc-900 dark:text-white font-black mt-1">{{ $user->posts_count ?? 0 }}</p>
             </div>
         </div>
     </div>

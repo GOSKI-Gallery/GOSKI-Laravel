@@ -1,6 +1,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module" integrity="sha384-E7dy6eN+cKffMM/2+QF5MMP1q8KS0AT4IlmT4v3mG2mNZ7ISeLRPdlHrlWJK/8yx" crossorigin="anonymous"></script>
 <el-dropdown class="inline-block">
-    <button class="flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2 py-1 rounded-full transition cursor-pointer">
+    <button id="user-menu-btn"
+            class="flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2 py-1 rounded-full transition cursor-pointer"
+            aria-label="Menu do usuário"
+            aria-haspopup="true"
+            aria-expanded="false">
         <div class="w-8 h-8 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
             @php
                 $avatarUrl = Auth::user()->profile_photo_url ?? '';
@@ -38,7 +42,8 @@
             @endif
 
             <button id="theme-toggle-menu"
-                class="flex items-center justify-between focus:bg-zinc-100 dark:focus:bg-zinc-800 px-5 py-3 focus:outline-hidden w-full cursor-pointer">
+                class="flex items-center justify-between focus:bg-zinc-100 dark:focus:bg-zinc-800 px-5 py-3 focus:outline-hidden w-full cursor-pointer"
+                aria-label="Alternar tema">
                 <span class="text-sm font-bold text-black dark:text-white theme-label">Modo escuro</span>
                 <svg class="sun-icon w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,6.65C6.9,7.16 6.36,7.78 5.94,8.5C5.5,9.24 5.25,10 5.11,10.79L3.34,7M3.36,17L5.12,13.23C5.26,14 5.53,14.78 5.95,15.5C6.37,16.24 6.91,16.86 7.5,17.37L3.36,17M20.65,7L18.88,10.8C18.74,10 18.47,9.23 18.05,8.5C17.63,7.78 17.1,7.15 16.5,6.64L20.65,7M20.64,17L16.5,17.36C17.09,16.85 17.62,16.22 18.04,15.5C18.46,14.77 18.73,14 18.87,13.21L20.64,17M12,22L9.59,18.56C10.33,18.83 11.14,19 12,19C12.82,19 13.63,18.83 14.37,18.56L12,22Z"/>
@@ -51,7 +56,8 @@
             <form action="/logout" method="POST">
                 @csrf
                 <button type="submit"
-                    class="flex items-center justify-between focus:bg-zinc-100 dark:focus:bg-zinc-800 px-5 py-3 focus:outline-hidden w-full cursor-pointer">
+                    class="flex items-center justify-between focus:bg-zinc-100 dark:focus:bg-zinc-800 px-5 py-3 focus:outline-hidden w-full cursor-pointer"
+                    aria-label="Sair da conta">
                     <span class="text-sm font-bold text-red-600">Sair</span>
                     <svg class="w-5 h-5 text-red-600" viewBox="0 0 24 24" fill="none">
                         <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/>
@@ -88,5 +94,13 @@
             localStorage.setItem('theme', newTheme);
             updateUI();
         });
+
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener('click', function () {
+                const expanded = userMenuBtn.getAttribute('aria-expanded') === 'true';
+                userMenuBtn.setAttribute('aria-expanded', String(!expanded));
+            });
+        }
     });
 </script>
